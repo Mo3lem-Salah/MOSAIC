@@ -353,7 +353,7 @@ class TestRenderPayloadStructure:
         ("FrozenLake-v1", "FrozenLakeAdapter", "DEFAULT_FROZEN_LAKE_CONFIG"),
         ("FrozenLake-v2", "FrozenLakeV2Adapter", "DEFAULT_FROZEN_LAKE_V2_CONFIG"),
         ("CliffWalking-v1", "CliffWalkingAdapter", "DEFAULT_CLIFF_WALKING_CONFIG"),
-        ("Taxi-v3", "TaxiAdapter", "DEFAULT_TAXI_CONFIG"),
+        ("Taxi-v4", "TaxiAdapter", "DEFAULT_TAXI_CONFIG"),
     ])
     def test_render_payload_structure(self, game_id, adapter_class, config):
         """All adapters provide properly structured render payloads."""
