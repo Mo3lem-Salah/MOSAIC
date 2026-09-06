@@ -398,6 +398,33 @@ the massive headroom at every resolution.
      - 0 / 700,000 frames
      - CPU-affinity pinned, cross-core
 
+Per-Framework FastLane Overhead
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enabling FastLane adds a per-step frame extraction cost inside each worker's
+actor loop.  The overhead is framework-dependent: frameworks with faster
+baseline steps (e.g., SBX's JIT-compiled step) show the largest relative
+overhead precisely because their baseline is so fast.  The following two plots
+summarise the overhead measured across seven publishing frameworks (CleanRL,
+SBX, XuanCe, SB3, Tianshou, TorchRL, RLlib) on CartPole-v1, 100,000 steps,
+five seeds per condition.
+
+**Overhead ratio per framework**: ratio of FastLane-enabled steps/s to native
+steps/s.  Values above 1.0 indicate negligible overhead; values below 1.0
+indicate a slowdown due to frame extraction in the worker's actor loop.
+
+.. image:: /images/rendering_tabs/overhead_ratios.png
+   :width: 100%
+   :alt: FastLane per-framework overhead ratios
+
+**Combined overhead summary**: absolute steps/s comparison between native
+(no FastLane), worker-wrapped (subprocess overhead only), and FastLane-enabled
+conditions, across all seven frameworks.
+
+.. image:: /images/rendering_tabs/combined_overhead.png
+   :width: 100%
+   :alt: FastLane combined overhead across frameworks
+
 Limitations
 ^^^^^^^^^^^
 

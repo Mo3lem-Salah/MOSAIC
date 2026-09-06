@@ -257,7 +257,18 @@ def _detect_optional_dependencies() -> dict[str, bool]:
     }
 
     for dep_name, package_name in checks.items():
-        found = importlib.util.find_spec(package_name) is not None
+        try:
+            found = importlib.util.find_spec(package_name) is not None
+        except (ModuleNotFoundError, ValueError):
+            found = False
+        except Exception:
+            LOGGER.debug(
+                "optional dependency '%s' (package '%s') raised an unexpected error during find_spec",
+                dep_name,
+                package_name,
+                exc_info=True,
+            )
+            found = False
         deps[dep_name] = found
         if not found:
             LOGGER.debug(

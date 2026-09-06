@@ -8,6 +8,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ruvector databases (local vector index files, regenerated at runtime)
+ruvector.db
+**/ruvector.db
+ruvector.db-*
+**/ruvector.db-*
+
 # C extensions
 *.so
 
@@ -23,6 +29,7 @@ lib/
 lib64/
 parts/
 sdist/
+var/
 wheels/
 share/python-wheels/
 *.egg-info/
@@ -84,7 +91,8 @@ coverage.xml
 .dmypy.json
 dmypy.json
 .pytype/
-
+**/graphify-out/
+graphify-out/*
 # =============================================================================
 # Project Runtime Artifacts
 # =============================================================================
@@ -157,7 +165,16 @@ ml-agents/
 3rd_party/workers/marllib_worker/marllib_worker/__pycache__
 3rd_party/workers/marllib_worker/**/__pycache__/
 
+# =============================================================================
+# Deprecated / Legacy Directories
+# =============================================================================
 
+cleanrl/
+coach/
+ray/
+SuperSuit/
+Vesna_RL/
+.fake/
 # =============================================================================
 # GitHub / CI
 # =============================================================================
@@ -192,6 +209,9 @@ _vizdoom.ini
 # =============================================================================
 # Development Progress (internal documentation - not for public release)
 # =============================================================================
+
+# Paper drafts — related_papers/RLlib excluded
+docs/my_paper/related_papers/RLlib_Abstractions_for_Distributed_Reinforcement_Learning/
 
 # Internal development docs (not for public release)
 docs/Development_Progress/
@@ -249,6 +269,14 @@ docs/my_paper/
 3rd_party/workers/llm_game_worker/LLM-Game-Benchmark
 3rd_party/workers/di_engine_worker/
 
+# Non-conforming / experimental workers: not registered in
+# gym_gui/ui/worker_catalog/catalog.py, do not follow MOSAIC's worker
+# admission standard (no CLI/runtime/config entrypoint contract). Kept
+# on disk for reference but excluded from version control.
+3rd_party/workers/unreal_map_worker/
+3rd_party/workers/proagent/
+3rd_party/workers/mapox-trainer/
+
 # Tools
 3rd_party/tools/hemac/
 3rd_party/tools/PufferLib/
@@ -295,15 +323,8 @@ results/
 .ruff_cache/
 
 
+3rd_party/benchmarks/workers_benchmark/papers/*
+
+3rd_party/environments/RPM_Generalizable_Behaviors_in_Multi_Agent_Reinforcement_Learning
+
 !3rd_party/benchmarks/workers_benchmark/configs/env
-
-
-
-# Benchmarks
-!var/frameworks/*
-var/frameworks/benchmarks/native
-var/frameworks/benchmarks/fastlane
-var/frameworks/benchmarks/.hydra_snapshots
-var/frameworks/benchmarks/.hydra_snapshots/multirun
-var/frameworks/benchmarks/sweep_logs
-var/frameworks/benchmarks/worker

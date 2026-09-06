@@ -164,18 +164,18 @@ babaisai = [
     "baba-is-ai @ git+https://github.com/nacloos/baba-is-ai",
 ]
 
-# mosaic_multigrid - Modernized multi-agent sports environments (REPLACES gym-multigrid)
-# PyPI: https://pypi.org/project/mosaic-multigrid/
-# Includes: Soccer 2v2/1v1, Collect 3-agent/2v2/1v1, Basketball 3v3, American Football 1v1/2v2/3v3 (IndAgObs + TeamObs variants)
-# v6.3.0: American Football environment with brown field, end zones, touchdown scoring, ball stealing
-# v6.0.0: Solo training environments (no opponent) for curriculum pre-training
-# v5.0.0: noop=0 added for AEC compatibility (inspired by MeltingPot NOOP=0)
-#         Action space: noop=0, left=1, right=2, forward=3, pickup=4, drop=5, toggle=6, done=7
-#         Step telemetry: infos[agent]["position"] and infos[agent]["carrying"] every step
-# Features: Gymnasium 1.0+ API, competitive/cooperative, ball passing/stealing, wrappers, PettingZoo API
+# mosaic_multigrid - Modernized multi-agent sports environments
+# PyPI: https://pypi.org/project/mosaic_multigrid/
+# Includes: Soccer, Basketball, American Football (solo, 1v1/2v2/3v3/4v4, one-sided
+#           Nv0/0vN up to 6, and 30 asymmetric competitive matchups — IndAgObs only), Collect
+# v7.0.0 (BREAKING): Removed TeamObs wrappers and all *-TeamObs-v1 env IDs. Added 30
+#         asymmetric competitive variants (1v2, 2v1, 1v3, 3v1, 1v4, 4v1, 2v3, 3v2,
+#         2v4, 4v2 across Basketball / American Football / Soccer). 81 registered env
+#         IDs total. Migrate any TeamObs training code to inject agent IDs at the
+#         algorithm layer (EPyMARL obs_agent_id convention).
 # NOTE: Now installs from local dev: pip install -e 3rd_party/environments/mosaic_multigrid/
 mosaic_multigrid = [
-    "mosaic-multigrid==6.5.0",
+    "mosaic_multigrid>=7.0.0",
 ]
 
 # malmoenv - Microsoft Malmo Minecraft RL environments (13 missions)
@@ -353,6 +353,25 @@ overcooked = [
     "scipy",
     "setuptools>=77.0.3",
     "tqdm",
+]
+
+# SocialJax - Sequential social dilemma environments in JAX
+# Paper: Guo et al. (2026). "SocialJax: A Suite of Sequential Social Dilemma Environments for MARL in JAX"
+# Repository: https://github.com/cooperativex/SocialJax
+# Local: 3rd_party/environments/SocialJax/
+# Includes: Coins, Commons Harvest Open, Clean Up, Coop Mining, Territory Open,
+#           PD Arena, Mushrooms, Gift, LB Foraging (9 environments)
+# Features: JAX/GPU-accelerated, mixed-incentive social dilemmas, individual and common rewards
+# Algorithms already integrated: IPPO, MAPPO, MAT (see 3rd_party/workers/jaxmarl_worker/algorithms/)
+# NOTE: Install from local path: pip install -e 3rd_party/environments/SocialJax/
+#       All JAX/flax/chex deps are listed here (SocialJax's own pyproject lists them only under
+#       [tool.poetry.group.dev.dependencies], so pip install alone will not pull them)
+socialjax = [
+    "jax>=0.4.20",
+    "jaxlib>=0.4.20",
+    "chex>=0.1.82",
+    "flax>=0.7.0",
+    "optax>=0.1.7",
 ]
 
 # =============================================================================
@@ -533,7 +552,7 @@ dev = [
     "pytest-rerunfailures>=13.0",
     "pyright>=1.1.0",
     "ruff>=0.1.0",
-    "gymnasium>=1.1.0,<1.3.0",
+    "gymnasium>=1.1.0",
 ]
 
 # =============================================================================

@@ -16,7 +16,8 @@
     "3rd_party/workers/mosaic/llm_worker",
     "3rd_party/workers/mosaic/vlm_worker",
     "3rd_party/workers/mosaic/passive_worker",
-    "3rd_party/workers/mosaic/random_worker"
+    "3rd_party/workers/mosaic/random_worker",
+    "3rd_party/workers/mava_worker"
   ],
   "include": [
     "gym_gui",

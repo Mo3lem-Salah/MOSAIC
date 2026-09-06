@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# MOSAIC — Single-Machine Launch
+# MOSAIC: Single-Machine Launch
 # Starts the server (trainer daemon) and client (GUI) on the same machine.
 #
 # For split client-server deployments use:
@@ -22,7 +22,12 @@ if [ -f .venv/bin/activate ]; then source .venv/bin/activate; fi
 
 mkdir -p var/logs var/trainer
 
-PYTHON_BIN="${PYTHON_BIN:-$(command -v python)}"
+# Local .venv takes priority over any PYTHON_BIN set in .env (which may be from another machine)
+if [ -f "${ROOT_DIR}/.venv/bin/python" ]; then
+    PYTHON_BIN="${ROOT_DIR}/.venv/bin/python"
+else
+    PYTHON_BIN="${PYTHON_BIN:-$(command -v python || command -v python3)}"
+fi
 DAEMON_ADDR="127.0.0.1:50055"
 
 # Warn if the user has a remote target set — run.sh always uses a local server
@@ -53,6 +58,7 @@ rm -f var/trainer/trainer.pid 2>/dev/null || true
 echo "Starting MOSAIC server..."
 QT_DEBUG_PLUGINS=0 \
     "$PYTHON_BIN" -m gym_gui.services.trainer_daemon \
+    --listen "${DAEMON_ADDR}" \
     > var/logs/trainer_daemon.log 2>&1 &
 DAEMON_PID=$!
 
