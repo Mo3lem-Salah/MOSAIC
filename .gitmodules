@@ -74,6 +74,19 @@
   path = 3rd_party/environments/Competition_Olympics-Wrestling
   url = https://github.com/jidiai/Competition_Olympics-Wrestling.git
 
+[submodule "Craftax"]
+  path = 3rd_party/environments/Craftax
+  url = https://github.com/MichaelTMatthews/Craftax.git
+
 [submodule "JaxMARL"]
   path = 3rd_party/workers/jaxmarl_worker/JaxMARL
   url = https://github.com/FLAIROx/JaxMARL.git
+[submodule "3rd_party/workers/sbx_worker/sbx"]
+	path = 3rd_party/workers/sbx_worker/sbx
+	url = https://github.com/araffin/sbx.git
+[submodule "3rd_party/workers/mushroom_rl_worker/mushroom-rl"]
+	path = 3rd_party/workers/mushroom_rl_worker/mushroom-rl
+	url = https://github.com/MushroomRL/mushroom-rl.git
+[submodule "3rd_party/workers/pearl_worker/Pearl"]
+	path = 3rd_party/workers/pearl_worker/Pearl
+	url = https://github.com/facebookresearch/Pearl.git

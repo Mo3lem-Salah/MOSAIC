@@ -913,7 +913,7 @@ class CliffWalkingAdapter(ToyTextAdapter):
 
 
 class TaxiAdapter(ToyTextAdapter):
-    """Adapter for Taxi-v3 environment with game-specific configuration."""
+    """Adapter for Taxi-v4 environment with game-specific configuration."""
 
     id = GameId.TAXI.value
     toy_text_defaults = TAXI_DEFAULTS

@@ -58,7 +58,7 @@ class GameId(StrEnum):
     FROZEN_LAKE = "FrozenLake-v1"
     FROZEN_LAKE_V2 = "FrozenLake-v2"
     CLIFF_WALKING = "CliffWalking-v1"  # Gymnasium 1.1.0+ has v1
-    TAXI = "Taxi-v3"
+    TAXI = "Taxi-v4"
     BLACKJACK = "Blackjack-v1"
     LUNAR_LANDER = "LunarLander-v3"
     CAR_RACING = "CarRacing-v3"

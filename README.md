@@ -19,6 +19,11 @@
 [![GitHub stars](https://img.shields.io/github/stars/Abdulhamid97Mousa/mosaic?style=social)](https://github.com/Abdulhamid97Mousa/mosaic/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Abdulhamid97Mousa/mosaic?style=social)](https://github.com/Abdulhamid97Mousa/mosaic/network/members)
 
+
+
+
+
+
 # MOSAIC
 
 **A Unified Platform for Cross-Paradigm Agent-Mixing and Human-AI Collaboration**
@@ -30,21 +35,50 @@ MOSAIC is a visual-first platform that enables researchers to configure, run, an
 | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 
 
-## Two Evaluation Modes
+## Video Showcase
 
-MOSAIC provides two evaluation modes designed for reproducibility:
-
-<video src="https://private-user-images.githubusercontent.com/80536675/553915409-ea9ebc18-2216-4fb2-913c-5d354ebea56e.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzIxNjgzMzQsIm5iZiI6MTc3MjE2ODAzNCwicGF0aCI6Ii84MDUzNjY3NS81NTM5MTU0MDktZWE5ZWJjMTgtMjIxNi00ZmIyLTkxM2MtNWQzNTRlYmVhNTZlLm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAyMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMjI3VDA0NTM1NFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTAyZDkzMWQwZjczOTI1NzFiNjk2MGU4N2I2ZTAxNDE0M2Y2YmQxNjM5ZTAxMTkxYzA5NGU4ZGE3YzZkZmJkZWEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.9BimKYjxGrdN_g1eDbXC69weDC7-My85Gl-ou2wNzxQ" controls autoplay muted loop style="width:100%; max-width:100%; height:auto; border-radius:8px;"></video>
-<p align="center"><b>Manual Mode:</b> Side-by-side lock-step evaluation with shared seeds.</p>
-
-- **Manual Mode:** side-by-side comparison where multiple operators step through the same environment with shared seeds, letting researchers visually inspect decision-making differences between paradigms in real time.
-
-<video src="https://private-user-images.githubusercontent.com/80536675/553915854-a9b3f6f4-661c-492f-b43f-34d7125a6d2e.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzIxNjgzMzQsIm5iZiI6MTc3MjE2ODAzNCwicGF0aCI6Ii84MDUzNjY3NS81NTM5MTU4NTQtYTliM2Y2ZjQtNjYxYy00OTJmLWI0M2YtMzRkNzEyNWE2ZDJlLm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAyMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMjI3VDA0NTM1NFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWNhMjM0ZjBjYjU1NWFlNmYxOGU2Yzc2N2U0ODE4OTYzZGVkYTc5YTIyMjM5YzRjODU0MTRhODFhOWI4ZDU3NmImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.tk8Ezu0ivgFlp-xm6YEkIsWlbFPcpOgSq30Hq_JEJvs" controls autoplay muted loop style="width:100%; max-width:100%; height:auto; border-radius:8px;"></video>
-<p align="center"><b>Script Mode:</b> Automated batch evaluation with deterministic seed sequences.</p>
-
-- **Script Mode:** automated, long-running evaluation driven by Python scripts that define operator configurations, worker assignments, seed sequences, and episode counts. Scripts execute deterministically with no manual intervention, producing reproducible telemetry logs (JSONL) for every step and episode.
-
-All evaluation runs share **identical conditions**: same environment seeds, same observations, and unified telemetry. Script Mode additionally supports **procedural seeds** (different seed per episode to test generalization) and **fixed seeds** (same seed every episode to isolate agent behaviour), with configurable step pacing for visual inspection or headless batch execution.
+<table>
+  <tr>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/df505885-525f-4f21-bacc-96f5464cf845" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>Google Research Football inside MOSAIC</strong>: human-controlled player, 10 Hz real-time stepping, RGB render view.</p>
+    </td>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/118bbc56-2ca0-4c7b-8c0c-c24464dbad43" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>MAPPO training on GRF</strong> (<code>academy_3_vs_1_with_keeper</code>) via <code>xuance_worker</code> inside MOSAIC.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/6c1bde96-c0ab-401c-ba80-56cdf3ab6807" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>StarCraft Multi-Agent Challenge (SMAC) inside MOSAIC</strong>: cooperative micromanagement via <code>xuance_worker</code>.</p>
+    </td>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/1f1b362d-0046-4393-ba23-675269239b3d" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>MAPPO training on SMAC</strong> via <code>xuance_worker</code> inside MOSAIC.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/dc83a7d3-8088-49f5-a1ad-05acece24b50" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>SMACv2 inside MOSAIC</strong>: procedural unit spawns and randomised team compositions via <code>xuance_worker</code>.</p>
+    </td>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/a752f29d-6b40-4a36-adea-21f3bc09069c" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>MAPPO training on SMACv2</strong> via <code>xuance_worker</code> inside MOSAIC.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/4644af3c-7e87-4ddc-a43b-df0ece99df9f" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>ViZDoom inside MOSAIC</strong>: human-controlled player via keyboard, first-person 3D pixel observations.</p>
+    </td>
+    <td width="50%">
+      <video src="https://github.com/user-attachments/assets/586aed3c-45fd-446e-8eaf-c2fd472bca58" controls autoplay muted loop style="width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></video>
+      <p align="center"><strong>PPO_Clip training on ViZDoom-TakeCover-v0</strong> via <code>xuance_worker</code> inside MOSAIC.</p>
+    </td>
+  </tr>
+</table>
 
 ## Why MOSAIC?
 
@@ -53,7 +87,7 @@ Today's AI landscape offers powerful but **fragmented** tools: RL frameworks ([C
 **MOSAIC provides:**
 
 - **Visual-First Design**: Configure experiments through an intuitive PyQt6 interface, **almost no code required**.
-- **Heterogeneous Agent Mixing**: Deploy Human, RL, and LLM agents in the same environment.
+- **Heterogeneous Agent Cooperation**: Deploy Human, RL, and LLM agents in the same environment.
 - **Resource Management & Quotas**: GPU allocation, queue limits, credit-based backpressure, health monitoring.
 - **Per-Agent Policy Binding**: Route each agent to different workers via `PolicyMappingService`.
 - **Worker Lifecycle Orchestration**: Subprocess management with heartbeat monitoring and graceful termination.
@@ -63,10 +97,10 @@ Today's AI landscape offers powerful but **fragmented** tools: RL frameworks ([C
 <video src="https://private-user-images.githubusercontent.com/80536675/553915983-ded17cdc-f23c-404f-a9f6-074fbe74816c.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzIxNjgzMzQsIm5iZiI6MTc3MjE2ODAzNCwicGF0aCI6Ii84MDUzNjY3NS81NTM5MTU5ODMtZGVkMTdjZGMtZjIzYy00MDRmLWE5ZjYtMDc0ZmJlNzQ4MTZjLm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAyMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMjI3VDA0NTM1NFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWUwZmZiZTlmZjQ3OGQ4NTk1ZWQzODEzMGVlYTMyY2E0Y2E1ZjJjZTU0NTg0MDMxYmU0OThlMGVkNjc1ZGVjNDgmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.1DWDiXB20L5dr8Hx60M70zd0pL1JKkOO5roOjr2kkaQ" controls autoplay muted loop style="width:100%; max-width:100%; height:auto; border-radius:8px;"></video>
 <p align="center"><b>Human vs Human:</b> Two human players competing via dedicated USB keyboards.</p>
 
-**2. Random Agents:** Baseline agents across 26 environment families.
+**2. Random Agents:** Baseline agents across 33 environment families.
 
 <video src="https://private-user-images.githubusercontent.com/80536675/553916105-2625a8f8-476c-4171-86cc-a9970cbf1665.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzIxNjgzMzQsIm5iZiI6MTc3MjE2ODAzNCwicGF0aCI6Ii84MDUzNjY3NS81NTM5MTYxMDUtMjYyNWE4ZjgtNDc2Yy00MTcxLTg2Y2MtYTk5NzBjYmYxNjY1Lm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAyMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMjI3VDA0NTM1NFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQwMzljOWNhYWQwNjZjNzRlZDU4ZmM3M2M0YWJlNjYwNWM0NzM2YjkxNmQ4YTQxYmEzYTNmNzJkYWQwZGI3MWQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.Lvwy-I3p1fNP-kmUhHtUXO7FtJ9Q_K_NCVuGbxZ6VbY" controls autoplay muted loop style="width:100%; max-width:100%; height:auto; border-radius:8px;"></video>
-<p align="center"><b>Random Agents:</b> Baseline agents across 26 environment families.</p>
+<p align="center"><b>Random Agents:</b> Baseline agents across 33 environment families.</p>
 
 **3. Heterogeneous Multi-Agent Ad-Hoc Teamwork in Adversarial Settings:** Different decision-making paradigms (RL, LLM, Random) competing head-to-head in the same multi-agent environment.
 
@@ -84,42 +118,41 @@ Existing frameworks are paradigm-siloed. No prior framework allowed fair, reprod
 
 **Column Definitions:**
 
-1. **Agent-mixing**: infrastructure for deploying heterogeneous agents from different paradigms in the same environment
-2. **Platform GUI**: real-time visualization during execution
-3. **Cross-Paradigm**: infrastructure for comparing different agent types (e.g., RL vs. LLM) on identical environment instances with shared random seeds for reproducible head-to-head evaluation
+1. **Platform GUI**: real-time visualization during execution
+2. **Cross-Paradigm**: infrastructure for comparing different agent types (e.g., RL vs. LLM) on identical environment instances with shared random seeds for reproducible head-to-head evaluation
 
 **Legend:** ✔️ Supported | ❌ Not supported | 🔵 Partial
 
 
-| System                   | RL  | LLM | VLM | Human | Framework | Platform GUI | Cross-Paradigm | Agent-mixing |
-| ------------------------ | --- | --- | --- | ----- | --------- | ------------ | -------------- | ------------ |
-| RLlib                    | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| CleanRL                  | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Tianshou                 | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Acme                     | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| XuanCe                   | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| OpenRL                   | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Stable-Baselines3        | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Coach                    | ✔️  | ❌   | ❌   | ❌     | ✔️        | ✔️           | ❌              | ❌            |
-| BenchMARL                | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| HeMAC                    | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Overcooked-AI            | ✔️  | ❌   | ❌   | ✔️    | ✔️        | ❌            | ❌              | ❌            |
-| BALROG                   | ❌   | ✔️  | ✔️  | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| TextArena                | ❌   | ✔️  | ❌   | ✔️    | ✔️        | ❌            | ❌              | ❌            |
-| GameBench                | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| lmgame-Bench             | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| LLM Chess                | ✔️  | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| LLM-Game-Bench           | ❌   | ✔️  | ❌   | ❌     | ✔️        | 🔵           | ❌              | ❌            |
-| AgentBench               | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| MultiAgentBench          | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| GAMEBoT                  | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Collab-Overcooked        | 🔵  | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| BotzoneBench             | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| AgentGym                 | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| Game Reasoning Arena     | ✔️  | ✔️  | 🔵  | 🔵    | ✔️        | ❌            | ❌              | ❌            |
-| CREW                     | ✔️  | ❌   | ❌   | ✔️    | ✔️        | ❌            | ❌              | ❌            |
-| LLM-PySC2                | ✔️  | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              | ❌            |
-| **MOSAIC (Ours)**        | ✔️  | ✔️  | ✔️  | ✔️    | ✔️        | ✔️           | ✔️             | ✔️           |
+| System                   | RL  | LLM | VLM | Human | Framework | Platform GUI | Cross-Paradigm |
+| ------------------------ | --- | --- | --- | ----- | --------- | ------------ | -------------- |
+| RLlib                    | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| CleanRL                  | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Tianshou                 | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Acme                     | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| XuanCe                   | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| OpenRL                   | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Stable-Baselines3        | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Coach                    | ✔️  | ❌   | ❌   | ❌     | ✔️        | ✔️           | ❌              |
+| BenchMARL                | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| HeMAC                    | ✔️  | ❌   | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Overcooked-AI            | ✔️  | ❌   | ❌   | ✔️    | ✔️        | ❌            | ❌              |
+| BALROG                   | ❌   | ✔️  | ✔️  | ❌     | ✔️        | ❌            | ❌              |
+| TextArena                | ❌   | ✔️  | ❌   | ✔️    | ✔️        | ❌            | ❌              |
+| GameBench                | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| lmgame-Bench             | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| LLM Chess                | ✔️  | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| LLM-Game-Bench           | ❌   | ✔️  | ❌   | ❌     | ✔️        | 🔵           | ❌              |
+| AgentBench               | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| MultiAgentBench          | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| GAMEBoT                  | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Collab-Overcooked        | 🔵  | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| BotzoneBench             | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| AgentGym                 | ❌   | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| Game Reasoning Arena     | ✔️  | ✔️  | 🔵  | 🔵    | ✔️        | ❌            | ❌              |
+| CREW                     | ✔️  | ❌   | ❌   | ✔️    | ✔️        | ❌            | ❌              |
+| LLM-PySC2                | ✔️  | ✔️  | ❌   | ❌     | ✔️        | ❌            | ❌              |
+| **MOSAIC (Ours)**        | ✔️  | ✔️  | ✔️  | ✔️    | ❌        | ✔️           | ✔️             |
 
 
 **MOSAIC introduces an agent-level interface enabling agent-mixing across fundamentally different decision-making paradigms.**
@@ -153,9 +186,9 @@ With flexible policy mappings, you can:
 # Green team: RL + LLM | Blue team: RL + Random
 config = OperatorConfig.multi_agent(
     player_workers={
-        "agent_0": WorkerAssignment(worker_id="xuance_worker", ...),  # RL  green agent mosaic_multigrid
+        "agent_0": WorkerAssignment(worker_id="xuance_worker", ...),  # RL  green agent multigrid_sports
         "agent_1": WorkerAssignment(worker_id="llm_worker", ...),     # LLM
-        "agent_2": WorkerAssignment(worker_id="xuance_worker", ...),  # RL  blue agent mosaic_multigrid
+        "agent_2": WorkerAssignment(worker_id="xuance_worker", ...),  # RL  blue agent multigrid_sports
         "agent_3": WorkerAssignment(worker_id="random_worker", ...),  # Random
     },
     link_groups={
@@ -198,31 +231,79 @@ See the [FastLane documentation](docs/source/documents/rendering_tabs/fastlane.r
 
 ## Experimental Configurations
 
-Heterogeneous decision-making enables a systematic ablation matrix for cross-paradigm research. The following configurations illustrate the design using [MOSAIC MultiGrid](documents/environments/mosaic_multigrid/index.html).
+Heterogeneous decision-making enables a systematic ablation matrix for cross-paradigm research. 
 
 ### Formal Notation
 
-<div align="center">
-    <a href="https://github.com/Abdulhamid97Mousa/mosaic"><img width="1000px" height="auto" src="gym_gui/assets/gui_images/Formal_Notation.png"></a>
-</div>
+| Symbol | Description |
+| --- | --- |
+| **Agent Types** | |
+| $\pi^{\text{RL}}_i$ | RL policy trained via reinforcement learning |
+| $\bar{\pi}^{\text{RL}}_i$ | Frozen RL policy (parameters $\theta_i$ fixed; no further learning) |
+| $\lambda^{\text{LLM}}_j$ | LLM agent (large language model, text-only observations) |
+| $\psi^{\text{VLM}}_k$ | VLM agent (vision-language model, multimodal observations) |
+| $h_m$ | Human operator (interactive GUI control) |
+| $\rho$ | Uniform random baseline policy |
+| $\nu$ | No-op baseline policy (null action at every step) |
+| **Agent Populations and Sizes** | |
+| $\Pi^{\text{RL}} = \{\pi^{\text{RL}}_i\}_{i=1}^{n_{\text{RL}}}$ | Population of RL policies of size $n_{\text{RL}}$ |
+| $\Lambda^{\text{LLM}} = \{\lambda^{\text{LLM}}_j\}_{j=1}^{n_{\text{LLM}}}$ | Population of LLM agents of size $n_{\text{LLM}}$ |
+| $\Psi^{\text{VLM}} = \{\psi^{\text{VLM}}_k\}_{k=1}^{n_{\text{VLM}}}$ | Population of VLM agents of size $n_{\text{VLM}}$ |
+| $\mathcal{H} = \{h_m\}_{m=1}^{n_{\text{H}}}$ | Population of human operators of size $n_{\text{H}}$ |
+| $N = n_{\text{RL}} + n_{\text{LLM}} + n_{\text{VLM}} + n_{\text{H}}$ | Total number of agents in the system |
+| **Team Partitions** | |
+| $K$ | Number of teams ($K \geq 1$) |
+| $\mathcal{T}_1, \mathcal{T}_2, \ldots, \mathcal{T}_K$ | Disjoint team partitions covering all agents: $\mathcal{T}_i \cap \mathcal{T}_j = \emptyset$ for $i \neq j$, $\bigcup_{k=1}^{K} \mathcal{T}_k = \{1,\ldots,N\}$ |
+| $n_k = \|\mathcal{T}_k\|$ | Size of team $k$; $\sum_{k=1}^{K} n_k = N$ |
+| $\mathcal{T}_A \equiv \mathcal{T}_1,\ \mathcal{T}_B \equiv \mathcal{T}_2$; $n_A \equiv n_1,\ n_B \equiv n_2$ | Two-team convention used in the experimental configurations below ($K=2$ case) |
+| **Observation and Action Spaces** | |
+| $\mathcal{O}^{\text{RL}} = \mathbb{R}^d$ | RL observation space (continuous tensor) |
+| $\mathcal{O}^{\text{LLM}} = \Sigma^{*}$ | LLM observation space (strings over alphabet $\Sigma$) |
+| $\mathcal{O}^{\text{VLM}} = \Sigma^{*} \times \mathbb{R}^{H \times W \times C}$ | VLM observation space (multimodal: text and RGB image) |
+| $\mathcal{O}^{\text{H}} = \mathbb{R}^{H \times W \times C}$ | Human observation space (rendered RGB image) |
+| $\mathcal{A} = \{1,2,\dots,K\}$ | Discrete action space (shared after paradigm-specific parsing) |
+| $\phi: \Sigma^{*} \to \mathcal{A}$ | Deterministic parsing function mapping LLM/VLM text to actions |
+| **Policy Inputs and Action Composition** | |
+| $\pi_\theta$ | MARL policy parameterized by $\theta$ (shared across agents or per-agent, depending on algorithm) |
+| $\tau_i^t$ | Trajectory (observation-action history) of agent $i$ up to time $t$ |
+| $e_i$ | Agent identity/embedding for agent $i$ |
+| $a_i^t \sim \pi_\theta(\cdot \mid \tau_i^t, e_i)$ | Action of agent $i$ at time $t$, sampled from the MARL policy |
+| $a^{\text{sub},t} = (a_1^{\text{sub},t}, \ldots, a_n^{\text{sub},t})$ | Submitted joint action at time $t$ (input to the environment step) |
+| $a_i^{\text{ext},t}$ | External action injected by an operator at slot $i$ during deployment |
+| $\text{Merge}(a^{\text{MARL}}, a^{\text{ext}}) \to a^{\text{sub},t}$ | Action Merger composing MARL outputs with external actions before submission |
+| $(s^{t+1}, r^t, \text{Done})$ | Environment transition after applying $a^{\text{sub},t}$ |
 
-### Standard Self-Play vs Cross-Paradigm Transfer
+### Training and Deployment Phases
 
-![Standard Self-Play vs Cross-Paradigm Transfer](docs/source/images/architecture/zsc_vs_transfer.png)
+![Training and Deployment Phases](docs/source/images/architecture/training_deployment_phases.png)
 
-**(a) Standard Self-Play (Baseline):** Agents $\pi^{RL}_1$ and $\pi^{RL}_2$ are co-trained, learning implicit partner models that overfit to the specific environment. This approach fails the Zero-Shot Coordination (ZSC) challenge because it struggles to coordinate with unseen RL partners (who may have learned different features). It collapses when a partner is swapped across paradigms (e.g., $\pi^{RL}$ paired with $\lambda^{LLM}$) due to observation space mismatches ($\mathcal{O}^{\text{RL}} \neq \mathcal{O}^{\text{LLM}}$) and violated behavioral expectations.
+**(A) Cooperative training-phase (Cooperative Self-Play):** All $n$ agents submit
+observations $O_i^t, e_i$ to a shared MARL policy $\pi_\theta$ each timestep. The
+policy outputs an action $a_i^t \sim \pi_\theta(\cdot \mid \tau_i^t, e_i)$ per
+agent; these are assembled into the joint action $a^{\text{sub},t}$ submitted to
+the environment. This is standard cooperative multi-agent training (e.g.,
+MAPPO, QMIX) on tasks like Basketball, where all agents share a common
+objective.
 
-**(b) Cross-Paradigm Transfer (MOSAIC):** Agent $\pi^{RL}$ is trained solo ($N=1$, zero partner expectations), then deployed in multi-agent teams alongside heterogeneous partners such as LLM agents $\lambda^{LLM}$, human players $h$, or random baselines. By eliminating co-training dependencies, agents can cooperate across paradigm boundaries using a unified action interface.
+**(B) Adversarial training-phase (Competitive Self-Play):** The same structure
+applies to competitive settings such as Soccer, where opposing teams (green vs.
+blue) are trained via self-play against each other under the same policy
+$\pi_\theta$.
 
+**(C) Cooperative deployment-phase (Cross-Paradigm External Agent):** At
+deployment, one or more external operators join the team alongside the MARL
+policy's agents. The MARL policy still produces actions for all $n$ of its
+trained agents, and each external operator contributes one additional action
+per timestep. An operator may be an LLM, or an RL policy trained under a
+different algorithm (MAPPO, IPPO, VDPPO, QMIX, CommNet, IC3NET, MAT). The
+**Action Merger** combines the MARL policy outputs with the external actions
+($\text{Merge}(a^{\text{MARL}}, a^{\text{ext}}) \to a^{\text{sub},t}$) to form
+the joint action submitted to the environment. This lets researchers train a
+team of $n$ agents and deploy with $n + k$ agents by adding $k$ external
+decision-makers at evaluation time, without retraining the original team.
 
-| Aspect                              | Standard Self-Play (Baseline)                           | Cross-Paradigm Transfer (MOSAIC)               |
-| ----------------------------------- | ------------------------------------------------------- | ---------------------------------------------- |
-| **Training**                        | Co-training via self-play ($N \geq 2$)                  | Solo training ($N=1$)                          |
-| **Partner Model**                   | Implicit partner model (overfitted to training partner) | Zero partner expectations                      |
-| **Generalization (RL)**             | Fails with unseen RL partners (ZSC failure)             | Generalizes to unseen solo-trained RL partners |
-| **Generalization (Cross-Paradigm)** | Fails when swapping RL ↔ LLM (Interface mismatch)       | Succeeds across paradigm boundaries            |
-| **Deployment**                      | Requires same-paradigm, familiar partners               | Supports RL, LLM, human, scripted agents       |
-
+See [Policy Mappings for Heterogeneous Multi-Agent Systems](documents/architecture/operators/policy_mappings.html)
+for the full mechanism and configuration reference.
 
 ### Adversarial Cross‑Paradigm Matchups
 
@@ -263,18 +344,6 @@ The second set of configurations examines intra-team heterogeneity by mixing par
 
 All RL policies are trained solo ($N=1$) and frozen before deployment; LLM/VLM agents are zero-shot. Configurations C1-C2 and C3-C4 test whether LLM and VLM agents can serve as effective teammates for frozen RL policies. C5 serves as the fair comparison baseline: two independently trained solo experts paired at evaluation time. C6-C7 compare zero-shot cross-paradigm teaming against co-trained RL teams. C8 directly compares LLM and VLM agents as teammates within heterogeneous teams.
 
-> **Solo‑to‑Team Transfer Design – Why Solo Training?**
->
-> RL agents are trained as **solo experts** in single-agent environments ($N=1$), then deployed as teammates in multi-agent settings **without any fine‑tuning**. This design eliminates the *co-training confound* and avoids the failure modes of standard self-play.
->
-> In standard self-play, agents develop implicit partner models calibrated against other RL agents sharing the same observation space ($\mathcal{O} = \mathbb{R}^d$). This creates two failure modes:
-> (1) **ZSC Failure**: The agent overfits to its training partner's conventions, failing to coordinate with *unseen* RL agents.
-> (2) **Cross-Paradigm Failure**: As shown in the figure's "Swap Attempt" panel, replacing an RL partner with an LLM agent causes a breakdown due to observation space mismatches ($\mathcal{O}^{\text{RL}} \neq \mathcal{O}^{\text{LLM}}$).
->
-> By training agents in isolation ($N=1$), the RL policy carries **zero partner expectations**. This cleanly isolates the paradigm variable as the sole experimental factor, allowing true cross-paradigm coordination where the challenge is not just an unknown policy, but a fundamentally different way of perceiving and acting in the world.
->
-> For full mathematical details and further configurations, see the companion paper.
-
 ## Supported Environment Families (29)
 
 | Family | Description | Example | Status |
@@ -295,16 +364,16 @@ All RL policies are trained solo ($N=1$) and frozen before deployment; LLM/VLM a
 | **PyBullet Drones** | Quadcopter physics simulation | <img src="docs/source/images/envs/pybullet_drones/pybullet_drones.gif" width="200"> | Human-Control: ❌, Single-Agent: ✅, Multi-Agent: ✅ |
 | **PettingZoo Classic** | Turn-based board games (AEC) | <img src="docs/source/images/envs/pettingzoo/pettingzoo.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **OpenSpiel** | Board games via DeepMind's OpenSpiel + Shimmy (Chess, Go, Checkers) | <img src="docs/source/images/envs/openspiel/openspiel.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ❌ |
-| **MOSAIC MultiGrid** | Competitive team sports (view_size=3) | <img src="docs/source/images/envs/mosaic_multigrid/mosaic_multigrid.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
+| **MOSAIC MultiGrid** | Competitive team sports (view_size=3) | <img src="docs/source/images/envs/multigrid_sports/multigrid_sports.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
 | **INI MultiGrid** | Cooperative exploration (view_size=7) | <img src="docs/source/images/envs/multigrid_ini/multigrid_ini.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **Melting Pot** | Social multi-agent scenarios (up to 16 agents) | <img src="docs/source/images/envs/meltingpot/meltingpot.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **Overcooked** | Cooperative cooking (2 agents) | <img src="docs/source/images/envs/overcooked/overcooked_layouts.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
-| **SMAC** | StarCraft Multi-Agent Challenge (hand-designed maps) | <img src="docs/source/images/envs/smac/smac.gif" width="200"> | Human-Control: ❌, Single-Agent: ❌, Multi-Agent: ✅ |
-| **SMACv2** | StarCraft Multi-Agent Challenge v2 (procedural units) | <img src="docs/source/images/envs/smacv2/smacv2.png" width="200"> | Human-Control: ❌, Single-Agent: ❌, Multi-Agent: ✅ |
+| **SMAC** | StarCraft Multi-Agent Challenge (hand-designed maps) | <img src="docs/source/images/envs/smac/smac.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
+| **SMACv2** | StarCraft Multi-Agent Challenge v2 (procedural units) | <img src="docs/source/images/envs/smacv2/smacv2.png" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
 | **RWARE** | Cooperative warehouse delivery | <img src="docs/source/images/envs/rware/rware.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **HeMAC** | Heterogeneous multi-agent challenge (Quadcopters, Observers, Provisioners) | | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **MuJoCo** | Continuous-control robotics tasks | <img src="docs/source/images/envs/mujoco/ant.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ❌ |
-| **Google Research Football** *(experimental)* | 11-vs-11 football/soccer simulation (Google Research) | <img src="https://1.bp.blogspot.com/-HkcNiCL13cc/XPqSVOgTwMI/AAAAAAAAEM4/OoK_qoM14QA6VNQ79sWeS97TKBhCD7CzQCLcBGAs/s640/image3.gif" width="200"> | Human-Control: 🚧, Single-Agent: 🚧, Multi-Agent: 🚧 |
+| **Google Research Football** | 11-vs-11 football/soccer simulation (Google Research) | <img src="https://1.bp.blogspot.com/-HkcNiCL13cc/XPqSVOgTwMI/AAAAAAAAEM4/OoK_qoM14QA6VNQ79sWeS97TKBhCD7CzQCLcBGAs/s640/image3.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
 | **MarLo** *(experimental)* | Multi-Agent RL in Minecraft (2018 MarLo Challenge) | <img src="https://media.giphy.com/media/u45fNQxG59wfnRpzwJ/giphy.gif" width="200"> | Human-Control: ✅, Single-Agent: 🚧, Multi-Agent: 🚧 |
 | **Malmo** *(experimental)* | Microsoft Research AI platform in Minecraft | <img src="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/06/malmo_human_ai_interaction-web.png" width="200"> | Human-Control: ✅, Single-Agent: 🚧, Multi-Agent: 🚧 |
 
@@ -316,7 +385,6 @@ MOSAIC is actively expanding to support more diverse and complex environments, s
 
 | Environment | Status | Description |
 |-------------|--------|-------------|
-| **Google Research Football** | 🚧 Experimental | 11-vs-11 football/soccer simulation for multi-agent RL |
 | **Minecraft: Malmo** | 🚧 Experimental | Microsoft Research AI platform built on Minecraft |
 | **Minecraft: MarLo** | 🚧 Experimental | Multi-Agent RL environments for Minecraft (2018 MarLo Challenge) |
 | **Minecraft: MineRL / Mindcraft** | 📋 Planned | Minecraft AI research platforms |
@@ -337,22 +405,40 @@ More algorithms coming soon, including additional multi-agent and hierarchical R
 **Legend:** 🚧 Experimental (under development) | 📋 Planned (on roadmap)
 
 
-## Supported Workers (8)
+
+## Two Evaluation Modes
+
+MOSAIC provides two evaluation modes designed for reproducibility:
+
+<video src="https://private-user-images.githubusercontent.com/80536675/553915409-ea9ebc18-2216-4fb2-913c-5d354ebea56e.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzIxNjgzMzQsIm5iZiI6MTc3MjE2ODAzNCwicGF0aCI6Ii84MDUzNjY3NS81NTM5MTU0MDktZWE5ZWJjMTgtMjIxNi00ZmIyLTkxM2MtNWQzNTRlYmVhNTZlLm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAyMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMjI3VDA0NTM1NFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTAyZDkzMWQwZjczOTI1NzFiNjk2MGU4N2I2ZTAxNDE0M2Y2YmQxNjM5ZTAxMTkxYzA5NGU4ZGE3YzZkZmJkZWEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.9BimKYjxGrdN_g1eDbXC69weDC7-My85Gl-ou2wNzxQ" controls autoplay muted loop style="width:100%; max-width:100%; height:auto; border-radius:8px;"></video>
+<p align="center"><b>Manual Mode:</b> Side-by-side lock-step evaluation with shared seeds.</p>
+
+- **Manual Mode:** side-by-side comparison where multiple operators step through the same environment with shared seeds, letting researchers visually inspect decision-making differences between paradigms in real time.
+
+<video src="https://private-user-images.githubusercontent.com/80536675/553915854-a9b3f6f4-661c-492f-b43f-34d7125a6d2e.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzIxNjgzMzQsIm5iZiI6MTc3MjE2ODAzNCwicGF0aCI6Ii84MDUzNjY3NS81NTM5MTU4NTQtYTliM2Y2ZjQtNjYxYy00OTJmLWI0M2YtMzRkNzEyNWE2ZDJlLm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAyMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMjI3VDA0NTM1NFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWNhMjM0ZjBjYjU1NWFlNmYxOGU2Yzc2N2U0ODE4OTYzZGVkYTc5YTIyMjM5YzRjODU0MTRhODFhOWI4ZDU3NmImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.tk8Ezu0ivgFlp-xm6YEkIsWlbFPcpOgSq30Hq_JEJvs" controls autoplay muted loop style="width:100%; max-width:100%; height:auto; border-radius:8px;"></video>
+<p align="center"><b>Script Mode:</b> Automated batch evaluation with deterministic seed sequences.</p>
+
+- **Script Mode:** automated, long-running evaluation driven by Python scripts that define operator configurations, worker assignments, seed sequences, and episode counts. Scripts execute deterministically with no manual intervention, producing reproducible telemetry logs (JSONL) for every step and episode.
+
+All evaluation runs share **identical conditions**: same environment seeds, same observations, and unified telemetry. Script Mode additionally supports **procedural seeds** (different seed per episode to test generalization) and **fixed seeds** (same seed every episode to isolate agent behaviour), with configurable step pacing for visual inspection or headless batch execution.
 
 
+## Supported Workers (12)
 
-| Worker                                                                                                         | Description                                                                                                       |
-| -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **[CleanRL](https://github.com/vwxyzjn/cleanrl)**                                                              | Single-file RL implementations (PPO, DQN, SAC, TD3, DDPG, C51)                                                    |
-| **[XuanCe](https://github.com/agi-brain/xuance)**                                                              | Modular RL framework with flexible algorithm composition. Multi-agent algorithms (MAPPO, QMIX, MADDPG, VDN, COMA) |
-| **[Ray RLlib](https://docs.ray.io/en/latest/rllib/)**                                                          | RL with distributed training and large-batch optimization (PPO, IMPALA, APPO)                                     |
-| **[BALROG](https://github.com/balrog-ai/BALROG)**                                                              | LLM/VLM agentic evaluation (GPT-4o, Claude 3, Gemini; NetHack, BabyAI, Crafter)                                   |
-| **[Chess LLM](docs/source/documents/architecture/workers/integrated_workers/Chess_LLM_Worker)**                | LLM chess play with multi-turn dialog (PettingZoo Chess) |
-| **[MOSAIC LLM](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_LLM_Worker)**              | Multi-agent LLM with coordination strategies and Theory of Mind (MultiGrid, BabyAI, MeltingPot, PettingZoo)       |
-| **[MOSAIC VLM](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_VLM_Worker)**              | Multi-agent VLM with coordination strategies and Theory of Mind (MultiGrid, BabyAI, MeltingPot, PettingZoo)       |
-| **[MOSAIC Human Worker](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_Human_Worker)**   | Human-in-the-loop play via keyboard for any Gymnasium-compatible environment (MiniGrid, Crafter, Chess, NetHack)  |
-| **[MOSAIC Random Worker](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_Random_Worker)** | Baseline agents with random action behaviours across all 26 environment families              |
-| **[MOSAIC Passive Worker](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_Passive_Worker)** | Baseline agents with no-op or Still action behaviours across all 26 environment families              |                      |
+| Worker | Algorithms | Environments |
+| ------ | ---------- | ------------ |
+| **[CleanRL](https://github.com/vwxyzjn/cleanrl)** | PPO, DQN, SAC, TD3, DDPG, C51 | Atari, MuJoCo, CartPole, LunarLander |
+| **[XuanCe](https://github.com/agi-brain/xuance)** | MAPPO, QMIX, MADDPG, VDN, COMA | MPE, SMAC, MiniGrid, MuJoCo |
+| **[Ray RLlib](https://docs.ray.io/en/latest/rllib/)** | PPO, IMPALA, APPO | Atari, MuJoCo, custom Gymnasium envs |
+| **[JaxMARL](https://github.com/FLAIROx/JaxMARL)** | IPPO, MAPPO, CommNet, IC3Net, MAT | MultiGrid, SocialJax, MPE, MABrax, Overcooked, Hanabi |
+| **[Mava](https://github.com/instadeepai/Mava)** | IPPO, MAPPO, RecurrentIPPO | RobotWarehouse, SocialJax |
+| **[BALROG](https://github.com/balrog-ai/BALROG)** | GPT-4o, Claude 3, Gemini | NetHack, BabyAI, Crafter |
+| **[Chess LLM](docs/source/documents/architecture/workers/integrated_workers/Chess_LLM_Worker)** | GPT-4o, Claude, Gemini (multi-turn dialog) | PettingZoo Chess |
+| **[MOSAIC LLM](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_LLM_Worker)** | CoT, Theory of Mind, coordination strategies | MultiGrid, BabyAI, MeltingPot, PettingZoo |
+| **[MOSAIC VLM](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_VLM_Worker)** | CoT, Theory of Mind, coordination strategies | MultiGrid, BabyAI, MeltingPot, PettingZoo |
+| **[MOSAIC Human Worker](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_Human_Worker)** | Human keyboard input | MiniGrid, Crafter, Chess, NetHack, GRF |
+| **[MOSAIC Random Worker](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_Random_Worker)** | Random policy | All 33 environment families |
+| **[MOSAIC Passive Worker](docs/source/documents/architecture/workers/integrated_workers/MOSAIC_Passive_Worker)** | No-op / Still policy | All 33 environment families |
 
 
 ## Installation
@@ -377,7 +463,7 @@ Install only what you need. **Workers** and **environment families** are indepen
 pip install -e ".[cleanrl,minigrid]"
 
 # Multi-agent worker (XuanCe) + competitive environments
-pip install -e ".[xuance,mosaic_multigrid]"
+pip install -e ".[xuance,multigrid_sports]"
 
 # Everything
 pip install -e ".[full]"
@@ -392,6 +478,14 @@ pip install -e ".[full]"
 # Or launch GUI only
 python -m gym_gui
 ```
+
+## Contributing
+
+Contributions are welcome: new workers, new environment families, baselines,
+benchmark runs, bug fixes, and documentation. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the dev setup, lint/test workflow, and
+PR checklist, and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community
+expectations.
 
 ## Citing MOSAIC
 
@@ -411,7 +505,29 @@ If you use MOSAIC in your research, please cite:
 
 ## License
 
-MOSAIC is released under the [MIT License](https://github.com/Abdulhamid97Mousa/mosaic/blob/main/LICENSE).
+```json
+The MIT License (MIT)
+
+Copyright (c) 2025-2026 The Mosaic authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ## Acknowledgments
 
@@ -420,6 +536,12 @@ MOSAIC is released under the [MIT License](https://github.com/Abdulhamid97Mousa/
 - [CleanRL](https://github.com/vwxyzjn/cleanrl): Clean RL implementations
 - [XuanCe](https://github.com/agi-brain/xuance): Multi-agent RL algorithms
 - [Ray RLlib](https://docs.ray.io/en/latest/rllib/): Distributed RL training
+- [JaxMARL](https://github.com/FLAIROx/JaxMARL): JAX-accelerated multi-agent RL
+- [Mava](https://github.com/instadeepai/Mava): Distributed JAX MARL framework (InstaDeep)
 - [BALROG](https://github.com/balrog-ai/BALROG): LLM/VLM agent benchmark
 - [llm_chess](https://github.com/maxim-saplin/llm_chess): LLM chess evaluation
-- [PyQt6](https://www.riverbankcomputing.com/software/pyqt/): GUI framework  
+- [Google Research Football](https://github.com/google-research/football): Physics-based football simulation
+- [SMAC](https://github.com/oxwhirl/smac): StarCraft Multi-Agent Challenge
+- [SMACv2](https://github.com/oxwhirl/smacv2): StarCraft Multi-Agent Challenge v2 with procedural units
+- [HeMAC](https://github.com/Thales-MARL/HeMAC): Heterogeneous multi-agent cooperative benchmark (Thales Group)
+- [PyQt6](https://www.riverbankcomputing.com/software/pyqt/): GUI framework
