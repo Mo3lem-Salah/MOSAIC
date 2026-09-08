@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from qtpy import QtWidgets
 
-from gym_gui.config.game_configs import (
+from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_MINIGRID_LAVAGAP_S7_CONFIG,
     BipedalWalkerConfig,
     CarRacingConfig,

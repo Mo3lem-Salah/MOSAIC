@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
+from gym_gui.config.deployment import vllm_base_url
+
 try:
     from dotenv import get_key, set_key
     DOTENV_AVAILABLE = True
@@ -631,7 +633,7 @@ class SettingsService:
             key="VLLM_BASE_URL",
             category="LLM & Chat",
             description="vLLM server base URL for local LLM",
-            default_value="http://localhost:8000/v1",
+            default_value=vllm_base_url(),
             value_type=SettingType.URL,
         )
         metadata["VLLM_API_KEY"] = SettingMetadata(

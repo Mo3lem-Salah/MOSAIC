@@ -377,13 +377,13 @@ def demo_mosaic_multigrid():
         import mosaic_multigrid.envs  # noqa: F401 — registers environments
     except ImportError as exc:
         print(f"\n  [SKIP] mosaic_multigrid not installed: {exc}")
-        print("         Install with:  pip install mosaic-multigrid==5.0.0")
+        print("         Install with:  pip install mosaic_multigrid==6.4.0")
         print()
         return
 
     ENV_ID = "MosaicMultiGrid-Soccer-1vs1-IndAgObs-v0"
     print(f"\n  Environment : {ENV_ID}")
-    print( "  Package     : mosaic-multigrid 5.0.0")
+    print( "  Package     : mosaic_multigrid 5.0.0")
     print( "  NOOP action : 0  (v5.0.0+ — safe non-acting placeholder)")
     print()
 

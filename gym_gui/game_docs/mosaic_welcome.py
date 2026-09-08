@@ -76,7 +76,12 @@ to create cohesive intelligent systems — like tiles in a mosaic forming a comp
         <a href="https://github.com/instadeepai/jumanji" style="color: #1565c0; font-size: 10px;">GitHub</a> |
         <a href="https://instadeepai.github.io/jumanji/" style="color: #1565c0; font-size: 10px;">Docs</a>
     </td>
-    <td style="background-color: #f5f5f5; width: 33%;"></td>
+    <td style="background-color: #e8f5e9; border-left: 4px solid #1b5e20; width: 33%;">
+        <b style="color: #1b5e20;">JaxMARL</b><br/>
+        <span style="color: #666; font-size: 11px;">JAX-accelerated MARL environments (StarCraft, Overcooked, etc.)</span><br/>
+        <a href="https://github.com/FLAIROx/JaxMARL" style="color: #1565c0; font-size: 10px;">GitHub</a> |
+        <a href="https://arxiv.org/abs/2311.10090" style="color: #1565c0; font-size: 10px;">Paper</a>
+    </td>
 </tr>
 </table>
 
@@ -155,7 +160,7 @@ to create cohesive intelligent systems — like tiles in a mosaic forming a comp
     </td>
     <td style="background-color: #e8f5e9; border-left: 4px solid #43a047; width: 33%;">
         <b style="color: #43a047;">MultiGrid</b><br/>
-        <span style="color: #666; font-size: 11px;">Multi-agent MiniGrid extensions (Soccer, Collect)</span><br/>
+        <span style="color: #666; font-size: 11px;">Multi-agent MiniGrid extensions (Soccer, Basketball, American Football, Collect)</span><br/>
         <a href="https://github.com/Abdulhamid97Mousa/mosaic_multigrid" style="color: #1565c0; font-size: 10px;">GitHub</a>
     </td>
 </tr>
@@ -193,7 +198,12 @@ to create cohesive intelligent systems — like tiles in a mosaic forming a comp
         <a href="https://github.com/oxwhirl/smacv2" style="color: #1565c0; font-size: 10px;">GitHub</a> |
         <a href="https://arxiv.org/abs/2212.07489" style="color: #1565c0; font-size: 10px;">Paper</a>
     </td>
-    <td style="background-color: #f5f5f5; width: 33%;"></td>
+    <td style="background-color: #f3e5f5; border-left: 4px solid #6a1b9a; width: 33%;">
+        <b style="color: #6a1b9a;">SocialJax</b><br/>
+        <span style="color: #666; font-size: 11px;">9 sequential social dilemma environments in pure JAX (FLAIROx)</span><br/>
+        <a href="https://github.com/FLAIROx/SocialJax" style="color: #1565c0; font-size: 10px;">GitHub</a> |
+        <a href="https://arxiv.org/abs/2503.14576" style="color: #1565c0; font-size: 10px;">Paper</a>
+    </td>
 </tr>
 </table>
 

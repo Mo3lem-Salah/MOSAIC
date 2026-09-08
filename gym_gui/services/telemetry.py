@@ -19,7 +19,7 @@ from gym_gui.logging_config.log_constants import (
 from gym_gui.storage.session import EpisodeRecord
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
-    from gym_gui.replay import FrameResolver
+    from gym_gui.replays import FrameResolver
     from gym_gui.services.storage import StorageRecorderService
     from gym_gui.telemetry import TelemetrySQLiteStore
     from gym_gui.validations import ValidationService
@@ -66,7 +66,7 @@ class TelemetryService(LogConstantMixin):
     def get_frame_resolver(self) -> Optional["FrameResolver"]:
         """Get the attached FrameResolver, lazily creating one if replay_dir is set."""
         if self._frame_resolver is None and self._replay_dir is not None:
-            from gym_gui.replay import FrameResolver
+            from gym_gui.replays import FrameResolver
 
             self._frame_resolver = FrameResolver(self._replay_dir)
         return self._frame_resolver

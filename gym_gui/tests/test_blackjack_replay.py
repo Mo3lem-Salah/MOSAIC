@@ -17,11 +17,11 @@ import pytest
 
 pygame = pytest.importorskip("pygame", reason="gymnasium[toy-text] requires pygame")
 
-from gym_gui.config.game_configs import DEFAULT_BLACKJACK_CONFIG
+from gym_gui.core.ui.game_config.game_configs import DEFAULT_BLACKJACK_CONFIG
 from gym_gui.core.adapters.toy_text import BlackjackAdapter
 from gym_gui.core.data_model import EpisodeRollup, StepRecord
 from gym_gui.core.enums import ControlMode, GameId
-from gym_gui.replays.loader import EpisodeReplayLoader
+from gym_gui.replays.EpisodeLoader import EpisodeLoader
 from gym_gui.services.telemetry import TelemetryService
 from gym_gui.telemetry.sqlite_store import TelemetrySQLiteStore
 
@@ -48,7 +48,7 @@ class TestBlackjackReplay:
     @pytest.fixture
     def replay_loader(self, telemetry_service):
         """Create replay loader with telemetry service."""
-        return EpisodeReplayLoader(telemetry_service)
+        return EpisodeLoader(telemetry_service)
 
     def test_blackjack_episode_records_with_control_mode(self, telemetry_service):
         """Test that Blackjack episodes are recorded with control_mode metadata."""

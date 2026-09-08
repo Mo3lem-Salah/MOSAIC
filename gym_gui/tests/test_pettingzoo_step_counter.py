@@ -179,7 +179,7 @@ class TestControlPanelSetStepCount:
 
     @pytest.fixture
     def panel(self, qtbot):
-        from gym_gui.config.game_configs import (
+        from gym_gui.core.ui.game_config.game_configs import (
             BipedalWalkerConfig,
             CarRacingConfig,
             CliffWalkingConfig,

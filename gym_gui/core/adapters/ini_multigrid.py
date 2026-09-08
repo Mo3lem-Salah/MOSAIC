@@ -21,7 +21,7 @@ Installation:
 
 Usage:
     from gym_gui.core.adapters.ini_multigrid import MultiGridAdapter
-    from gym_gui.config.game_configs import MultiGridConfig
+    from gym_gui.core.ui.game_config.game_configs import MultiGridConfig
 
     config = MultiGridConfig(env_id="MultiGrid-Empty-5x5-v0")
     adapter = MultiGridAdapter(config=config)
@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
 
-from gym_gui.config.game_configs import MultiGridConfig
+from gym_gui.core.ui.game_config.game_configs import MultiGridConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,

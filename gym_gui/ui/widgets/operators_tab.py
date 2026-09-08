@@ -62,6 +62,8 @@ class OperatorsTab(QtWidgets.QWidget):
     human_action_requested = pyqtSignal(str, int)  # operator_id, action_index - request to step human operator
     human_step_parallel_requested = pyqtSignal()  # Request a parallel multi-agent step cycle (Human Step in parallel mode)
     keyboard_assignment_changed = pyqtSignal(str, object)  # (device_path, agent_id) - relayed from embedded KeyboardAssignmentWidget
+    auto_step_requested = pyqtSignal(int, int)   # seed, interval_ms
+    auto_step_stop_requested = pyqtSignal()
 
     def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
         super().__init__(parent)
@@ -231,7 +233,7 @@ class OperatorsTab(QtWidgets.QWidget):
         seed_row = QtWidgets.QHBoxLayout()
         seed_row.setSpacing(8)
 
-        seed_label = QtWidgets.QLabel("Shared Seed:", exec_group)
+        seed_label = QtWidgets.QLabel("Seed:", exec_group)
         seed_label.setToolTip(
             "All operators use this seed for identical initial conditions.\n"
             "This ensures fair, reproducible side-by-side comparison."
@@ -252,7 +254,7 @@ class OperatorsTab(QtWidgets.QWidget):
         self._random_seed_button.clicked.connect(self._on_random_seed_clicked)
         seed_row.addWidget(self._random_seed_button)
 
-        self._use_shared_seed_checkbox = QtWidgets.QCheckBox("Use Shared Seed", exec_group)
+        self._use_shared_seed_checkbox = QtWidgets.QCheckBox("Use Shared Seed Across Operators", exec_group)
         self._use_shared_seed_checkbox.setChecked(True)
         self._use_shared_seed_checkbox.setToolTip(
             "When checked, all operators use the same seed for identical layouts.\n"
@@ -335,7 +337,52 @@ class OperatorsTab(QtWidgets.QWidget):
         self._stop_operators_button.clicked.connect(self._on_stop_operators_clicked)
         button_row.addWidget(self._stop_operators_button)
 
+        self._auto_step_button = QtWidgets.QPushButton("Auto-Step", exec_group)
+        self._auto_step_button.setToolTip(
+            "Pre-cache all episode steps, then replay them in a loop.\n"
+            "Click again to stop the replay."
+        )
+        self._auto_step_button.setStyleSheet(
+            "QPushButton { font-weight: bold; background-color: #9C27B0; color: white; }"
+        )
+        self._auto_step_button.setEnabled(False)
+        self._auto_step_button.setCheckable(True)
+        self._auto_step_button.clicked.connect(self._on_auto_step_clicked)
+        button_row.addWidget(self._auto_step_button)
+
         exec_layout.addLayout(button_row)
+
+        # Auto-Step interval row
+        auto_row = QtWidgets.QHBoxLayout()
+        auto_row.setSpacing(6)
+        auto_row.addWidget(QtWidgets.QLabel("Auto-Step interval (s):", exec_group))
+        self._auto_step_interval_spin = QtWidgets.QDoubleSpinBox(exec_group)
+        self._auto_step_interval_spin.setRange(0.1, 5.0)
+        self._auto_step_interval_spin.setSingleStep(0.1)
+        self._auto_step_interval_spin.setValue(0.5)
+        self._auto_step_interval_spin.setDecimals(1)
+        self._auto_step_interval_spin.setFixedWidth(70)
+        self._auto_step_interval_spin.setToolTip(
+            "Seconds between frames during Auto-Step replay (0.1 - 5.0 s)"
+        )
+        auto_row.addWidget(self._auto_step_interval_spin)
+        auto_row.addStretch(1)
+        exec_layout.addLayout(auto_row)
+
+        # Auto-Step progress bar -- full-width dedicated row, tqdm-style
+        self._auto_step_progress_bar = QtWidgets.QProgressBar(exec_group)
+        self._auto_step_progress_bar.setRange(0, 1000)
+        self._auto_step_progress_bar.setValue(0)
+        self._auto_step_progress_bar.setFormat("Caching: %v / %m steps (%p%)")
+        self._auto_step_progress_bar.setTextVisible(True)
+        self._auto_step_progress_bar.setFixedHeight(22)
+        self._auto_step_progress_bar.setStyleSheet(
+            "QProgressBar { border: 1px solid #9C27B0; border-radius: 4px; text-align: center; font-weight: bold; }"
+            " QProgressBar::chunk { background-color: #9C27B0; }"
+        )
+        self._auto_step_progress_bar.setVisible(False)
+        self._auto_step_progress_bar.setToolTip("Auto-Step pre-caching progress (0 to 1000 steps)")
+        exec_layout.addWidget(self._auto_step_progress_bar)
 
         # Step counter and status row
         status_row = QtWidgets.QHBoxLayout()
@@ -495,9 +542,11 @@ class OperatorsTab(QtWidgets.QWidget):
         # and shows the human action panel for the remaining human agents).
         if self._parallel_mode or not self._has_human_operator:
             self._step_all_button.setEnabled(True)
+            self._auto_step_button.setEnabled(True)
             self._status_label.setText(f"Running (seed={seed})")
         else:
             self._step_all_button.setEnabled(False)
+            self._auto_step_button.setEnabled(False)
             self._status_label.setText(f"Waiting for Human... (seed={seed})")
 
     def _on_step_all_clicked(self) -> None:
@@ -527,11 +576,50 @@ class OperatorsTab(QtWidgets.QWidget):
         self._is_running = False
         self._step_all_button.setEnabled(False)
         self._stop_operators_button.setEnabled(False)
+        self.set_auto_step_state(False)
+        self.auto_step_stop_requested.emit()
         self._status_label.setText("Stopped")
 
         # Mark all operators as stopped
         for operator_id in self._operator_states:
             self._operator_states[operator_id] = "stopped"
+
+    def _on_auto_step_clicked(self) -> None:
+        """Toggle Auto-Step: start collection or stop replay."""
+        if self._auto_step_button.isChecked():
+            seed = self._seed_spin.value()
+            interval_ms = int(self._auto_step_interval_spin.value() * 1000)
+            self._auto_step_button.setText("Stop Auto-Step")
+            self._auto_step_progress_bar.setValue(0)
+            self._auto_step_progress_bar.setVisible(True)
+            self._status_label.setText("Auto-Step: caching...")
+            self.auto_step_requested.emit(seed, interval_ms)
+        else:
+            self.set_auto_step_state(False)
+            self.auto_step_stop_requested.emit()
+            self._status_label.setText(f"Running (seed={self._seed_spin.value()})")
+
+    def set_auto_step_state(self, active: bool) -> None:
+        """Called by main_window to update button state.
+        active=True  -> collection done, replay has started; hide the progress bar.
+        active=False -> stopped; hide everything.
+        """
+        self._auto_step_button.setChecked(active)
+        if active:
+            self._auto_step_button.setText("Stop Auto-Step")
+            # Collection finished -- hide the caching bar, replay is running
+            self._auto_step_progress_bar.setVisible(False)
+        else:
+            self._auto_step_button.setText("Auto-Step")
+            self._auto_step_progress_bar.setVisible(False)
+
+    def update_auto_step_progress(self, value: int, total: int) -> None:
+        """Update the full-width tqdm-style bar during collection."""
+        self._auto_step_progress_bar.setVisible(True)
+        self._auto_step_progress_bar.setRange(0, max(total, 1))
+        self._auto_step_progress_bar.setValue(value)
+        # _status_label mirrors bar text for small-screen layouts
+        self._status_label.setText(f"Caching: {value} / {total}")
 
     def _on_initialize_requested(self, operator_id: str, config: OperatorConfig) -> None:
         """Handle initialize request from an operator row.

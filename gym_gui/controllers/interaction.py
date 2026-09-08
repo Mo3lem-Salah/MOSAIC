@@ -231,6 +231,66 @@ class ProcgenInteractionController(InteractionController):
         return 0.0
 
 
+class GFootballInteractionController(InteractionController):
+    """Idle controller for Google Research Football: tick with ``idle`` action.
+
+    Football is a real-time sport: the ball keeps moving, the built-in AI keeps
+    playing, and the match clock keeps running whether or not the human presses
+    a key. Without an idle tick the environment would only advance on an
+    explicit "Agent Step", which is not playable.
+
+    GRF's action set is *sticky*: sending ``5`` (right) sets the controlled
+    player's direction and he keeps running that way on every subsequent step
+    until ``14`` (release_direction) or a different direction arrives. That
+    pairs naturally with idle ticking: a single key press starts a run, the
+    idle ticks carry it forward, and the human is free to press the next
+    action whenever they choose. Nothing needs to be held down.
+
+    Default 10 Hz matches GRF's own physics/step cadence. Higher rates mostly
+    cost CPU, because every step renders a 1280x720 frame.
+    """
+
+    def __init__(self, owner, target_hz: int = 10):
+        """Initialize GFootball interaction controller.
+
+        Args:
+            owner: SessionController instance.
+            target_hz: Target step rate (default 10 Hz, GRF's native cadence).
+        """
+        self._owner = owner
+        self._interval_ms = max(1, int(1000 / float(target_hz)))  # 100ms at 10 Hz
+
+    def idle_interval_ms(self) -> Optional[int]:
+        return self._interval_ms
+
+    def should_idle_tick(self) -> bool:
+        """Check if we should advance the match this tick."""
+        o = self._owner
+        if o._adapter is None or o._game_id is None:
+            return False
+        if not getattr(o, "_game_started", False):
+            return False
+        if o._game_paused:
+            return False
+        if getattr(o._control_mode, "name", "") != "HUMAN_ONLY":
+            return False
+        if o._last_step is not None and (o._last_step.terminated or o._last_step.truncated):
+            return False
+        return True
+
+    def maybe_passive_action(self) -> Optional[Any]:
+        """Return the NOOP action for GRF.
+
+        Index 0 of GRF's action set is ``action_idle``, a real no-op action in
+        the environment's own ``Discrete(19)`` space. Unlike ViZDoom this needs
+        no sentinel value, because idle is directly representable.
+        """
+        return 0
+
+    def step_dt(self) -> float:
+        return 0.0
+
+
 class SMACInteractionController(InteractionController):
     """Idle controller for SMAC/SMACv2: step continuously with random valid actions.
 

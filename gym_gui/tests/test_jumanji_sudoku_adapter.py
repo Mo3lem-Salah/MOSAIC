@@ -29,7 +29,7 @@ import pytest
 # Skip entire module if jumanji is not installed
 jumanji = pytest.importorskip("jumanji")
 
-from gym_gui.config.game_configs import JumanjiConfig
+from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 from gym_gui.core.adapters.base import AdapterContext
 from gym_gui.core.adapters.jumanji import (
     JUMANJI_ADAPTERS,
@@ -445,7 +445,7 @@ class TestJumanjiSudokuConfig:
 
     def test_jumanji_config_sudoku_defaults(self) -> None:
         """Test JumanjiConfig default values for Sudoku."""
-        from gym_gui.config.game_configs import DEFAULT_JUMANJI_SUDOKU_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_JUMANJI_SUDOKU_CONFIG
 
         assert DEFAULT_JUMANJI_SUDOKU_CONFIG.env_id == "jumanji/Sudoku-v0"
 

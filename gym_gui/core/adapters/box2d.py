@@ -9,7 +9,7 @@ import gymnasium as gym
 import gymnasium.spaces as spaces
 import numpy as np
 
-from gym_gui.config.game_configs import BipedalWalkerConfig, CarRacingConfig, LunarLanderConfig
+from gym_gui.core.ui.game_config.game_configs import BipedalWalkerConfig, CarRacingConfig, LunarLanderConfig
 from gym_gui.core.adapters.base import AdapterContext, AdapterStep, EnvironmentAdapter, StepState
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
 from gym_gui.core.wrappers.time_limits import EpisodeTimeLimitSeconds, configure_step_limit

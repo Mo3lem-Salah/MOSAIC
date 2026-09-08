@@ -9,6 +9,7 @@ and training run validation defaults.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 
 
@@ -16,7 +17,9 @@ from dataclasses import dataclass, field
 class TrainerClientDefaults:
     """gRPC client tuning for the GUI ↔ trainer bridge."""
 
-    target: str = "127.0.0.1:50055"
+    target: str = field(
+        default_factory=lambda: os.environ.get("MOSAIC_DAEMON_TARGET", "127.0.0.1:50055")
+    )
     deadline_s: float = 10.0
     connect_timeout_s: float = 5.0
     keepalive_time_s: float = 30.0

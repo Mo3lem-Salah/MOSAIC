@@ -9,7 +9,7 @@ import pytest
 
 pytest.importorskip("minigrid")
 
-from gym_gui.config.game_config_builder import GameConfigBuilder
+from gym_gui.core.ui.game_config.game_config_builder import GameConfigBuilder
 from gym_gui.core.adapters.base import AdapterContext
 from gym_gui.core.enums import ControlMode, GameId
 from gym_gui.core.factories.adapters import create_adapter

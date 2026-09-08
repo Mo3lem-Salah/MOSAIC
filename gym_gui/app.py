@@ -13,7 +13,7 @@ import warnings
 warnings.filterwarnings("ignore", message=".*Gym has been unmaintained.*")
 warnings.filterwarnings("ignore", message=".*pkg_resources is deprecated.*")
 warnings.filterwarnings("ignore", message=".*Matplotlib is not installed.*")
-# Suppress mosaic_multigrid deprecation warnings (old gym API)
+# Suppress old gym API deprecation warnings (used by legacy env packages)
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="gym.utils.seeding")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="gym.core")
 
@@ -166,7 +166,104 @@ def _get_system_info() -> dict[str, Any]:
     return info
 
 
-def _detect_optional_dependencies() -> dict[str, bool]:
+_CHAT_CHECKS: dict[str, str] = {
+    # Chat/LLM support (OpenRouter + vLLM)
+    "chat": "openai",  # Note: Uses OpenAI-compatible API for OpenRouter/vLLM
+}
+
+_ENV_FAMILY_CHECKS: dict[str, str] = {
+    "minigrid": "minigrid",
+    "babyai": "minigrid.envs.babyai",  # BabyAI (bundled in minigrid>=2)
+    "mosaic_multigrid": "mosaic_multigrid",  # MOSAIC MultiGrid (Gymnasium API)
+    "malmoenv": "malmoenv",  # MalmoEnv: Microsoft Malmo Java-based Minecraft (requires running Minecraft server)
+    "multigrid_ini": "multigrid",  # Original INI version (cooperative exploration)
+    "pettingzoo": "pettingzoo",
+    "mujoco": "mujoco",
+    "atari": "ale_py",  # ALE = Arcade Learning Environment
+    "vizdoom": "vizdoom",
+    "crafter": "crafter",
+    "nethack": "nle",  # NLE = NetHack Learning Environment (different from ALE!)
+    "procgen": "procgen",  # Procgen procedurally generated benchmark
+    "textworld": "textworld",  # TextWorld text-based game environment
+    "babaisai": "baba_is_ai",  # BabaIsAI rule manipulation puzzle benchmark
+    "griddly": "griddly",  # Griddly C++ backend grid world platform
+    "jumanji": "jumanji",  # Jumanji JAX-based RL environments
+    ## "pybullet_drones": "gym_pybullet_drones",  # PyBullet Drones quadcopter environments
+    "openspiel": "pyspiel",  # OpenSpiel board games via Shimmy
+    "socialjax": "socialjax",     # SocialJax sequential social dilemma environments (JAX)
+    "meltingpot": "meltingpot",  # Melting Pot multi-agent social scenarios
+    ## "neuralmmo": "nmmo",  # Neural MMO massively multiagent game environment
+    "hemac": "hemac",  # HeMAC Heterogeneous Multi-Agent Challenge
+    # Overcooked versions
+    "overcooked_ai": "overcooked_ai_py",  # Original UC Berkeley version
+    # SMAC: StarCraft Multi-Agent Challenge
+    "smac": "smac",           # SMAC v1: hand-designed cooperative micromanagement maps
+    "smacv2": "smacv2",       # SMACv2: procedural unit generation
+    "rware": "rware",         # RWARE: Robotic Warehouse multi-agent cooperative
+    "gfootball": "gfootball",  # Google Research Football multi-agent environment
+    "olympics_wrestling": "olympics_engine",  # Jidi Olympics Wrestling (sumo) environment
+}
+
+_FRAMEWORK_CHECKS: dict[str, str] = {
+    "ray_worker": "ray",
+    "cleanrl_worker": "cleanrl",
+    "xuance_worker": "xuance",
+    "tianshou_worker": "tianshou",
+    "sb3_worker": "stable_baselines3",
+    "sbx_worker": "sbx",
+    "mushroomrl_worker": "mushroom_rl",
+    "pearl_worker": "pearl",
+    "torchrl_worker": "torchrl",
+    "omnisafe_worker": "omnisafe",
+    "mctx_worker": "mctx",
+    "marllib_worker": "marllib",
+    "chess_worker": "chess_worker",
+}
+
+_NATIVE_WORKER_CHECKS: dict[str, str] = {
+    "llm_worker": "llm_worker",
+    "vlm_worker": "vlm_worker",
+    "human_worker": "human_worker",
+    "passive_worker": "passive_worker",
+    "random_worker": "random_worker",
+}
+
+
+def _check_group(checks: dict[str, str]) -> dict[str, bool]:
+    """Probe a group of package names via find_spec(), never __import__().
+
+    IMPORTANT: We use find_spec() to avoid executing module code.
+    Never replace this with __import__() -- it will block on packages
+    like xuance (mpi4py MPI_Init hang) or add multi-second delays.
+    See _detect_optional_dependencies() docstring for details.
+    """
+    import importlib.util
+
+    result: dict[str, bool] = {}
+    for dep_name, package_name in checks.items():
+        try:
+            found = importlib.util.find_spec(package_name) is not None
+        except (ModuleNotFoundError, ValueError):
+            found = False
+        except Exception:
+            LOGGER.debug(
+                "optional dependency '%s' (package '%s') raised an unexpected error during find_spec",
+                dep_name,
+                package_name,
+                exc_info=True,
+            )
+            found = False
+        result[dep_name] = found
+        if not found:
+            LOGGER.debug(
+                "optional dependency '%s' (package '%s') not found",
+                dep_name,
+                package_name,
+            )
+    return result
+
+
+def _detect_optional_dependencies() -> dict[str, dict[str, bool]]:
     """Detect which optional dependency groups are installed.
 
     Uses ``importlib.util.find_spec()`` to probe package availability
@@ -189,101 +286,38 @@ def _detect_optional_dependencies() -> dict[str, bool]:
 
     Note: Some packages have multiple versions (e.g., mosaic_multigrid vs
     multigrid-ini).  This detection shows which core packages are available.
+
+    Returns:
+        A dict grouped by category so callers (and the startup diagnostic
+        printout) can distinguish environment-family packages from RL
+        training framework packages and MOSAIC native workers, instead of
+        one flat unlabeled namespace::
+
+            {
+                "chat": {"chat": bool},
+                "environments": {"minigrid": bool, "atari": bool, ...},
+                "frameworks": {"ray_worker": bool, "cleanrl_worker": bool, ...},
+                "native_workers": {"llm_worker": bool, "human_worker": bool, ...},
+            }
     """
-    import importlib.util
-
-    deps: dict[str, bool] = {}
-
-    # Check for key packages that indicate installed optional deps.
-    # IMPORTANT: We use find_spec() to avoid executing module code.
-    # Never replace this with __import__() -- it will block on packages
-    # like xuance (mpi4py MPI_Init hang) or add multi-second delays.
-    checks = {
-        # Chat/LLM support (OpenRouter + vLLM)
-        "chat": "openai",  # Note: Uses OpenAI-compatible API for OpenRouter/vLLM
-
-        # Environment families
-        "minigrid": "minigrid",
-        "babyai": "minigrid.envs.babyai",  # BabyAI (bundled in minigrid>=2)
-        "mosaic_multigrid": "mosaic_multigrid",  # Modern fork (Gymnasium API)
-        "malmoenv": "malmoenv",  # MalmoEnv: Microsoft Malmo Java-based Minecraft (requires running Minecraft server)
-        "multigrid_ini": "multigrid",  # Original INI version (cooperative exploration)
-        "pettingzoo": "pettingzoo",
-        "mujoco": "mujoco",
-        "atari": "ale_py",  # ALE = Arcade Learning Environment
-        "vizdoom": "vizdoom",
-        "crafter": "crafter",
-        "nethack": "nle",  # NLE = NetHack Learning Environment (different from ALE!)
-        "procgen": "procgen",  # Procgen procedurally generated benchmark
-        "textworld": "textworld",  # TextWorld text-based game environment
-        "babaisai": "baba_is_ai",  # BabaIsAI rule manipulation puzzle benchmark
-        "griddly": "griddly",  # Griddly C++ backend grid world platform
-        "jumanji": "jumanji",  # Jumanji JAX-based RL environments
-        ## "pybullet_drones": "gym_pybullet_drones",  # PyBullet Drones quadcopter environments
-        "openspiel": "pyspiel",  # OpenSpiel board games via Shimmy
-        "meltingpot": "meltingpot",  # Melting Pot multi-agent social scenarios
-        ## "neuralmmo": "nmmo",  # Neural MMO massively multiagent game environment
-        ## "hemac": "hemac",  # HeMAC Heterogeneous Multi-Agent Challenge
-
-        # Overcooked versions
-        "overcooked_ai": "overcooked_ai_py",  # Original UC Berkeley version
-
-        # SMAC: StarCraft Multi-Agent Challenge
-        "smac": "smac",           # SMAC v1: hand-designed cooperative micromanagement maps
-        "smacv2": "smacv2",       # SMACv2: procedural unit generation
-        "rware": "rware",         # RWARE: Robotic Warehouse multi-agent cooperative
-
-        # RL training frameworks
-        "ray_worker": "ray",
-        "cleanrl_worker": "cleanrl",
-        "xuance_worker": "xuance",
-        "tianshou_worker": "tianshou",
-        "sb3_worker": "stable_baselines3",
-        "sbx_worker": "sbx.version",
-        "mushroomrl_worker": "mushroom_rl",
-        "pearl_worker": "pearl",
-        "torchrl_worker": "torchrl",
-        "omnisafe_worker": "omnisafe",
-        "mctx_worker": "mctx",
-        "marllib_worker": "marllib",
-        "chess_worker": "chess_worker",
-
-        # MOSAIC native workers
-        "llm_worker": "llm_worker",
-        "vlm_worker": "vlm_worker",
-        "human_worker": "human_worker",
-        "passive_worker": "passive_worker",
-        "random_worker": "random_worker",
+    deps: dict[str, dict[str, bool]] = {
+        "chat": _check_group(_CHAT_CHECKS),
+        "environments": _check_group(_ENV_FAMILY_CHECKS),
+        "frameworks": _check_group(_FRAMEWORK_CHECKS),
+        "native_workers": _check_group(_NATIVE_WORKER_CHECKS),
     }
 
-    for dep_name, package_name in checks.items():
-        try:
-            found = importlib.util.find_spec(package_name) is not None
-        except (ModuleNotFoundError, ValueError):
-            found = False
-        except Exception:
-            LOGGER.debug(
-                "optional dependency '%s' (package '%s') raised an unexpected error during find_spec",
-                dep_name,
-                package_name,
-                exc_info=True,
-            )
-            found = False
-        deps[dep_name] = found
-        if not found:
-            LOGGER.debug(
-                "optional dependency '%s' (package '%s') not found",
-                dep_name,
-                package_name,
-            )
+    total = sum(len(group) for group in deps.values())
+    found_count = sum(sum(group.values()) for group in deps.values())
 
     _log(
         LOG_RUNTIME_APP_DEBUG,
         message="optional_deps_detected",
         extra={
             "method": "find_spec",
-            "found": sum(deps.values()),
-            "total": len(deps),
+            "found": found_count,
+            "total": total,
+            "groups": {name: len(group) for name, group in deps.items()},
         },
     )
 

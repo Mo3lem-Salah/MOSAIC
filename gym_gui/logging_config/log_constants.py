@@ -3856,6 +3856,60 @@ LOG_HEMAC_ENERGY_DEPLETED = _constant(
     tags=_tags("hemac", "energy", "warning"),
 )
 
+LOG_HEMAC_ENV_CREATED = _constant(
+    "LOG4111",
+    "INFO",
+    "HeMAC environment created",
+    component="Adapter",
+    subcomponent="HeMAC",
+    tags=_tags("hemac", "environment", "lifecycle"),
+)
+
+LOG_HEMAC_ENV_RESET = _constant(
+    "LOG4112",
+    "INFO",
+    "HeMAC environment reset",
+    component="Adapter",
+    subcomponent="HeMAC",
+    tags=_tags("hemac", "episode", "lifecycle"),
+)
+
+LOG_HEMAC_STEP_SUMMARY = _constant(
+    "LOG4113",
+    "DEBUG",
+    "HeMAC step summary",
+    component="Adapter",
+    subcomponent="HeMAC",
+    tags=_tags("hemac", "step"),
+)
+
+LOG_HEMAC_ENV_CLOSED = _constant(
+    "LOG4114",
+    "INFO",
+    "HeMAC environment closed",
+    component="Adapter",
+    subcomponent="HeMAC",
+    tags=_tags("hemac", "environment", "lifecycle"),
+)
+
+LOG_HEMAC_RENDER_ERROR = _constant(
+    "LOG4115",
+    "WARNING",
+    "HeMAC render error",
+    component="Adapter",
+    subcomponent="HeMAC",
+    tags=_tags("hemac", "render", "error"),
+)
+
+LOG_HEMAC_INIT_ERROR = _constant(
+    "LOG4116",
+    "ERROR",
+    "HeMAC environment initialization failed",
+    component="Adapter",
+    subcomponent="HeMAC",
+    tags=_tags("hemac", "environment", "error"),
+)
+
 
 # ---------------------------------------------------------------------------
 # Google Research Football Adapter constants (LOG4120–LOG4125)
@@ -3907,6 +3961,106 @@ LOG_GFOOTBALL_GOAL = _constant(
     component="Adapter",
     subcomponent="GFootball",
     tags=_tags("gfootball", "goal", "reward"),
+)
+LOG_GFOOTBALL_INIT_ERROR = _constant(
+    "LOG4126",
+    "ERROR",
+    "GFootball environment initialization failed",
+    component="Adapter",
+    subcomponent="GFootball",
+    tags=_tags("gfootball", "environment", "error"),
+)
+LOG_GFOOTBALL_STEP_ERROR = _constant(
+    "LOG4127",
+    "ERROR",
+    "GFootball step execution failed",
+    component="Adapter",
+    subcomponent="GFootball",
+    tags=_tags("gfootball", "step", "error"),
+)
+LOG_GFOOTBALL_RESET_ERROR = _constant(
+    "LOG4128",
+    "ERROR",
+    "GFootball environment reset failed",
+    component="Adapter",
+    subcomponent="GFootball",
+    tags=_tags("gfootball", "reset", "error"),
+)
+
+# ---------------------------------------------------------------------------
+# Olympics Wrestling adapter constants (LOG4130-LOG4138)
+# ---------------------------------------------------------------------------
+LOG_OLYMPICS_ENV_CREATED = _constant(
+    "LOG4130",
+    "INFO",
+    "Olympics Wrestling environment created",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "init"),
+)
+LOG_OLYMPICS_ENV_RESET = _constant(
+    "LOG4131",
+    "DEBUG",
+    "Olympics Wrestling environment reset",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "reset"),
+)
+LOG_OLYMPICS_STEP_SUMMARY = _constant(
+    "LOG4132",
+    "DEBUG",
+    "Olympics Wrestling step completed",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "step"),
+)
+LOG_OLYMPICS_ENV_CLOSED = _constant(
+    "LOG4133",
+    "INFO",
+    "Olympics Wrestling environment closed",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "close"),
+)
+LOG_OLYMPICS_RENDER_ERROR = _constant(
+    "LOG4134",
+    "WARNING",
+    "Olympics Wrestling render failed",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "render", "error"),
+)
+LOG_OLYMPICS_KNOCKOUT = _constant(
+    "LOG4135",
+    "INFO",
+    "Olympics Wrestling knockout detected",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "knockout"),
+)
+LOG_OLYMPICS_INIT_ERROR = _constant(
+    "LOG4136",
+    "ERROR",
+    "Olympics Wrestling environment initialization failed",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "init", "error"),
+)
+LOG_OLYMPICS_STEP_ERROR = _constant(
+    "LOG4137",
+    "ERROR",
+    "Olympics Wrestling step failed",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "step", "error"),
+)
+LOG_OLYMPICS_RESET_ERROR = _constant(
+    "LOG4138",
+    "ERROR",
+    "Olympics Wrestling environment reset failed",
+    component="Adapter",
+    subcomponent="Olympics",
+    tags=_tags("olympics", "wrestling", "reset", "error"),
 )
 
 
@@ -5823,6 +5977,236 @@ LOG_WORKER_PASSIVE_DEBUG = _constant(
 )
 
 
+# ---------------------------------------------------------------------------
+# SocialJax Adapter constants (LOG1071-LOG1076)
+# ---------------------------------------------------------------------------
+LOG_SOCIALJAX_ENV_CREATED = _constant(
+    "LOG1071",
+    "INFO",
+    "SocialJax environment created",
+    component="Adapter",
+    subcomponent="SocialJax",
+    tags=_tags("socialjax", "env", "created"),
+)
+
+LOG_SOCIALJAX_ENV_RESET = _constant(
+    "LOG1072",
+    "INFO",
+    "SocialJax environment reset",
+    component="Adapter",
+    subcomponent="SocialJax",
+    tags=_tags("socialjax", "env", "reset"),
+)
+
+LOG_SOCIALJAX_ACTION_TAKEN = _constant(
+    "LOG1073",
+    "DEBUG",
+    "SocialJax action taken per step with key label",
+    component="Adapter",
+    subcomponent="SocialJax",
+    tags=_tags("socialjax", "step", "action", "key"),
+)
+
+LOG_SOCIALJAX_ENV_CLOSED = _constant(
+    "LOG1074",
+    "INFO",
+    "SocialJax environment closed",
+    component="Adapter",
+    subcomponent="SocialJax",
+    tags=_tags("socialjax", "env", "closed"),
+)
+
+LOG_SOCIALJAX_RENDER_ERROR = _constant(
+    "LOG1075",
+    "WARNING",
+    "SocialJax render failed",
+    component="Adapter",
+    subcomponent="SocialJax",
+    tags=_tags("socialjax", "render", "error"),
+)
+
+LOG_SOCIALJAX_PATH_INJECTED = _constant(
+    "LOG1076",
+    "DEBUG",
+    "SocialJax source tree injected into sys.path",
+    component="Adapter",
+    subcomponent="SocialJax",
+    tags=_tags("socialjax", "import", "path"),
+)
+
+
+# =========================================================================
+# Ghost Agent Replacement (GAR)
+# =========================================================================
+
+LOG_GAR_GHOST_DETECTED = _constant(
+    "LOG4815",
+    "INFO",
+    "Ghost agent detected in LinkGroup",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "ghost_agent", "detection"),
+)
+
+LOG_GAR_REPLACEMENT_ASSIGNED = _constant(
+    "LOG4816",
+    "INFO",
+    "Replacement worker assigned to ghost agent slot",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "replacement", "assignment"),
+)
+
+LOG_GAR_SHARED_RL_LAUNCHED = _constant(
+    "LOG4817",
+    "INFO",
+    "Shared RL process launched for LinkGroup with ghost agents",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "launch", "shared_rl"),
+)
+
+LOG_GAR_REPLACEMENT_LAUNCHED = _constant(
+    "LOG4818",
+    "INFO",
+    "Replacement worker process launched for ghost agent slot",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "launch", "replacement"),
+)
+
+LOG_GAR_GHOST_ACTION_DISCARDED = _constant(
+    "LOG4819",
+    "DEBUG",
+    "Ghost agent action computed and discarded",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "action", "discard"),
+)
+
+LOG_GAR_REAL_ACTION_SUBMITTED = _constant(
+    "LOG4820",
+    "DEBUG",
+    "Replacement action submitted to environment for ghost slot",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "action", "submit"),
+)
+
+LOG_GAR_VALIDATION_NO_AGENTS = _constant(
+    "LOG4821",
+    "ERROR",
+    "No agents physically present in environment (all slots ghosted)",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "validation", "error"),
+)
+
+LOG_GAR_TEAM_CHECKPOINT_MISMATCH = _constant(
+    "LOG4822",
+    "WARNING",
+    "Solo checkpoint team direction may not match ghost agent team slot",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "validation", "team", "warning"),
+)
+
+LOG_GAR_EPISODE_SUMMARY = _constant(
+    "LOG4823",
+    "INFO",
+    "GAR episode completed with ghost agent statistics",
+    component="Service",
+    subcomponent="GhostAgentReplacement",
+    tags=_tags("gar", "episode", "summary"),
+)
+
+
+# ---------------------------------------------------------------------------
+# Auto-Step constants (LOG4824-LOG4832)
+# Pre-run + replay of a full episode for visual policy inspection.
+# ---------------------------------------------------------------------------
+
+LOG_AUTO_STEP_COLLECTION_STARTED = _constant(
+    "LOG4824",
+    "INFO",
+    "Auto-Step collection started",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "collection", "start"),
+)
+
+LOG_AUTO_STEP_COLLECTION_DONE = _constant(
+    "LOG4825",
+    "INFO",
+    "Auto-Step collection finished -- all operators cached",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "collection", "done"),
+)
+
+LOG_AUTO_STEP_REPLAY_STARTED = _constant(
+    "LOG4826",
+    "INFO",
+    "Auto-Step replay started",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "replay", "start"),
+)
+
+LOG_AUTO_STEP_REPLAY_STOPPED = _constant(
+    "LOG4827",
+    "INFO",
+    "Auto-Step replay stopped by user",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "replay", "stop"),
+)
+
+LOG_AUTO_STEP_NO_RL_OPERATORS = _constant(
+    "LOG4828",
+    "WARNING",
+    "Auto-Step requested but no RL operators are active",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "warning", "no_operators"),
+)
+
+LOG_AUTO_STEP_OPERATOR_NOT_RUNNING = _constant(
+    "LOG4829",
+    "WARNING",
+    "Auto-Step skipping operator -- process not running",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "warning", "operator_dead"),
+)
+
+LOG_AUTO_STEP_STEP_TIMEOUT = _constant(
+    "LOG4830",
+    "ERROR",
+    "Auto-Step response timed out for operator",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "error", "timeout"),
+)
+
+LOG_AUTO_STEP_OPERATOR_ERROR = _constant(
+    "LOG4831",
+    "ERROR",
+    "Auto-Step received error response from operator",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "error", "operator_error"),
+)
+
+LOG_AUTO_STEP_LLM_SKIPPED = _constant(
+    "LOG4832",
+    "INFO",
+    "Auto-Step skipping LLM operator -- pre-caching not supported for LLM",
+    component="UI",
+    subcomponent="AutoStep",
+    tags=_tags("auto_step", "llm", "skipped"),
+)
+
 # =========================================================================
 # Helper Functions for Runtime Discovery & Validation
 # =========================================================================
@@ -6346,6 +6730,13 @@ ALL_LOG_CONSTANTS: Tuple[LogConstant, ...] = (
     LOG_WORKER_PASSIVE_ENV_CREATED,
     LOG_WORKER_PASSIVE_ENV_RESET,
     LOG_WORKER_PASSIVE_DEBUG,
+    # SocialJax Adapter
+    LOG_SOCIALJAX_ENV_CREATED,
+    LOG_SOCIALJAX_ENV_RESET,
+    LOG_SOCIALJAX_ACTION_TAKEN,
+    LOG_SOCIALJAX_ENV_CLOSED,
+    LOG_SOCIALJAX_RENDER_ERROR,
+    LOG_SOCIALJAX_PATH_INJECTED,
     # MushroomRL Worker
     LOG_WORKER_MUSHROOMRL_RUNTIME_STARTED,
     LOG_WORKER_MUSHROOMRL_RUNTIME_COMPLETED,
@@ -6850,6 +7241,13 @@ __all__ = (
     "LOG_WORKER_PASSIVE_ENV_CREATED",
     "LOG_WORKER_PASSIVE_ENV_RESET",
     "LOG_WORKER_PASSIVE_DEBUG",
+    # SocialJax Adapter
+    "LOG_SOCIALJAX_ENV_CREATED",
+    "LOG_SOCIALJAX_ENV_RESET",
+    "LOG_SOCIALJAX_ACTION_TAKEN",
+    "LOG_SOCIALJAX_ENV_CLOSED",
+    "LOG_SOCIALJAX_RENDER_ERROR",
+    "LOG_SOCIALJAX_PATH_INJECTED",
     # Worker Availability Messages
     "GODOT_NOT_INSTALLED_TITLE",
     "GODOT_NOT_INSTALLED_MSG",

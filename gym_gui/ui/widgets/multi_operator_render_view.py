@@ -384,6 +384,8 @@ class MultiOperatorRenderView(QtWidgets.QWidget):
             if container.is_interactive
         ]
 
+    # ------------------------------------------------------------------
+
     def set_chess_legal_moves(
         self,
         operator_id: str,

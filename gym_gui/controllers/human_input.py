@@ -158,9 +158,9 @@ _STANDARD_MINIGRID_ACTIONS = (
     _mapping(("Key_Q",), 6),                # done / no-op
 )
 
-# mosaic_multigrid v6.0.0 action mapping (8 discrete actions)
+# mosaic_multigrid v7.0.0 action mapping (8 discrete actions)
 # Action indices: 0=NOOP, 1=LEFT, 2=RIGHT, 3=FORWARD, 4=PICKUP, 5=DROP, 6=TOGGLE, 7=DONE
-# Used by: Soccer, Collect, Basketball, Solo variants (PyPI: mosaic-multigrid v6.0.0)
+# Used by: Soccer, Collect, Basketball, Solo variants (PyPI: mosaic_multigrid v7.0.0)
 # No key pressed → NOOP (action 0) via _get_default_idle_action()
 _MOSAIC_MULTIGRID_ACTIONS = (
     _mapping(("Key_Left", "Key_A"), 1),    # turn left
@@ -235,26 +235,19 @@ _MINIG_GRID_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
 # INI multigrid (BlockedUnlockPickup, Empty, etc.): 0=LEFT, 1=RIGHT, 2=FORWARD, etc. (7 actions, no STILL)
 _MULTIGRID_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
     # MOSAIC multigrid environments (7 actions - modernized from legacy 8-action version)
-    GameId.MOSAIC_MULTIGRID_SOCCER: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_COLLECT: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_INDAGOBS: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_COLLECT_INDAGOBS: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2_INDAGOBS: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_TEAMOBS: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2_TEAMOBS: _INI_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_INDAGOBS: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_TEAMOBS: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_SOLO_GREEN: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_SOLO_BLUE: _MOSAIC_MULTIGRID_ACTIONS,
+    # v7.0.0: TeamObs variants removed; 30 asymmetric competitive variants added.
+    GameId.MOSAIC_MULTIGRID_S_2V2_INDAGOBS: _INI_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_C_INDAGOBS: _INI_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_C_2V2_INDAGOBS: _INI_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_BB_3V3_INDAGOBS: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_BB_G_1V0: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V1: _MOSAIC_MULTIGRID_ACTIONS,
     # American Football environments (v6.3.0)
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_1V1: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_2V2: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_3V3: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_2V2_TEAMOBS: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_3V3_TEAMOBS: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_SOLO_GREEN: _MOSAIC_MULTIGRID_ACTIONS,
-    GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_SOLO_BLUE: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_AF_1V1_INDAGOBS: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_AF_2V2_INDAGOBS: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_AF_3V3_INDAGOBS: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_AF_G_1V0: _MOSAIC_MULTIGRID_ACTIONS,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V1: _MOSAIC_MULTIGRID_ACTIONS,
     # INI multigrid environments (7 actions, no STILL - same as MiniGrid)
     GameId.INI_MULTIGRID_BLOCKED_UNLOCK_PICKUP: _INI_MULTIGRID_ACTIONS,
     GameId.INI_MULTIGRID_EMPTY_5X5: _INI_MULTIGRID_ACTIONS,
@@ -500,6 +493,105 @@ def _crafter_mappings() -> Tuple[ShortcutMapping, ...]:
 _CRAFTER_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
     GameId.CRAFTER_REWARD: _crafter_mappings(),
     GameId.CRAFTER_NO_REWARD: _crafter_mappings(),
+}
+
+# ===========================================================================
+# Craftax Mappings (JAX-based Crafter successor)
+# Keys mirror the Craftax authors' recommended bindings (see Action-enum
+# comments in 3rd_party/environments/Craftax/craftax/*/constants.py).
+#   Classic (17 actions): same shape as Crafter but different key choices
+#     (SLEEP=Tab not R, PLACE_STONE=R not 1). Match upstream, do NOT reuse
+#     _crafter_mappings() -- consistency with Craftax reference beats
+#     consistency across MOSAIC's survival envs.
+#   Full   (43 actions): adds level-descent, spells, potions, level-ups,
+#     enchantments. Bindings spill onto punctuation (Key_BracketLeft,
+#     Key_Minus, Key_Equal, Key_Semicolon) because 43 > home-row capacity.
+# ===========================================================================
+def _craftax_classic_mappings() -> Tuple[ShortcutMapping, ...]:
+    """17-action mapping for Craftax-Classic (Crafter-parity mechanics)."""
+    return (
+        # Action 0 (NOOP) has no key -- happens on timeout / idle
+        _mapping(("Key_Left", "Key_A"), 1),        # LEFT
+        _mapping(("Key_Right", "Key_D"), 2),       # RIGHT
+        _mapping(("Key_Up", "Key_W"), 3),          # UP
+        _mapping(("Key_Down", "Key_S"), 4),        # DOWN
+        _mapping(("Key_Space",), 5),                # DO (interact)
+        _mapping(("Key_Tab",), 6),                  # SLEEP
+        _mapping(("Key_R",), 7),                    # PLACE_STONE
+        _mapping(("Key_T",), 8),                    # PLACE_TABLE
+        _mapping(("Key_F",), 9),                    # PLACE_FURNACE
+        _mapping(("Key_P",), 10),                   # PLACE_PLANT
+        _mapping(("Key_1",), 11),                   # MAKE_WOOD_PICKAXE
+        _mapping(("Key_2",), 12),                   # MAKE_STONE_PICKAXE
+        _mapping(("Key_3",), 13),                   # MAKE_IRON_PICKAXE
+        _mapping(("Key_4",), 14),                   # MAKE_WOOD_SWORD
+        _mapping(("Key_5",), 15),                   # MAKE_STONE_SWORD
+        _mapping(("Key_6",), 16),                   # MAKE_IRON_SWORD
+    )
+
+
+def _craftax_full_mappings() -> Tuple[ShortcutMapping, ...]:
+    """43-action mapping for full Craftax (dungeons, spells, potions, levels)."""
+    return (
+        # ── Movement + basic interact (shared with Classic) ─────────────────
+        _mapping(("Key_Left", "Key_A"), 1),        # LEFT
+        _mapping(("Key_Right", "Key_D"), 2),       # RIGHT
+        _mapping(("Key_Up", "Key_W"), 3),          # UP
+        _mapping(("Key_Down", "Key_S"), 4),        # DOWN
+        _mapping(("Key_Space",), 5),                # DO
+        _mapping(("Key_Tab",), 6),                  # SLEEP
+        _mapping(("Key_R",), 7),                    # PLACE_STONE
+        _mapping(("Key_T",), 8),                    # PLACE_TABLE
+        _mapping(("Key_F",), 9),                    # PLACE_FURNACE
+        _mapping(("Key_P",), 10),                   # PLACE_PLANT
+        # ── Crafting: pickaxes / swords ─────────────────────────────────────
+        # Digit shift vs Classic: 4 becomes DIAMOND_PICKAXE, so wood/stone/iron
+        # swords slide to 5/6/7 (matches Craftax authors' comment labels).
+        _mapping(("Key_1",), 11),                   # MAKE_WOOD_PICKAXE
+        _mapping(("Key_2",), 12),                   # MAKE_STONE_PICKAXE
+        _mapping(("Key_3",), 13),                   # MAKE_IRON_PICKAXE
+        _mapping(("Key_5",), 14),                   # MAKE_WOOD_SWORD
+        _mapping(("Key_6",), 15),                   # MAKE_STONE_SWORD
+        _mapping(("Key_7",), 16),                   # MAKE_IRON_SWORD
+        # ── Rest + dungeon traversal ────────────────────────────────────────
+        _mapping(("Key_E",), 17),                   # REST (partial sleep)
+        _mapping(("Key_Period",), 18),              # DESCEND (>)
+        _mapping(("Key_Comma",), 19),               # ASCEND  (<)
+        # ── Diamond tier ────────────────────────────────────────────────────
+        _mapping(("Key_4",), 20),                   # MAKE_DIAMOND_PICKAXE
+        _mapping(("Key_8",), 21),                   # MAKE_DIAMOND_SWORD
+        _mapping(("Key_Y",), 22),                   # MAKE_IRON_ARMOUR
+        _mapping(("Key_U",), 23),                   # MAKE_DIAMOND_ARMOUR
+        # ── Ranged + spells ─────────────────────────────────────────────────
+        _mapping(("Key_I",), 24),                   # SHOOT_ARROW
+        _mapping(("Key_O",), 25),                   # MAKE_ARROW
+        _mapping(("Key_G",), 26),                   # CAST_FIREBALL
+        _mapping(("Key_H",), 27),                   # CAST_ICEBALL
+        _mapping(("Key_J",), 28),                   # PLACE_TORCH
+        # ── Potions (bottom-row Z-N span) ───────────────────────────────────
+        _mapping(("Key_Z",), 29),                   # DRINK_POTION_RED
+        _mapping(("Key_X",), 30),                   # DRINK_POTION_GREEN
+        _mapping(("Key_C",), 31),                   # DRINK_POTION_BLUE
+        _mapping(("Key_V",), 32),                   # DRINK_POTION_PINK
+        _mapping(("Key_B",), 33),                   # DRINK_POTION_CYAN
+        _mapping(("Key_N",), 34),                   # DRINK_POTION_YELLOW
+        _mapping(("Key_M",), 35),                   # READ_BOOK
+        # ── Enchantments + torch craft + level-ups ──────────────────────────
+        _mapping(("Key_K",), 36),                   # ENCHANT_SWORD
+        _mapping(("Key_L",), 37),                   # ENCHANT_ARMOUR
+        _mapping(("Key_BracketLeft",), 38),         # MAKE_TORCH  ([)
+        _mapping(("Key_BracketRight",), 39),        # LEVEL_UP_DEXTERITY  (])
+        _mapping(("Key_Minus",), 40),               # LEVEL_UP_STRENGTH   (-)
+        _mapping(("Key_Equal",), 41),               # LEVEL_UP_INTELLIGENCE (=)
+        _mapping(("Key_Semicolon",), 42),           # ENCHANT_BOW  (;)
+    )
+
+
+_CRAFTAX_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
+    GameId.CRAFTAX_CLASSIC_SYMBOLIC: _craftax_classic_mappings(),
+    GameId.CRAFTAX_CLASSIC_PIXELS:   _craftax_classic_mappings(),
+    GameId.CRAFTAX_SYMBOLIC:         _craftax_full_mappings(),
+    GameId.CRAFTAX_PIXELS:           _craftax_full_mappings(),
 }
 
 # ===========================================================================
@@ -787,6 +879,205 @@ _JUMANJI_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
 
 # =============================================================================
 # Qt-to-Linux keycode conversion for subprocess workers
+_STANDARD_GRIDDLY_ACTIONS = (
+    _mapping(("Key_Left", "Key_A"), 1),
+    _mapping(("Key_Up", "Key_W"), 2),
+    _mapping(("Key_Right", "Key_D"), 3),
+    _mapping(("Key_Down", "Key_S"), 4),
+)
+
+_GRIDDLY_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
+    game_id: _STANDARD_GRIDDLY_ACTIONS
+    for game_id in [
+        GameId.GRIDDLY_ZELDA,
+        GameId.GRIDDLY_ZELDA_SEQUENTIAL,
+        GameId.GRIDDLY_PO_ZELDA,
+        GameId.GRIDDLY_SOKOBAN,
+        GameId.GRIDDLY_SOKOBAN_2,
+        GameId.GRIDDLY_PO_SOKOBAN_2,
+        GameId.GRIDDLY_CLUSTERS,
+        GameId.GRIDDLY_PO_CLUSTERS,
+        GameId.GRIDDLY_BAIT,
+        GameId.GRIDDLY_BAIT_WITH_KEYS,
+        GameId.GRIDDLY_PO_BAIT,
+        GameId.GRIDDLY_ZEN_PUZZLE,
+        GameId.GRIDDLY_PO_ZEN_PUZZLE,
+        GameId.GRIDDLY_LABYRINTH,
+        GameId.GRIDDLY_PO_LABYRINTH,
+        GameId.GRIDDLY_COOK_ME_PASTA,
+        GameId.GRIDDLY_PO_COOK_ME_PASTA,
+        GameId.GRIDDLY_SPIDERS,
+        GameId.GRIDDLY_SPIDER_NEST,
+        GameId.GRIDDLY_BUTTERFLIES_AND_SPIDERS,
+        GameId.GRIDDLY_RANDOM_BUTTERFLIES,
+        GameId.GRIDDLY_EYEBALL,
+        GameId.GRIDDLY_DRUNK_DWARF,
+        GameId.GRIDDLY_DOGGO,
+        GameId.GRIDDLY_PUSH_MANIA,
+    ]
+}
+
+# Google Research Football: 19 default actions
+# Movement: WASD + diagonals (QE/ZC), passes/shots on right hand
+_STANDARD_GRF_ACTIONS: Tuple[ShortcutMapping, ...] = (
+    _mapping(("Key_0",), 0),               # idle
+    _mapping(("Key_A",), 1),               # left
+    _mapping(("Key_Q",), 2),               # top_left
+    _mapping(("Key_W",), 3),               # top
+    _mapping(("Key_E",), 4),               # top_right
+    _mapping(("Key_D",), 5),               # right
+    _mapping(("Key_C",), 6),               # bottom_right
+    _mapping(("Key_S",), 7),               # bottom
+    _mapping(("Key_Z",), 8),               # bottom_left
+    _mapping(("Key_J",), 9),               # long_pass
+    _mapping(("Key_K",), 10),              # high_pass
+    _mapping(("Key_L",), 11),              # short_pass
+    _mapping(("Key_Space",), 12),          # shot
+    _mapping(("Key_Shift",), 13),          # sprint
+    _mapping(("Key_X",), 14),              # release_direction
+    _mapping(("Key_V",), 15),              # release_sprint
+    _mapping(("Key_T",), 16),              # sliding
+    _mapping(("Key_R",), 17),              # dribble
+    _mapping(("Key_F",), 18),              # release_dribble
+)
+
+# ===========================================================================
+# SocialJax Mappings (sequential social dilemma environments)
+#
+# Standard grid envs (coin_game, harvest, clean_up, territory, pd_arena,
+# mushrooms, gift) use ABSOLUTE cardinal movement:
+#   0=turn_left, 1=turn_right, 2=left, 3=right, 4=up, 5=down, 6=stay
+#   + env-specific special actions at indices 7 and 8
+#
+# coop_mining uses EGOCENTRIC movement (relative to agent heading):
+#   0=turn_left, 1=turn_right, 2=step_left, 3=step_right,
+#   4=forward, 5=backward, 6=stay, 7=mine
+#
+# lb_foraging has NO turning (pure cardinal navigation):
+#   0=none, 1=north, 2=south, 3=west, 4=east, 5=load
+# ===========================================================================
+
+# Shared 7-action base for absolute-movement envs
+_SOCIALJAX_BASE_7 = (
+    _mapping(("Key_Q",), 0),                       # turn_left
+    _mapping(("Key_E",), 1),                       # turn_right
+    _mapping(("Key_A", "Key_Left"), 2),            # left
+    _mapping(("Key_D", "Key_Right"), 3),           # right
+    _mapping(("Key_W", "Key_Up"), 4),              # up
+    _mapping(("Key_S", "Key_Down"), 5),            # down
+    _mapping(("Key_Space",), 6),                   # stay
+)
+
+# 8-action (+ zap_forward): harvest_open, mushrooms
+_SOCIALJAX_BASE_7_ZAP = _SOCIALJAX_BASE_7 + (
+    _mapping(("Key_F",), 7),                       # zap_forward
+)
+
+# 9-action clean_up: + zap_forward + zap_clean
+_SOCIALJAX_CLEANUP_9 = _SOCIALJAX_BASE_7 + (
+    _mapping(("Key_F",), 7),                       # zap_forward (attack)
+    _mapping(("Key_Z",), 8),                       # zap_clean (clean river)
+)
+
+# 9-action territory_open: + zap_forward + claim
+_SOCIALJAX_TERRITORY_9 = _SOCIALJAX_BASE_7 + (
+    _mapping(("Key_F",), 7),                       # zap_forward (attack)
+    _mapping(("Key_Z",), 8),                       # claim (mark territory)
+)
+
+# 8-action pd_arena: + interact
+_SOCIALJAX_PD_ARENA_8 = _SOCIALJAX_BASE_7 + (
+    _mapping(("Key_F",), 7),                       # interact (zap opponent)
+)
+
+# 9-action gift: + zap_forward + consume
+_SOCIALJAX_GIFT_9 = _SOCIALJAX_BASE_7 + (
+    _mapping(("Key_F",), 7),                       # zap_forward (gift to nearby)
+    _mapping(("Key_Z",), 8),                       # consume (redeem tokens)
+)
+
+# 8-action coop_mining: egocentric movement + mine
+_SOCIALJAX_COOP_MINING_8 = (
+    _mapping(("Key_Q",), 0),                       # turn_left
+    _mapping(("Key_E",), 1),                       # turn_right
+    _mapping(("Key_A", "Key_Left"), 2),            # step_left (strafe)
+    _mapping(("Key_D", "Key_Right"), 3),           # step_right (strafe)
+    _mapping(("Key_W", "Key_Up"), 4),              # forward
+    _mapping(("Key_S", "Key_Down"), 5),            # backward
+    _mapping(("Key_Space",), 6),                   # stay
+    _mapping(("Key_F",), 7),                       # mine
+)
+
+# 6-action lb_foraging: no turning, pure cardinal + load
+_SOCIALJAX_LB_FORAGING_6 = (
+    _mapping(("Key_Space",), 0),                   # none (no-op)
+    _mapping(("Key_W", "Key_Up"), 1),              # north
+    _mapping(("Key_S", "Key_Down"), 2),            # south
+    _mapping(("Key_A", "Key_Left"), 3),            # west
+    _mapping(("Key_D", "Key_Right"), 4),           # east
+    _mapping(("Key_F", "Key_Return"), 5),          # load
+)
+
+_SOCIALJAX_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
+    GameId.SOCIALJAX_COIN_GAME:           _SOCIALJAX_BASE_7,
+    GameId.SOCIALJAX_HARVEST_COMMON_OPEN: _SOCIALJAX_BASE_7_ZAP,
+    GameId.SOCIALJAX_CLEAN_UP:            _SOCIALJAX_CLEANUP_9,
+    GameId.SOCIALJAX_TERRITORY_OPEN:      _SOCIALJAX_TERRITORY_9,
+    GameId.SOCIALJAX_PD_ARENA:            _SOCIALJAX_PD_ARENA_8,
+    GameId.SOCIALJAX_MUSHROOMS:           _SOCIALJAX_BASE_7_ZAP,
+    GameId.SOCIALJAX_GIFT:                _SOCIALJAX_GIFT_9,
+    GameId.SOCIALJAX_COOP_MINING:         _SOCIALJAX_COOP_MINING_8,
+    GameId.SOCIALJAX_LB_FORAGING:         _SOCIALJAX_LB_FORAGING_6,
+}
+
+# HeMAC Discrete(5): 0=NOOP/recharge, 1=[+vx,+vy], 2=[+vx,-vy], 3=[-vx,+vy], 4=[-vx,-vy]
+# In pygame y-down coords: 1=SE, 2=NE, 3=SW, 4=NW on screen.
+# WASD maps to the visually closest diagonal (W≈NE, S≈SW, A≈NW, D≈SE).
+_HEMAC_BASE_5: Tuple[ShortcutMapping, ...] = (
+    _mapping(("Key_Space",), 0),           # NOOP / recharge in place
+    _mapping(("Key_W", "Key_Up"), 2),      # NE on screen (+vx, -vy)
+    _mapping(("Key_D", "Key_Right"), 1),   # SE on screen (+vx, +vy)
+    _mapping(("Key_A", "Key_Left"), 4),    # NW on screen (-vx, -vy)
+    _mapping(("Key_S", "Key_Down"), 3),    # SW on screen (-vx, +vy)
+)
+
+_HEMAC_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
+    game_id: _HEMAC_BASE_5
+    for game_id in [
+        GameId.HEMAC_SIMPLE_FLEET_1Q1O,
+        GameId.HEMAC_SIMPLE_FLEET_3Q1O,
+        GameId.HEMAC_SIMPLE_FLEET_5Q2O,
+        GameId.HEMAC_FLEET_3Q1O,
+        GameId.HEMAC_FLEET_10Q3O,
+        GameId.HEMAC_FLEET_20Q5O,
+        GameId.HEMAC_COMPLEX_FLEET_3Q1O1P,
+        GameId.HEMAC_COMPLEX_FLEET_5Q2O1P,
+    ]
+}
+
+_GFOOTBALL_MAPPINGS: Dict[GameId, Tuple[ShortcutMapping, ...]] = {
+    game_id: _STANDARD_GRF_ACTIONS
+    for game_id in [
+        GameId.GRF_11V11_EASY,
+        GameId.GRF_11V11,
+        GameId.GRF_11V11_HARD,
+        GameId.GRF_1V1_EASY,
+        GameId.GRF_5V5,
+        GameId.GRF_ACADEMY_EMPTY_GOAL_CLOSE,
+        GameId.GRF_ACADEMY_EMPTY_GOAL,
+        GameId.GRF_ACADEMY_RUN_TO_SCORE,
+        GameId.GRF_ACADEMY_RUN_TO_SCORE_WITH_KEEPER,
+        GameId.GRF_ACADEMY_PASS_AND_SHOOT,
+        GameId.GRF_ACADEMY_RUN_PASS_AND_SHOOT,
+        GameId.GRF_ACADEMY_3V1_WITH_KEEPER,
+        GameId.GRF_ACADEMY_CORNER,
+        GameId.GRF_ACADEMY_COUNTERATTACK_EASY,
+        GameId.GRF_ACADEMY_COUNTERATTACK_HARD,
+        GameId.GRF_ACADEMY_SINGLE_GOAL_VS_LAZY,
+    ]
+}
+
+
 # =============================================================================
 _QT_KEY_ENUM_TO_NAME: Dict[int, str] = {}
 
@@ -856,9 +1147,14 @@ def build_key_action_map_for_game(
         _MINIHACK_MAPPINGS,
         _NETHACK_MAPPINGS,
         _CRAFTER_MAPPINGS,
+        _CRAFTAX_MAPPINGS,
         _BABAISAI_MAPPINGS,
         _PROCGEN_MAPPINGS,
         _JUMANJI_MAPPINGS,
+        _GRIDDLY_MAPPINGS,
+        _HEMAC_MAPPINGS,
+        _GFOOTBALL_MAPPINGS,
+        _SOCIALJAX_MAPPINGS,
     ]
     for source in mapping_sources:
         mappings = source.get(game_id)
@@ -992,9 +1288,13 @@ __all__ = [
     "_MINIHACK_MAPPINGS",
     "_NETHACK_MAPPINGS",
     "_CRAFTER_MAPPINGS",
+    "_CRAFTAX_MAPPINGS",
     "_BABAISAI_MAPPINGS",
     "_PROCGEN_MAPPINGS",
     "_ALE_MAPPINGS",
     "_BOX_2D_MAPPINGS",
     "_JUMANJI_MAPPINGS",
+    "_GRIDDLY_MAPPINGS",
+    "_HEMAC_MAPPINGS",
+    "_SOCIALJAX_MAPPINGS",
 ]

@@ -12,6 +12,8 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from gym_gui.config.deployment import vllm_base_url
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -102,7 +104,7 @@ class ChessWorkerPresenter:
         self,
         client_name: str = "vllm",
         model_id: str = "Qwen/Qwen2.5-1.5B-Instruct",
-        base_url: str = "http://127.0.0.1:8000/v1",
+        base_url: str = vllm_base_url(),
         api_key: Optional[str] = None,
         temperature: float = 0.3,
         max_tokens: int = 256,

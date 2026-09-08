@@ -8,7 +8,8 @@ version = "1.0.1"
 description = "MOSAIC: A Unified Platform for Cross-Paradigm Agent-Mixing and Human-AI Collaboration"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     {name = "Dr. Abdulhamid Mousa", email = "mousa.abdulhamid@bit.edu.cn"}
 ]

@@ -16,7 +16,7 @@ from typing import Any, Mapping
 import gymnasium as gym
 import numpy as np
 
-from gym_gui.config.game_configs import CrafterConfig
+from gym_gui.core.ui.game_config.game_configs import CrafterConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,

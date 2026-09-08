@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package gymgui.system;
+
+// SystemService — GPU and system resource monitoring on the daemon machine.
+//
+// GetSystemInfo (unary) is polled by VLLMServerWidget's QTimer to update
+// the remote GPU memory label without a persistent stream.
+// WatchSystemInfo (streaming) is available for live dashboard panels.
+
+service SystemService {
+  rpc GetSystemInfo   (SystemInfoRequest) returns (SystemInfoEvent);
+  rpc WatchSystemInfo (WatchSystemRequest) returns (stream SystemInfoEvent);
+}
+
+message SystemInfoRequest  {}
+message WatchSystemRequest { uint32 interval_ms = 1; }
+
+message SystemInfoEvent {
+  repeated GPUInfo gpus  = 1;
+  float cpu_percent      = 2;
+  float ram_used_gb      = 3;
+  float ram_total_gb     = 4;
+}
+
+message GPUInfo {
+  uint32 index               = 1;
+  string name                = 2;
+  float  memory_used_gb      = 3;
+  float  memory_total_gb     = 4;
+  float  utilization_percent = 5;
+  float  temperature_celsius = 6;
+}

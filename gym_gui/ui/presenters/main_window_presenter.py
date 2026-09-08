@@ -102,9 +102,19 @@ class MainWindowPresenter(QtCore.QObject, LogConstantMixin):
             return
         if game_id is None:
             self._view.game_info_setter("")
-        else:
-            # Presenter-level minimal description; MainWindow can enrich
-            self._view.game_info_setter(f"Selected: {game_id}")
+            return
+        # Use the centralized game_docs to set rich HTML; fall back to plain text only
+        # if docs are unavailable. MainWindow._on_game_changed fires first (connected
+        # earlier) and also calls get_game_info, but since this handler fires second it
+        # would overwrite with a plain "Selected: ..." string unless we also use get_game_info.
+        try:
+            from gym_gui.core.enums import GameId
+            from gym_gui.game_docs import get_game_info
+            gid = GameId(game_id)
+            html = get_game_info(gid)
+            self._view.game_info_setter(html)
+        except Exception:
+            self._view.game_info_setter(f"<p>Selected: <code>{game_id}</code></p>")
 
     def _handle_awaiting_human(self, waiting: bool, message: str) -> None:
         if self._view is None:

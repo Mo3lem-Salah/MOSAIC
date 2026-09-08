@@ -410,6 +410,8 @@ class TrainerDispatcher:
                     self._ensure_cleanrl_worker_available(run.run_id, module)
                 elif module and module.startswith("xuance_worker"):
                     self._ensure_xuance_worker_available(run.run_id, module)
+                elif module and module.startswith("jaxmarl_worker"):
+                    self._ensure_jaxmarl_worker_available(run.run_id, module)
                 if config_path is not None and "--config" not in args:
                     args.extend(["--config", str(config_path)])
                 if use_grpc:
@@ -525,6 +527,20 @@ class TrainerDispatcher:
         }
         log_constant(_LOGGER, LOG_TRAINER_WORKER_IMPORT_ERROR, extra=extra)
         raise RuntimeError("xuance_worker module not importable. Install with: pip install -e 3rd_party/workers/xuance_worker")
+
+    def _ensure_jaxmarl_worker_available(self, run_id: str, module: str) -> None:
+        """Log a structured error if jaxmarl_worker cannot be imported."""
+
+        if importlib.util.find_spec("jaxmarl_worker") is not None:
+            return
+
+        extra = {
+            "run_id": run_id,
+            "module": module,
+            "pythonpath": os.environ.get("PYTHONPATH", ""),
+        }
+        log_constant(_LOGGER, LOG_TRAINER_WORKER_IMPORT_ERROR, extra=extra)
+        raise RuntimeError("jaxmarl_worker module not importable. Install with: pip install -e 3rd_party/workers/jaxmarl_worker")
 
     def _build_worker_env(self, run: RunRecord) -> dict[str, str]:
         """Build environment variables for the worker subprocess."""

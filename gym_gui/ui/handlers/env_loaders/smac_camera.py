@@ -4,8 +4,17 @@ Enables click-and-drag camera panning on the 3D rendered SC2 view.
 Reuses the same mouse capture infrastructure built for ViZDoom FPS control:
 click to capture mouse, drag to pan, ESC to release.
 
-The mouse delta (in pixels) is converted to world-coordinate offsets using
-the adapter's ``camera_width`` property and sent via ``adapter.move_camera()``.
+The mouse delta (in pixels) is converted to world-coordinate offsets and
+sent via ``adapter.move_camera()``, which sends a real SC2
+``ActionRaw.camera_move`` action -- this genuinely repositions the in-engine
+3D camera (verified: panning changes 663K/786K pixels of the rendered
+frame), unlike the old numpy-crop approach it replaces.
+
+Note: there is no zoom/FOV control here. SC2's 3D camera field of view is
+fixed per-map by the engine itself and is not adjustable via any interface
+option available during live gameplay (see ``gym_gui.core.adapters.smac``
+module docstring for the full investigation). Only camera position (pan)
+can be controlled.
 """
 
 from __future__ import annotations
@@ -26,7 +35,7 @@ class SmacCameraLoader:
     """Loader for SMAC/SMACv2 mouse-driven 3D camera panning.
 
     Configures the render widget's mouse capture system so that click-drag
-    gestures translate into SC2 ``ActionRaw.camera_move`` commands.
+    gestures translate into real SC2 ``ActionRaw.camera_move`` commands.
 
     Args:
         render_tabs: The render tabs widget for configuring mouse capture.
@@ -38,7 +47,7 @@ class SmacCameraLoader:
     def configure_mouse_capture(
         self,
         session: "SessionController",
-        delta_scale: float = 0.15,
+        delta_scale: float = 0.12,
     ) -> bool:
         """Configure mouse panning for SMAC/SMACv2 3D-rendered games.
 
@@ -47,8 +56,7 @@ class SmacCameraLoader:
 
         Args:
             session: The session controller with the current game.
-            delta_scale: Sensitivity multiplier (world units per pixel,
-                         default 0.15 gives comfortable panning speed).
+            delta_scale: World units of camera pan per pixel of mouse drag.
 
         Returns:
             True if mouse capture was enabled (SMAC/SMACv2 game with 3D
@@ -72,14 +80,11 @@ class SmacCameraLoader:
         if config is not None and getattr(config, "renderer", "3d") != "3d":
             return False
 
-        # Get camera width for pixel-to-world conversion
-        cam_width = getattr(adapter, "camera_width", 24.0)
-
         # Capture render_tabs for the closure so we can push frames immediately
         render_tabs = self._render_tabs
 
         def mouse_delta_callback(delta_x: float, delta_y: float) -> None:
-            """Convert pixel-based mouse delta to world-unit camera pan.
+            """Convert pixel-based mouse delta to a real in-engine camera pan.
 
             After moving the camera, immediately re-render and push the
             new frame to the display so the user sees instant visual feedback.
@@ -100,32 +105,17 @@ class SmacCameraLoader:
             except Exception:
                 pass
 
-        def scroll_zoom_callback(direction: int) -> None:
-            """Scroll wheel -> software zoom in/out."""
-            if adapter is None or not hasattr(adapter, "zoom_camera"):
-                return
-            adapter.zoom_camera(direction)
-            # Re-render with new zoom level and push to display
-            try:
-                render_data = adapter.render()
-                if render_data is not None:
-                    render_tabs.display_payload(render_data)
-            except Exception:
-                pass
-
         self._render_tabs.configure_mouse_capture(
             enabled=True,
             delta_callback=mouse_delta_callback,
             delta_scale=delta_scale,
         )
-        self._render_tabs.set_scroll_callback(scroll_zoom_callback)
-        _LOG.debug("SMAC camera panning + zoom enabled for %s (width=%.1f)", game_id, cam_width)
+        _LOG.debug("SMAC camera panning enabled for %s (no zoom -- fixed per-map FOV)", game_id)
         return True
 
     def disable_mouse_capture(self) -> None:
-        """Disable mouse capture and scroll zoom."""
+        """Disable mouse capture."""
         self._render_tabs.configure_mouse_capture(enabled=False)
-        self._render_tabs.set_scroll_callback(None)
 
 
 __all__ = ["SmacCameraLoader"]

@@ -394,17 +394,11 @@ try:  # Optional dependency - MOSAIC MultiGrid (competitive team-based)
         MOSAIC_MULTIGRID_ACTIONS,
         MOSAIC_MULTIGRID_ADAPTERS,
         MultiGridBasketballIndAgObsAdapter,
-        MultiGridBasketballTeamObsAdapter,
         MultiGridCollect1vs1IndAgObsAdapter,
         MultiGridCollect2vs2IndAgObsAdapter,
-        MultiGridCollect2vs2TeamObsAdapter,
-        MultiGridCollect3HAdapter,
-        MultiGridCollect4HAdapter,
         MultiGridCollectIndAgObsAdapter,
         MultiGridSoccer1vs1IndAgObsAdapter,
-        MultiGridSoccerAdapter,
         MultiGridSoccerIndAgObsAdapter,
-        MultiGridSoccerTeamObsAdapter,
     )
     from .mosaic_multigrid import (  # pragma: no cover - mosaic_multigrid optional
         MultiGridAdapter as MosaicMultiGridAdapter,
@@ -479,6 +473,28 @@ except Exception:  # pragma: no cover - ini_multigrid optional
     INI_MULTIGRID_ADAPTERS = {}  # type: ignore[misc]
     INI_MULTIGRID_ACTIONS = []  # type: ignore[misc]
     _INI_MULTIGRID_AVAILABLE = False
+
+try:  # Optional dependency - SocialJax (JAX sequential social dilemma)
+    from .socialjax import (  # pragma: no cover - socialjax optional
+        SOCIALJAX_ADAPTERS,
+        SocialJaxAdapter,
+        SocialJaxCoinGameAdapter,
+        SocialJaxHarvestCommonOpenAdapter,
+        SocialJaxCleanUpAdapter,
+        SocialJaxCoopMiningAdapter,
+        SocialJaxTerritoryOpenAdapter,
+        SocialJaxPdArenaAdapter,
+        SocialJaxMushroomsAdapter,
+        SocialJaxGiftAdapter,
+        SocialJaxLbForagingAdapter,
+        create_socialjax_adapter,
+    )
+    _SOCIALJAX_AVAILABLE = True
+except Exception:  # pragma: no cover - socialjax optional
+    SocialJaxAdapter = None  # type: ignore[misc, assignment]
+    SOCIALJAX_ADAPTERS = {}  # type: ignore[misc]
+    create_socialjax_adapter = None  # type: ignore[misc, assignment]
+    _SOCIALJAX_AVAILABLE = False
 
 try:  # Optional dependency - MeltingPot (multi-agent social scenarios)
     from .meltingpot import (  # pragma: no cover - meltingpot optional
@@ -609,13 +625,30 @@ except Exception:  # pragma: no cover - rware optional
 try:
     from .smac import (
         SMAC_ADAPTERS,
+        SMAC1C3S5ZAdapter,
+        SMAC10Mvs11MAdapter,
+        SMAC25MAdapter,
+        SMAC27Mvs30MAdapter,
+        SMAC2Cvs64ZGAdapter,
+        SMAC2Mvs1ZAdapter,
         SMAC2S3ZAdapter,
+        SMAC2Svs1SCAdapter,
         SMAC3MAdapter,
         SMAC3S5ZAdapter,
+        SMAC3S5Zvs3S6ZAdapter,
+        SMAC3Svs3ZAdapter,
+        SMAC3Svs4ZAdapter,
+        SMAC3Svs5ZAdapter,
         SMAC5Mvs6MAdapter,
+        SMAC6Hvs8ZAdapter,
         SMAC8MAdapter,
+        SMAC8Mvs9MAdapter,
         SMACAdapter,
+        SMACBaneVsBaneAdapter,
+        SMACCorridorAdapter,
+        SMACMMMAdapter,
         SMACMMM2Adapter,
+        SMACSoManyBanelingAdapter,
     )
     _SMAC_AVAILABLE = True
 except Exception:
@@ -627,8 +660,23 @@ try:
     from .smacv2 import (
         SMACV2_ADAPTERS,
         SMACv2Adapter,
+        SMACv2Protoss5v5Adapter,
+        SMACv2Protoss10v10Adapter,
+        SMACv2Protoss10v11Adapter,
+        SMACv2Protoss20v20Adapter,
+        SMACv2Protoss20v23Adapter,
         SMACv2ProtossAdapter,
+        SMACv2Terran5v5Adapter,
+        SMACv2Terran10v10Adapter,
+        SMACv2Terran10v11Adapter,
+        SMACv2Terran20v20Adapter,
+        SMACv2Terran20v23Adapter,
         SMACv2TerranAdapter,
+        SMACv2Zerg5v5Adapter,
+        SMACv2Zerg10v10Adapter,
+        SMACv2Zerg10v11Adapter,
+        SMACv2Zerg20v20Adapter,
+        SMACv2Zerg20v23Adapter,
         SMACv2ZergAdapter,
     )
     _SMACV2_AVAILABLE = True
@@ -636,6 +684,51 @@ except Exception:
     SMACv2Adapter = None  # type: ignore[misc, assignment]
     SMACV2_ADAPTERS = {}  # type: ignore[misc]
     _SMACV2_AVAILABLE = False
+
+try:  # Optional dependency - Google Research Football (GRF)
+    from .gfootball import (  # pragma: no cover - gfootball optional
+        GRF_DEFAULT_ACTIONS,
+        GFOOTBALL_ADAPTERS,
+        GFootballAdapter,
+        GRF11vs11Adapter,
+        GRF11vs11EasyAdapter,
+        GRF11vs11HardAdapter,
+        GRF1vs1EasyAdapter,
+        GRF5vs5Adapter,
+        GRFAcademy3vs1WithKeeperAdapter,
+        GRFAcademyCornerAdapter,
+        GRFAcademyCounterattackEasyAdapter,
+        GRFAcademyCounterattackHardAdapter,
+        GRFAcademyEmptyGoalAdapter,
+        GRFAcademyEmptyGoalCloseAdapter,
+        GRFAcademyPassAndShootAdapter,
+        GRFAcademyRunPassAndShootAdapter,
+        GRFAcademyRunToScoreAdapter,
+        GRFAcademyRunToScoreWithKeeperAdapter,
+        GRFAcademySingleGoalVsLazyAdapter,
+    )
+    _GFOOTBALL_AVAILABLE = True
+except Exception:  # pragma: no cover - gfootball optional
+    GFootballAdapter = None  # type: ignore[misc, assignment]
+    GFOOTBALL_ADAPTERS = {}  # type: ignore[misc]
+    GRF_DEFAULT_ACTIONS = []  # type: ignore[misc]
+    _GFOOTBALL_AVAILABLE = False
+
+try:  # Optional dependency - Jidi Olympics Wrestling (sumo)
+    from .olympics_wrestling import (  # pragma: no cover - olympics optional
+        OLYMPICS_ACTION_NAMES,
+        OLYMPICS_ACTION_PRESETS,
+        OLYMPICS_WRESTLING_ADAPTERS,
+        OlympicsWrestlingAdapter,
+        OlympicsWrestlingGameAdapter,
+    )
+    _OLYMPICS_AVAILABLE = True
+except Exception:  # pragma: no cover - olympics optional
+    OlympicsWrestlingAdapter = None  # type: ignore[misc, assignment]
+    OLYMPICS_WRESTLING_ADAPTERS = {}  # type: ignore[misc]
+    OLYMPICS_ACTION_PRESETS = {}  # type: ignore[misc]
+    OLYMPICS_ACTION_NAMES = []  # type: ignore[misc]
+    _OLYMPICS_AVAILABLE = False
 
 # Standalone adapters for Human vs Agent mode (simplified state-based interfaces)
 from .chess_adapter import ChessAdapter as ChessHvAAdapter
@@ -903,18 +996,12 @@ if _BABAISAI_AVAILABLE:
 if _MOSAIC_MULTIGRID_AVAILABLE:
     __all__ += [
         "MosaicMultiGridAdapter",
-        "MultiGridSoccerAdapter",
-        "MultiGridCollect3HAdapter",
-        "MultiGridCollect4HAdapter",
         "MultiGridSoccerIndAgObsAdapter",
         "MultiGridSoccer1vs1IndAgObsAdapter",
         "MultiGridCollectIndAgObsAdapter",
         "MultiGridCollect2vs2IndAgObsAdapter",
         "MultiGridCollect1vs1IndAgObsAdapter",
         "MultiGridBasketballIndAgObsAdapter",
-        "MultiGridSoccerTeamObsAdapter",
-        "MultiGridCollect2vs2TeamObsAdapter",
-        "MultiGridBasketballTeamObsAdapter",
         "MOSAIC_MULTIGRID_ADAPTERS",
         "MOSAIC_MULTIGRID_ACTIONS",
     ]
@@ -949,6 +1036,22 @@ if _INI_MULTIGRID_AVAILABLE:
         "INIMultiGridAdapter",
         "INI_MULTIGRID_ADAPTERS",
         "INI_MULTIGRID_ACTIONS",
+    ]
+
+if _SOCIALJAX_AVAILABLE:
+    __all__ += [
+        "SocialJaxAdapter",
+        "SocialJaxCoinGameAdapter",
+        "SocialJaxHarvestCommonOpenAdapter",
+        "SocialJaxCleanUpAdapter",
+        "SocialJaxCoopMiningAdapter",
+        "SocialJaxTerritoryOpenAdapter",
+        "SocialJaxPdArenaAdapter",
+        "SocialJaxMushroomsAdapter",
+        "SocialJaxGiftAdapter",
+        "SocialJaxLbForagingAdapter",
+        "SOCIALJAX_ADAPTERS",
+        "create_socialjax_adapter",
     ]
 
 if _MELTINGPOT_AVAILABLE:
@@ -1032,10 +1135,27 @@ if _SMAC_AVAILABLE:
         "SMAC_ADAPTERS",
         "SMAC3MAdapter",
         "SMAC8MAdapter",
+        "SMAC25MAdapter",
         "SMAC2S3ZAdapter",
         "SMAC3S5ZAdapter",
         "SMAC5Mvs6MAdapter",
+        "SMAC8Mvs9MAdapter",
+        "SMAC10Mvs11MAdapter",
+        "SMAC27Mvs30MAdapter",
+        "SMACMMMAdapter",
         "SMACMMM2Adapter",
+        "SMAC3S5Zvs3S6ZAdapter",
+        "SMAC3Svs3ZAdapter",
+        "SMAC3Svs4ZAdapter",
+        "SMAC3Svs5ZAdapter",
+        "SMAC1C3S5ZAdapter",
+        "SMAC2Mvs1ZAdapter",
+        "SMACCorridorAdapter",
+        "SMAC6Hvs8ZAdapter",
+        "SMAC2Svs1SCAdapter",
+        "SMACSoManyBanelingAdapter",
+        "SMACBaneVsBaneAdapter",
+        "SMAC2Cvs64ZGAdapter",
     ]
 
 if _SMACV2_AVAILABLE:
@@ -1045,6 +1165,53 @@ if _SMACV2_AVAILABLE:
         "SMACv2TerranAdapter",
         "SMACv2ProtossAdapter",
         "SMACv2ZergAdapter",
+        "SMACv2Terran5v5Adapter",
+        "SMACv2Terran10v10Adapter",
+        "SMACv2Terran20v20Adapter",
+        "SMACv2Terran10v11Adapter",
+        "SMACv2Terran20v23Adapter",
+        "SMACv2Protoss5v5Adapter",
+        "SMACv2Protoss10v10Adapter",
+        "SMACv2Protoss20v20Adapter",
+        "SMACv2Protoss10v11Adapter",
+        "SMACv2Protoss20v23Adapter",
+        "SMACv2Zerg5v5Adapter",
+        "SMACv2Zerg10v10Adapter",
+        "SMACv2Zerg20v20Adapter",
+        "SMACv2Zerg10v11Adapter",
+        "SMACv2Zerg20v23Adapter",
+    ]
+
+if _GFOOTBALL_AVAILABLE:
+    __all__ += [
+        "GFootballAdapter",
+        "GFOOTBALL_ADAPTERS",
+        "GRF_DEFAULT_ACTIONS",
+        "GRFAcademyEmptyGoalAdapter",
+        "GRFAcademyEmptyGoalCloseAdapter",
+        "GRFAcademyRunToScoreAdapter",
+        "GRFAcademyRunToScoreWithKeeperAdapter",
+        "GRFAcademyPassAndShootAdapter",
+        "GRFAcademyRunPassAndShootAdapter",
+        "GRFAcademyCounterattackEasyAdapter",
+        "GRFAcademyCounterattackHardAdapter",
+        "GRFAcademyCornerAdapter",
+        "GRFAcademySingleGoalVsLazyAdapter",
+        "GRFAcademy3vs1WithKeeperAdapter",
+        "GRF1vs1EasyAdapter",
+        "GRF5vs5Adapter",
+        "GRF11vs11Adapter",
+        "GRF11vs11EasyAdapter",
+        "GRF11vs11HardAdapter",
+    ]
+
+if _OLYMPICS_AVAILABLE:
+    __all__ += [
+        "OlympicsWrestlingAdapter",
+        "OlympicsWrestlingGameAdapter",
+        "OLYMPICS_WRESTLING_ADAPTERS",
+        "OLYMPICS_ACTION_PRESETS",
+        "OLYMPICS_ACTION_NAMES",
     ]
 
 # Human vs Agent mode adapters (always available)

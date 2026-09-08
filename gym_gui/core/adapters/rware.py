@@ -10,6 +10,7 @@ Source: 3rd_party/robotic-warehouse/
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Dict, List, Mapping
 
 import gymnasium as gym
@@ -38,8 +39,58 @@ from gym_gui.logging_config.log_constants import (
 _LOGGER = logging.getLogger(__name__)
 
 
+_pyglet_patched = False
+
+
+def _patch_pyglet_window_invisible() -> None:
+    """Force pyglet windows to start invisible, before RWARE ever creates one.
+
+    RWARE's ``rware.rendering.Viewer`` unconditionally instantiates
+    ``pyglet.window.Window()`` with no ``visible`` argument, which pops a
+    real OS window on screen the instant a frame is rendered -- even in
+    ``rgb_array`` mode where MOSAIC only wants the raw pixel buffer.
+
+    Monkey-patching ``pyglet.window.Window.__init__`` to default
+    ``visible=False`` stops the window from ever appearing, so frames only
+    ever show up inside MOSAIC's own Render View. This is strictly
+    stronger than hiding the window after it has already flashed on
+    screen (the previous approach), since it prevents the pop-up rather
+    than reacting to it.
+
+    Controlled by ``RWARE_HIDDEN_WINDOW`` (see ``.env.example``): "1"
+    (default) applies the patch; "0" restores the upstream behaviour of
+    showing the engine's own window.
+    """
+    global _pyglet_patched
+    if _pyglet_patched:
+        return
+    if os.getenv("RWARE_HIDDEN_WINDOW", "1") == "0":
+        _LOGGER.debug("RWARE_HIDDEN_WINDOW=0: leaving pyglet window visibility untouched")
+        return
+    try:
+        import pyglet
+
+        original_init = pyglet.window.Window.__init__
+
+        def _invisible_init(self, *args: Any, **kwargs: Any) -> None:
+            kwargs.setdefault("visible", False)
+            original_init(self, *args, **kwargs)
+
+        pyglet.window.Window.__init__ = _invisible_init  # type: ignore[method-assign]
+        _pyglet_patched = True
+        _LOGGER.debug("Patched pyglet.window.Window to default visible=False")
+    except Exception as exc:  # pragma: no cover - defensive
+        _LOGGER.debug("Could not patch pyglet window visibility: %s", exc)
+
+
 def _ensure_rware() -> None:
-    """Import rware lazily to trigger gymnasium.register() calls."""
+    """Import rware lazily to trigger gymnasium.register() calls.
+
+    Patches pyglet's window visibility *before* importing rware, so that
+    when rware's Viewer lazily creates its window on first render, it
+    is born invisible instead of popping up on screen.
+    """
+    _patch_pyglet_window_invisible()
     import rware  # noqa: F401
 
 
@@ -72,7 +123,7 @@ class RWAREAdapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
     ) -> None:
         super().__init__(context)
 
-        from gym_gui.config.game_configs import RWAREConfig
+        from gym_gui.core.ui.game_config.game_configs import RWAREConfig
 
         if config is None:
             config = RWAREConfig()
@@ -209,18 +260,24 @@ class RWAREAdapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
     def _try_render(self) -> dict[str, Any] | None:
         """Attempt render, returning payload dict or None on error.
 
-        RWARE uses pyglet which always creates a visible window, even in
-        ``rgb_array`` mode.  After the first render (which lazily creates
-        the Viewer), we hide the pyglet window so frames only appear
-        inside MOSAIC's Render View.
+        The pyglet window RWARE's Viewer lazily creates on first render is
+        born invisible thanks to ``_patch_pyglet_window_invisible()`` in
+        ``_ensure_rware()``. As a defensive fallback (in case the patch
+        fails to apply, e.g. a differently versioned pyglet), we also
+        explicitly hide the window here after the first render. Either
+        way, frames only ever surface inside MOSAIC's Render View.
+
+        Both the patch and this fallback respect ``RWARE_HIDDEN_WINDOW``
+        (see ``.env.example``): if it is set to "0" the user explicitly
+        wants the engine's own window visible, so we leave it alone.
         """
         if self._rware_env is None:
             return None
         try:
             frame = self._rware_env.render()
 
-            # Hide the pyglet window after first render creates it
-            if not self._pyglet_window_hidden:
+            # Defensive fallback: hide the window if it somehow became visible
+            if not self._pyglet_window_hidden and os.getenv("RWARE_HIDDEN_WINDOW", "1") != "0":
                 self._hide_pyglet_window()
                 self._pyglet_window_hidden = True
 

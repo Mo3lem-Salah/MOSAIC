@@ -49,7 +49,7 @@ class Settings:
     """Typed view over the environment configuration.
 
     Note: Game-specific configurations (like FrozenLake's is_slippery or
-    Taxi's is_raining) are now in gym_gui.config.game_configs module.
+    Taxi's is_raining) are now in gym_gui.core.ui.game_config.game_configs module.
     """
 
     qt_api: str = "PyQt6"

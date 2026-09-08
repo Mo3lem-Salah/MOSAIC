@@ -156,6 +156,37 @@ class OperatorScriptExecutionManager(QtCore.QObject):
             for config in operator_configs:
                 self.launch_operator.emit(config.operator_id, config, first_seed)
 
+    def start_free_run(self, operator_id: str, step_delay_ms: int = 50) -> None:
+        """Start continuous stepping for a single operator without episode tracking.
+
+        Used by the Operators tab to auto-step RL workers (e.g. jaxmarl_worker)
+        after initialization, so agents visibly move without requiring a Script
+        Experiment to be configured.
+
+        Args:
+            operator_id: The operator to step continuously.
+            step_delay_ms: Milliseconds between steps (default 50ms = ~20 fps).
+        """
+        if self._is_running:
+            _LOGGER.info("Execution manager already running, ignoring start_free_run")
+            return
+        _LOGGER.info("start_free_run: operator_id=%s delay_ms=%d", operator_id, step_delay_ms)
+        self._step_delay_ms = step_delay_ms
+        self._operator_states = {operator_id: "running"}
+        self._is_running = True
+        self._waiting_for_response = True
+        # Kick off the first step
+        self.step_operator.emit(operator_id)
+
+    def stop_free_run(self) -> None:
+        """Stop a free-run started by start_free_run()."""
+        if not self._is_running:
+            return
+        _LOGGER.info("stop_free_run called")
+        self._is_running = False
+        self._waiting_for_response = False
+        self._operator_states.clear()
+
     def stop_experiment(self) -> None:
         """Stop running experiment."""
         if not self._is_running:

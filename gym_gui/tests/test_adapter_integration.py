@@ -22,7 +22,7 @@ class TestToyTextAdaptersLoad:
 
     def test_frozenlake_v1_loads(self):
         """FrozenLake-v1 adapter loads successfully."""
-        from gym_gui.config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
         from gym_gui.core.adapters.toy_text import FrozenLakeAdapter
 
         adapter = FrozenLakeAdapter(game_config=DEFAULT_FROZEN_LAKE_CONFIG)
@@ -34,7 +34,7 @@ class TestToyTextAdaptersLoad:
 
     def test_frozenlake_v2_loads(self):
         """FrozenLake-v2 adapter loads successfully."""
-        from gym_gui.config.game_configs import DEFAULT_FROZEN_LAKE_V2_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_FROZEN_LAKE_V2_CONFIG
         from gym_gui.core.adapters.toy_text import FrozenLakeV2Adapter
 
         adapter = FrozenLakeV2Adapter(game_config=DEFAULT_FROZEN_LAKE_V2_CONFIG)
@@ -46,7 +46,7 @@ class TestToyTextAdaptersLoad:
 
     def test_cliffwalking_loads(self):
         """CliffWalking adapter loads successfully."""
-        from gym_gui.config.game_configs import DEFAULT_CLIFF_WALKING_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_CLIFF_WALKING_CONFIG
         from gym_gui.core.adapters.toy_text import CliffWalkingAdapter
 
         adapter = CliffWalkingAdapter(game_config=DEFAULT_CLIFF_WALKING_CONFIG)
@@ -58,7 +58,7 @@ class TestToyTextAdaptersLoad:
 
     def test_taxi_loads(self):
         """Taxi adapter loads successfully."""
-        from gym_gui.config.game_configs import DEFAULT_TAXI_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_TAXI_CONFIG
         from gym_gui.core.adapters.toy_text import TaxiAdapter
 
         adapter = TaxiAdapter(game_config=DEFAULT_TAXI_CONFIG)
@@ -74,7 +74,7 @@ class TestAdapterRenderPayloads:
 
     def test_frozenlake_v1_render_has_holes(self):
         """FrozenLake-v1 render includes hole positions."""
-        from gym_gui.config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
         from gym_gui.core.adapters.toy_text import FrozenLakeAdapter
 
         adapter = FrozenLakeAdapter(game_config=DEFAULT_FROZEN_LAKE_CONFIG)
@@ -91,7 +91,7 @@ class TestAdapterRenderPayloads:
 
     def test_frozenlake_v2_render_with_custom_goal(self):
         """FrozenLake-v2 render works with custom goal position."""
-        from gym_gui.config.game_configs import FrozenLakeConfig
+        from gym_gui.core.ui.game_config.game_configs import FrozenLakeConfig
         from gym_gui.core.adapters.toy_text import FrozenLakeV2Adapter
 
         config = FrozenLakeConfig(
@@ -128,7 +128,7 @@ class TestAdapterRenderPayloads:
 
     def test_cliffwalking_render_complete(self):
         """CliffWalking render provides complete payload."""
-        from gym_gui.config.game_configs import DEFAULT_CLIFF_WALKING_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_CLIFF_WALKING_CONFIG
         from gym_gui.core.adapters.toy_text import CliffWalkingAdapter
 
         adapter = CliffWalkingAdapter(game_config=DEFAULT_CLIFF_WALKING_CONFIG)
@@ -151,7 +151,7 @@ class TestAdapterRenderPayloads:
 
     def test_taxi_render_has_state(self):
         """Taxi render includes taxi state information."""
-        from gym_gui.config.game_configs import DEFAULT_TAXI_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_TAXI_CONFIG
         from gym_gui.core.adapters.toy_text import TaxiAdapter
 
         adapter = TaxiAdapter(game_config=DEFAULT_TAXI_CONFIG)
@@ -172,7 +172,7 @@ class TestCustomGameConfigs:
 
     def test_frozenlake_v2_custom_grid_size(self):
         """FrozenLake-v2 respects custom grid dimensions."""
-        from gym_gui.config.game_configs import FrozenLakeConfig
+        from gym_gui.core.ui.game_config.game_configs import FrozenLakeConfig
         from gym_gui.core.adapters.toy_text import FrozenLakeV2Adapter
 
         config = FrozenLakeConfig(
@@ -191,7 +191,7 @@ class TestCustomGameConfigs:
 
     def test_cliffwalking_slippery_config(self):
         """CliffWalking respects is_slippery configuration."""
-        from gym_gui.config.game_configs import CliffWalkingConfig
+        from gym_gui.core.ui.game_config.game_configs import CliffWalkingConfig
         from gym_gui.core.adapters.toy_text import CliffWalkingAdapter
 
         config = CliffWalkingConfig(is_slippery=True)
@@ -207,7 +207,7 @@ class TestHolePlacement:
 
     def test_deterministic_holes_use_official_pattern(self):
         """When random_holes=False, holes follow official Gymnasium pattern."""
-        from gym_gui.config.game_configs import DEFAULT_FROZEN_LAKE_V2_CONFIG, FrozenLakeConfig
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_FROZEN_LAKE_V2_CONFIG, FrozenLakeConfig
         from gym_gui.core.adapters.toy_text import FrozenLakeV2Adapter
 
         adapter = FrozenLakeV2Adapter(game_config=DEFAULT_FROZEN_LAKE_V2_CONFIG)
@@ -234,7 +234,7 @@ class TestHolePlacement:
 
     def test_random_holes_distributed(self):
         """When random_holes=True, holes are randomly placed."""
-        from gym_gui.config.game_configs import FrozenLakeConfig
+        from gym_gui.core.ui.game_config.game_configs import FrozenLakeConfig
         from gym_gui.core.adapters.toy_text import FrozenLakeV2Adapter
 
         config = FrozenLakeConfig(
@@ -264,7 +264,7 @@ class TestHolePlacement:
 
     def test_custom_goal_avoids_hole_conflict(self):
         """Custom goal position doesn't have a hole placed on it."""
-        from gym_gui.config.game_configs import FrozenLakeConfig
+        from gym_gui.core.ui.game_config.game_configs import FrozenLakeConfig
         from gym_gui.core.adapters.toy_text import FrozenLakeV2Adapter
 
         config = FrozenLakeConfig(
@@ -296,7 +296,7 @@ class TestAdapterCompatibility:
 
     def test_adapter_has_required_methods(self):
         """All adapters have methods required by worker."""
-        from gym_gui.config.game_configs import (
+        from gym_gui.core.ui.game_config.game_configs import (
             DEFAULT_CLIFF_WALKING_CONFIG,
             DEFAULT_FROZEN_LAKE_CONFIG,
             DEFAULT_TAXI_CONFIG,
@@ -329,7 +329,7 @@ class TestAdapterCompatibility:
 
     def test_adapter_spaces_have_n_attribute(self):
         """Adapters provide Gymnasium spaces with .n attribute."""
-        from gym_gui.config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
         from gym_gui.core.adapters.toy_text import FrozenLakeAdapter
 
         adapter = FrozenLakeAdapter(game_config=DEFAULT_FROZEN_LAKE_CONFIG)
@@ -353,7 +353,7 @@ class TestRenderPayloadStructure:
         ("FrozenLake-v1", "FrozenLakeAdapter", "DEFAULT_FROZEN_LAKE_CONFIG"),
         ("FrozenLake-v2", "FrozenLakeV2Adapter", "DEFAULT_FROZEN_LAKE_V2_CONFIG"),
         ("CliffWalking-v1", "CliffWalkingAdapter", "DEFAULT_CLIFF_WALKING_CONFIG"),
-        ("Taxi-v4", "TaxiAdapter", "DEFAULT_TAXI_CONFIG"),
+        ("Taxi-v3", "TaxiAdapter", "DEFAULT_TAXI_CONFIG"),
     ])
     def test_render_payload_structure(self, game_id, adapter_class, config):
         """All adapters provide properly structured render payloads."""
@@ -382,7 +382,7 @@ class TestWorkerIntegration:
 
     def test_worker_reset_pattern(self):
         """Worker pattern of unpacking reset result."""
-        from gym_gui.config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_FROZEN_LAKE_CONFIG
         from gym_gui.core.adapters.toy_text import FrozenLakeAdapter
 
         adapter = FrozenLakeAdapter(game_config=DEFAULT_FROZEN_LAKE_CONFIG)
@@ -398,7 +398,7 @@ class TestWorkerIntegration:
 
     def test_worker_step_pattern(self):
         """Worker pattern of unpacking step result."""
-        from gym_gui.config.game_configs import DEFAULT_CLIFF_WALKING_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_CLIFF_WALKING_CONFIG
         from gym_gui.core.adapters.toy_text import CliffWalkingAdapter
 
         adapter = CliffWalkingAdapter(game_config=DEFAULT_CLIFF_WALKING_CONFIG)
@@ -419,7 +419,7 @@ class TestWorkerIntegration:
 
     def test_worker_render_pattern(self):
         """Worker can call adapter.render() for telemetry."""
-        from gym_gui.config.game_configs import DEFAULT_TAXI_CONFIG
+        from gym_gui.core.ui.game_config.game_configs import DEFAULT_TAXI_CONFIG
         from gym_gui.core.adapters.toy_text import TaxiAdapter
 
         adapter = TaxiAdapter(game_config=DEFAULT_TAXI_CONFIG)

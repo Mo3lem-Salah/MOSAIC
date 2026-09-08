@@ -23,14 +23,15 @@ def get_simple_fleet_html(env_id: str) -> str:
 <h2>{env_id}</h2>
 
 <p style="background-color: #fff3e0; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-<strong>API:</strong> PettingZoo AEC -- Heterogeneous multi-agent drone search.
+<strong>API:</strong> PettingZoo Parallel — simultaneous stepping.
 <a href="https://github.com/ThalesGroup/HeMAC" target="_blank">GitHub</a>
+&nbsp;|&nbsp; ECAI 2025 &mdash; ThalesGroup
 </p>
 
 <p>Simple Fleet challenge: quadcopter drones and high-altitude observers
 cooperate to locate and intercept Points of Interest (POIs) in a 2D
-continuous area. No provisioner (ground vehicle) — focuses on aerial
-coordination. {total} agents ({composition['quadcopters']}Q + {composition['observers']}O).</p>
+continuous patrol area. No obstacles, no provisioners &mdash; focused on
+aerial coordination. {total} agents ({composition['quadcopters']}Q + {composition['observers']}O).</p>
 
 <h4>Available Variants</h4>
 <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
@@ -39,77 +40,86 @@ coordination. {total} agents ({composition['quadcopters']}Q + {composition['obse
         <th style="border: 1px solid #ddd; padding: 8px;">Quadcopters</th>
         <th style="border: 1px solid #ddd; padding: 8px;">Observers</th>
         <th style="border: 1px solid #ddd; padding: 8px;">Total</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Max Cycles</th>
     </tr>
     <tr>
         <td style="border: 1px solid #ddd; padding: 8px;"><code>hemac-simple-fleet-1q1o-v0</code></td>
         <td style="border: 1px solid #ddd; padding: 8px;">1</td>
         <td style="border: 1px solid #ddd; padding: 8px;">1</td>
         <td style="border: 1px solid #ddd; padding: 8px;">2</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">600</td>
     </tr>
     <tr>
         <td style="border: 1px solid #ddd; padding: 8px;"><code>hemac-simple-fleet-3q1o-v0</code></td>
         <td style="border: 1px solid #ddd; padding: 8px;">3</td>
         <td style="border: 1px solid #ddd; padding: 8px;">1</td>
         <td style="border: 1px solid #ddd; padding: 8px;">4</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">600</td>
     </tr>
     <tr>
         <td style="border: 1px solid #ddd; padding: 8px;"><code>hemac-simple-fleet-5q2o-v0</code></td>
         <td style="border: 1px solid #ddd; padding: 8px;">5</td>
         <td style="border: 1px solid #ddd; padding: 8px;">2</td>
         <td style="border: 1px solid #ddd; padding: 8px;">7</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">600</td>
     </tr>
 </table>
 
-<h4>Agent Types & Observation Spaces</h4>
+<h4>Agent Types &amp; Spaces</h4>
 <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
     <tr style="background-color: #f0f0f0;">
-        <th style="border: 1px solid #ddd; padding: 8px;">Agent Type</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Agent</th>
         <th style="border: 1px solid #ddd; padding: 8px;">Obs Space</th>
         <th style="border: 1px solid #ddd; padding: 8px;">Action Space</th>
-        <th style="border: 1px solid #ddd; padding: 8px;">Description</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Role</th>
     </tr>
     <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Quadcopter</strong></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Box(-10000, 10000, (14,))</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Box(-1, 1, (2,))</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Low-altitude interceptor. Continuous thrust/heading control. Sensors: DownwardCamera, RoundCamera, IMU, UWB.</td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Quadcopter (Q)</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><code>Box(-10000, 10000, (15,))</code></td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><code>Discrete(5)</code></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">Low-altitude interceptor. RoundCamera sensor. Max speed 10.</td>
     </tr>
     <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Observer</strong></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Box(-10000, 10000, (11,))</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Discrete(5)</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">High-altitude surveillance (100m). Discrete heading: turn_right, turn_left, straight×3. ForwardFacingCamera.</td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Observer (O)</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><code>Box(-10000, 10000, (11,))</code></td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><code>Discrete(5)</code></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">High-altitude surveillance. ForwardFacingCamera (hfov=30&deg;, range 200).</td>
     </tr>
 </table>
 
-<h4>Rewards & Episode End</h4>
+<h4>Action Space: Discrete(5) &mdash; all agent types</h4>
 <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
-    <tr style="background-color: #f0f0f0;">
-        <th style="border: 1px solid #ddd; padding: 8px;">Condition</th>
-        <th style="border: 1px solid #ddd; padding: 8px;">Value</th>
+    <tr style="background-color: #e3f2fd;">
+        <th style="border: 1px solid #ddd; padding: 8px;">ID</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Drone movement</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">MOSAIC key</th>
     </tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">POI interception</td><td style="border: 1px solid #ddd; padding: 8px;">+reward (distance-based)</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Energy penalty</td><td style="border: 1px solid #ddd; padding: 8px;">Implicit via dynamics</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Termination</td><td style="border: 1px solid #ddd; padding: 8px;">All POIs captured or all agents destroyed</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Truncation</td><td style="border: 1px solid #ddd; padding: 8px;">max_cycles (default 300 steps)</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>0</strong></td><td style="border: 1px solid #ddd; padding: 8px;">NOOP / recharge in place</td><td style="border: 1px solid #ddd; padding: 8px;"><kbd>Space</kbd></td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>1</strong></td><td style="border: 1px solid #ddd; padding: 8px;">Fly SE &nbsp;(+vx, +vy)</td><td style="border: 1px solid #ddd; padding: 8px;"><kbd>D</kbd> / <kbd>&rarr;</kbd></td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>2</strong></td><td style="border: 1px solid #ddd; padding: 8px;">Fly NE &nbsp;(+vx, &minus;vy)</td><td style="border: 1px solid #ddd; padding: 8px;"><kbd>W</kbd> / <kbd>&uarr;</kbd></td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>3</strong></td><td style="border: 1px solid #ddd; padding: 8px;">Fly SW &nbsp;(&minus;vx, +vy)</td><td style="border: 1px solid #ddd; padding: 8px;"><kbd>S</kbd> / <kbd>&darr;</kbd></td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><strong>4</strong></td><td style="border: 1px solid #ddd; padding: 8px;">Fly NW &nbsp;(&minus;vx, &minus;vy)</td><td style="border: 1px solid #ddd; padding: 8px;"><kbd>A</kbd> / <kbd>&larr;</kbd></td></tr>
 </table>
+<p style="color: #888; font-size: 0.9em;">All movements are diagonal (no pure cardinal directions). In Human Only mode
+the same action is broadcast to every agent each tick.</p>
 
-<h4>Key Parameters</h4>
+<h4>Scenario Parameters</h4>
 <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
     <tr style="background-color: #f0f0f0;">
         <th style="border: 1px solid #ddd; padding: 8px;">Parameter</th>
-        <th style="border: 1px solid #ddd; padding: 8px;">Default</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Value</th>
     </tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Area size</td><td style="border: 1px solid #ddd; padding: 8px;">1000 × 1000</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Obstacles</td><td style="border: 1px solid #ddd; padding: 8px;">2–3 random per episode</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Time factor</td><td style="border: 1px solid #ddd; padding: 8px;">0.8–1.0</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;">Render</td><td style="border: 1px solid #ddd; padding: 8px;">PyGame ('human' or None)</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;">Area</td><td style="border: 1px solid #ddd; padding: 8px;">Pentagon patrol (100,100)&rarr;(250,100)&rarr;(820,480)&rarr;(600,800)&rarr;(100,620)</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;">Obstacles</td><td style="border: 1px solid #ddd; padding: 8px;">None</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;">POI speed</td><td style="border: 1px solid #ddd; padding: 8px;">2.0, random spawn</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;">Drone max charge</td><td style="border: 1px solid #ddd; padding: 8px;">100</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;">Max cycles</td><td style="border: 1px solid #ddd; padding: 8px;">600 (configurable)</td></tr>
 </table>
 
 <h4>References</h4>
 <ul>
     <li><a href="https://github.com/ThalesGroup/HeMAC" target="_blank">HeMAC GitHub (ThalesGroup)</a></li>
-    <li>ECAI 2025 Paper: Heterogeneous Multi-Agent Challenge</li>
+    <li>Dansereau et al. (2025). "The Heterogeneous Multi-Agent Challenge." ECAI 2025. arXiv:2509.19512</li>
 </ul>
 """
 

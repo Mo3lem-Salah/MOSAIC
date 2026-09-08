@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
 
-from gym_gui.config.game_configs import MeltingPotConfig
+from gym_gui.core.ui.game_config.game_configs import MeltingPotConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,

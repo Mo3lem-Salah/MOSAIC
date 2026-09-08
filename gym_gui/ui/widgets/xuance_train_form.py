@@ -35,7 +35,7 @@ from xuance_worker import (
 from gym_gui.config.paths import VAR_CUSTOM_SCRIPTS_DIR, VAR_TRAINER_DIR, XUANCE_SCRIPTS_DIR
 from gym_gui.core.enums import ENVIRONMENT_FAMILY_BY_GAME, EnvironmentFamily, GameId
 from gym_gui.fastlane.worker_helpers import apply_fastlane_environment
-from gym_gui.logging_config.helpers import LogConstantMixin
+from gym_gui.logging_config.helpers import LogConstantMixin, log_constant
 from gym_gui.logging_config.log_constants import (
     LOG_UI_TRAIN_FORM_ERROR,
     LOG_UI_TRAIN_FORM_INFO,
@@ -137,18 +137,76 @@ _STATIC_ENVIRONMENT_FAMILIES: Dict[str, List[Tuple[str, str]]] = {
         ("simple_speaker_listener_v4", "simple_speaker_listener_v4"),
     ],
     "smac": [
-        ("3m", "3m"),
-        ("8m", "8m"),
-        ("2s3z", "2s3z"),
-        ("3s5z", "3s5z"),
-        ("1c3s5z", "1c3s5z"),
-        ("corridor", "corridor"),
-        ("27m_vs_30m", "27m_vs_30m"),
+        # Easy (8 maps)
+        ("3m",          "3m (Easy, 3 Marines vs 3 Marines)"),
+        ("8m",          "8m (Easy, 8 Marines vs 8 Marines)"),
+        ("25m",         "25m (Easy, 25 Marines vs 25 Marines)"),
+        ("2s3z",        "2s3z (Easy, 2 Stalkers + 3 Zealots vs same)"),
+        ("3s5z",        "3s5z (Easy, 3 Stalkers + 5 Zealots vs same)"),
+        ("1c3s5z",      "1c3s5z (Easy, 1 Colossus + 3 Stalkers + 5 Zealots vs same)"),
+        ("2m_vs_1z",    "2m_vs_1z (Easy, 2 Marines vs 1 Zealot)"),
+        ("2s_vs_1sc",   "2s_vs_1sc (Easy, 2 Stalkers vs 1 Spine Crawler)"),
+        # Hard (11 maps)
+        ("3s_vs_3z",    "3s_vs_3z (Hard, 3 Stalkers vs 3 Zealots)"),
+        ("3s_vs_4z",    "3s_vs_4z (Hard, 3 Stalkers vs 4 Zealots)"),
+        ("3s_vs_5z",    "3s_vs_5z (Hard, 3 Stalkers vs 5 Zealots)"),
+        ("5m_vs_6m",    "5m_vs_6m (Hard, 5 Marines vs 6 Marines)"),
+        ("8m_vs_9m",    "8m_vs_9m (Hard, 8 Marines vs 9 Marines)"),
+        ("10m_vs_11m",  "10m_vs_11m (Hard, 10 Marines vs 11 Marines)"),
+        ("bane_vs_bane","bane_vs_bane (Hard, Banelings vs Banelings)"),
+        ("2c_vs_64zg",  "2c_vs_64zg (Hard, 2 Colossi vs 64 Zerglings)"),
+        ("MMM",         "MMM (Hard, Medivac + Marauders + Marines vs same)"),
+        ("corridor",    "corridor (Hard, 6 Zealots vs 24 Zerglings)"),
+        ("27m_vs_30m",  "27m_vs_30m (Hard, 27 Marines vs 30 Marines)"),
+        # Super Hard (4 maps)
+        ("3s5z_vs_3s6z",   "3s5z_vs_3s6z (Super Hard, asymmetric)"),
+        ("6h_vs_8z",       "6h_vs_8z (Super Hard, 6 Hydralisks vs 8 Zealots)"),
+        ("so_many_baneling","so_many_baneling (Super Hard, 7 Marines vs 32 Banelings)"),
+        ("MMM2",           "MMM2 (Super Hard, Medivac + Marauders + Marines, asymmetric)"),
     ],
-    "football": [
-        ("academy_3_vs_1_with_keeper", "academy_3_vs_1_with_keeper"),
-        ("academy_counterattack_easy", "academy_counterattack_easy"),
-        ("11_vs_11_kaggle", "11_vs_11_kaggle"),
+    "smacv2": [
+        # SMACv2: procedurally generated units, three races.
+        # Requires upstream `smacv2` package + a starcraft2v2 wrapper in xuance
+        # (not shipped by default; wire in xuance/environment/multi_agent_env/).
+        ("protoss_5_vs_5",   "protoss_5_vs_5 (Symmetric)"),
+        ("terran_5_vs_5",    "terran_5_vs_5 (Symmetric)"),
+        ("zerg_5_vs_5",      "zerg_5_vs_5 (Symmetric)"),
+        ("protoss_10_vs_10", "protoss_10_vs_10 (Symmetric)"),
+        ("terran_10_vs_10",  "terran_10_vs_10 (Symmetric)"),
+        ("zerg_10_vs_10",    "zerg_10_vs_10 (Symmetric)"),
+        ("protoss_10_vs_11", "protoss_10_vs_11 (Asymmetric)"),
+        ("terran_10_vs_11",  "terran_10_vs_11 (Asymmetric)"),
+        ("zerg_10_vs_11",    "zerg_10_vs_11 (Asymmetric)"),
+        ("protoss_20_vs_20", "protoss_20_vs_20 (Symmetric)"),
+        ("terran_20_vs_20",  "terran_20_vs_20 (Symmetric)"),
+        ("zerg_20_vs_20",    "zerg_20_vs_20 (Symmetric)"),
+        ("protoss_20_vs_23", "protoss_20_vs_23 (Asymmetric)"),
+        ("terran_20_vs_23",  "terran_20_vs_23 (Asymmetric)"),
+        ("zerg_20_vs_23",    "zerg_20_vs_23 (Asymmetric)"),
+    ],
+    # All GRF scenarios — displayed in both SA and MA tabs.
+    # env_id values are xuance's shorthand keys (GFOOTBALL_ENV_ID dict in
+    # xuance/environment/multi_agent_env/football.py); display labels are the
+    # exact GRF scenario names.
+    "gfootball": [
+        ("eg",               "academy_empty_goal"),
+        ("eg_close",         "academy_empty_goal_close"),
+        ("rs",               "academy_run_to_score"),
+        ("rsk",              "academy_run_to_score_with_keeper"),
+        ("single_gvl",       "academy_single_goal_versus_lazy"),
+        ("psk",              "academy_pass_and_shoot_with_keeper"),
+        ("rpsk",             "academy_run_pass_and_shoot_with_keeper"),
+        ("3v1",              "academy_3_vs_1_with_keeper"),
+        ("ca_easy",          "academy_counterattack_easy"),
+        ("ca_hard",          "academy_counterattack_hard"),
+        ("corner",           "academy_corner"),
+        ("1v1",              "1_vs_1_easy"),
+        ("5v5",              "5_vs_5"),
+        ("11v11",            "11_vs_11_stochastic"),
+        ("11v11_easy",       "11_vs_11_easy_stochastic"),
+        ("11v11_hard",       "11_vs_11_hard_stochastic"),
+        ("11v11_competition","11_vs_11_competition"),
+        ("11v11_kaggle",     "11_vs_11_kaggle"),
     ],
     # Advanced RL benchmarks (single-agent)
     "minigrid": [
@@ -358,8 +416,9 @@ _STATIC_ENVIRONMENT_FAMILIES: Dict[str, List[Tuple[str, str]]] = {
 _SINGLE_AGENT_FAMILIES = [
     "classic_control", "box2d", "mujoco", "atari",
     "minigrid", "babyai", "vizdoom", "minihack", "nethack", "crafter", "procgen",
+    "gfootball",
 ]
-_MULTI_AGENT_FAMILIES = ["mpe", "smac", "football"]
+_MULTI_AGENT_FAMILIES = ["mpe", "smac", "smacv2", "gfootball"]
 
 
 # --- Environment Discovery (Hybrid: Central Registry + Dynamic Discovery) ---
@@ -423,7 +482,7 @@ def _build_environment_index() -> Dict[str, List[Tuple[str, str]]]:
     Build environment index using hybrid approach:
     1. Central GameId enum (gym_gui.core.enums) as base
     2. Dynamic discovery from gymnasium for installed packages
-    3. Static fallback for multi-agent families (mpe, smac, football)
+    3. Static fallback for multi-agent families (mpe, smac, smacv2, gfootball)
 
     This ensures:
     - Single source of truth where possible (central enums)
@@ -463,11 +522,11 @@ def _build_environment_index() -> Dict[str, List[Tuple[str, str]]]:
         if family not in _DYNAMIC_DISCOVERY_FAMILIES:
             index[family].sort(key=lambda x: x[0])
 
-    # Third: Add multi-agent families from static lists
-    # (these are XuanCe-specific and not in gym_gui.core.enums)
-    for family in ["mpe", "smac", "football"]:
-        if family not in index and family in _STATIC_ENVIRONMENT_FAMILIES:
-            index[family] = _STATIC_ENVIRONMENT_FAMILIES[family]
+    # Third: Add any remaining families from static lists not yet in the index.
+    # (XuanCe-specific families not discoverable from gym_gui.core.enums)
+    for family, envs in _STATIC_ENVIRONMENT_FAMILIES.items():
+        if family not in index:
+            index[family] = envs
 
     return dict(index)
 
@@ -485,7 +544,10 @@ def get_environment_ids(family: str) -> List[Tuple[str, str]]:
     - Central registry fallback (curated list)
     - Static lists for multi-agent families
 
-    Returns list of (label, env_id) tuples for the given family.
+    Returns list of (env_id, label) tuples for the given family — env_id
+    FIRST (the key xuance consumes), label SECOND (the display string).
+    Callers must not swap this order; QComboBox.addItem(label, data=env_id)
+    depends on it. See _populate_env_combo for the contract.
     """
     return _XUANCE_ENVIRONMENT_INDEX.get(family, [])
 
@@ -524,6 +586,9 @@ class _FormState:
     fastlane_slot: int = 0
     fastlane_video_mode: str = "single"
     fastlane_grid_limit: int = 4
+    # SMAC/SMACv2-specific render settings
+    smac_render_mode: str = "heatmap"  # "heatmap" | "3d"
+    smac_render_size: int = 1024
 
 
 class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
@@ -624,6 +689,9 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
 
         # Analytics section
         self._setup_analytics(form_layout)
+
+        # SMAC render section (shown only for smac/smacv2 families)
+        self._setup_smac_render_section(form_layout)
 
         # FastLane section
         self._setup_fastlane_section(form_layout)
@@ -752,7 +820,7 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
 
     def _setup_algo_params(self, layout: QtWidgets.QVBoxLayout) -> None:
         """Set up algorithm parameters section (dynamic)."""
-        self._algo_param_group = QtWidgets.QGroupBox("Algorithm Parameters", self)
+        self._algo_param_group = QtWidgets.QGroupBox("Algorithm Hyper-parameters", self)
         self._algo_param_layout = QtWidgets.QGridLayout(self._algo_param_group)
         self._algo_param_layout.setContentsMargins(12, 12, 12, 12)
         self._algo_param_layout.setHorizontalSpacing(16)
@@ -831,7 +899,7 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         parallels_label = QtWidgets.QLabel("Parallel Envs:", self)
         self._parallels_spin = QtWidgets.QSpinBox(self)
         self._parallels_spin.setRange(1, 256)
-        self._parallels_spin.setValue(8)
+        self._parallels_spin.setValue(4)
         self._parallels_spin.setToolTip("Number of parallel environments")
         params_layout.addWidget(parallels_label, 1, 2)
         params_layout.addWidget(self._parallels_spin, 1, 3)
@@ -897,7 +965,7 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
 
     def _setup_analytics(self, layout: QtWidgets.QVBoxLayout) -> None:
         """Set up analytics & tracking section."""
-        group = QtWidgets.QGroupBox("Analytics & Tracking", self)
+        group = QtWidgets.QGroupBox("Tracking", self)
         group_layout = QtWidgets.QVBoxLayout(group)
         group_layout.setContentsMargins(8, 8, 8, 8)
         group_layout.setSpacing(6)
@@ -1044,6 +1112,80 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         self._wandb_http_proxy_input.setEnabled(vpn_enabled)
         self._wandb_https_proxy_input.setEnabled(vpn_enabled)
 
+    def _setup_smac_render_section(self, layout: QtWidgets.QVBoxLayout) -> None:
+        """SMAC/SMACv2-specific render mode widget.
+
+        Hidden for all environment families except 'smac' and 'smacv2'.
+        Appears above the FastLane widget so the user sets the render path
+        before enabling streaming.
+        """
+        group = QtWidgets.QGroupBox("SMAC Rendering", self)
+        group_layout = QtWidgets.QVBoxLayout(group)
+        group_layout.setContentsMargins(8, 8, 8, 8)
+        group_layout.setSpacing(6)
+
+        hint = QtWidgets.QLabel(
+            "Select how training frames are rendered for FastLane live visualization.",
+            group,
+        )
+        hint.setStyleSheet("color: #777777; font-size: 11px;")
+        hint.setWordWrap(True)
+        group_layout.addWidget(hint)
+
+        grid = QtWidgets.QGridLayout()
+        grid.setSpacing(6)
+
+        # Render mode — mutually exclusive dropdown (never both at once)
+        mode_label = QtWidgets.QLabel("Render Mode:", group)
+        self._smac_render_mode_combo = QtWidgets.QComboBox(group)
+        self._smac_render_mode_combo.addItem("Heatmap  (headless, pure numpy)", "heatmap")
+        self._smac_render_mode_combo.addItem("3D GPU Accelerated  (SC2 native render)", "3d")
+        self._smac_render_mode_combo.setToolTip(
+            "Heatmap: renders agent positions as a 2D colour overlay from SC2’s\n"
+            "protobuf observations — fully headless, no GPU render pipeline needed.\n"
+            "\n"
+            "3D GPU: patches SC2 launch with want_rgb=True for full game-engine\n"
+            "rendering. Requires a GPU and slightly increases environment startup time."
+        )
+        self._smac_render_mode_combo.currentIndexChanged.connect(
+            self._on_smac_render_mode_changed
+        )
+        grid.addWidget(mode_label, 0, 0)
+        grid.addWidget(self._smac_render_mode_combo, 0, 1)
+
+        # Render size spinner — only meaningful in 3D mode
+        res_label = QtWidgets.QLabel("Render Size:", group)
+        self._smac_render_size_spin = QtWidgets.QSpinBox(group)
+        self._smac_render_size_spin.setRange(256, 2048)
+        self._smac_render_size_spin.setSingleStep(64)
+        self._smac_render_size_spin.setValue(1024)
+        self._smac_render_size_spin.setSuffix(" px")
+        self._smac_render_size_spin.setToolTip(
+            "Square render resolution for 3D GPU mode (width = height = this value).\n"
+            "Higher values produce sharper FastLane frames at the cost of more VRAM.\n"
+            "Ignored in Heatmap mode."
+        )
+        grid.addWidget(res_label, 0, 2)
+        grid.addWidget(self._smac_render_size_spin, 0, 3)
+        grid.setColumnStretch(4, 1)
+
+        group_layout.addLayout(grid)
+
+        # Initially hidden — toggled by _on_env_family_changed
+        group.setVisible(False)
+        self._smac_render_group = group
+
+        # Set initial control state (heatmap = resolution greyed out)
+        self._on_smac_render_mode_changed(0)
+
+        layout.addWidget(group)
+
+    def _on_smac_render_mode_changed(self, index: int) -> None:
+        """Grey out the resolution spinner when Heatmap is selected."""
+        _ = index
+        is_3d = (self._smac_render_mode_combo.currentData() == "3d")
+        self._smac_render_size_spin.setEnabled(is_3d)
+
     def _setup_fastlane_section(self, layout: QtWidgets.QVBoxLayout) -> None:
         """Set up FastLane live visualization section."""
         group = QtWidgets.QGroupBox("FastLane Live Visualization", self)
@@ -1154,8 +1296,12 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         self._fastlane_slot_spin.setEnabled(fastlane_enabled)
 
         if not fastlane_enabled:
-            # Reset to defaults when disabled
-            self._fastlane_only_checkbox.setChecked(True)
+            # Uncheck fastlane_only when FastLane itself is off. Prior code
+            # reset this to True on disable, which then leaked through the
+            # config metadata as ui.fastlane_only=True and caused the FastLane
+            # tab handler to auto-open an unavailable "live" tab even when
+            # the user had explicitly disabled FastLane.
+            self._fastlane_only_checkbox.setChecked(False)
 
     def _setup_buttons(self, layout: QtWidgets.QVBoxLayout) -> None:
         """Set up dialog buttons."""
@@ -1213,6 +1359,13 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         is_single_agent = index == 0
         algo_combo = self._sa_algo_combo if is_single_agent else self._ma_algo_combo
         self._on_algorithm_changed(algo_combo)
+        # Update SMAC render group visibility for the newly active tab's family
+        if hasattr(self, "_smac_render_group"):
+            family_combo = (
+                self._sa_env_family_combo if is_single_agent else self._ma_env_family_combo
+            )
+            family = family_combo.currentData()
+            self._smac_render_group.setVisible(family in ("smac", "smacv2"))
 
     def _on_algorithm_changed(self, combo: QtWidgets.QComboBox) -> None:
         """Handle algorithm selection change - rebuild parameters."""
@@ -1229,6 +1382,9 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         family = family_combo.currentData()
         env_combo = self._sa_env_combo if paradigm == "single_agent" else self._ma_env_combo
         self._populate_env_combo(env_combo, family)
+        # Show SMAC render widget only for smac/smacv2 families
+        if hasattr(self, "_smac_render_group"):
+            self._smac_render_group.setVisible(family in ("smac", "smacv2"))
 
     def _populate_algo_combo(
         self,
@@ -1285,9 +1441,19 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         combo.clear()
 
         if family:
-            # Use dynamic discovery (falls back to static list if needed)
+            # Use dynamic discovery (falls back to static list if needed).
+            #
+            # Tuple contract: (env_id, label) — env_id is the KEY xuance
+            # consumes (e.g. "3v1", "CartPole-v1"), label is the human-visible
+            # display text (e.g. "3v1 — academy_3_vs_1_with_keeper"). Both
+            # `_discover_gymnasium_envs` and central-enum paths return
+            # (env_id, env_id) where they're identical; `_STATIC_ENVIRONMENT_FAMILIES`
+            # can have a distinct label. This ordering must match the tuple layout
+            # in _STATIC_ENVIRONMENT_FAMILIES or QComboBox.currentData() returns
+            # the LABEL instead of the KEY at env-instantiation time (regression
+            # covered by test_env_combo_returns_env_id_key_not_label).
             env_list = get_environment_ids(family)
-            for label, env_id in env_list:
+            for env_id, label in env_list:
                 combo.addItem(label, env_id)
 
         combo.blockSignals(False)
@@ -1455,27 +1621,75 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
         env = env_family_combo.currentData() or "classic_control"
         env_id = env_combo.currentData() or "CartPole-v1"
 
+        # Translate form-facing family key -> xuance's internal YAML config
+        # directory name. The UI shows `gfootball` (matches the upstream
+        # Python package name `import gfootball`), but xuance ships its
+        # YAML configs under `xuance/configs/{algo}/football/`. Without
+        # this translation, get_runner() raises AttributeError because
+        # it looks for `./xuance/configs/{algo}/gfootball/{env_id}.yaml`
+        # which does not exist.
+        _FORM_ENV_TO_XUANCE_ENV = {
+            "gfootball": "football",
+            # xuance ships SMAC YAML configs under configs/{algo}/sc2/, not smac/
+            "smac": "sc2",
+        }
+        _form_family_key = env  # keep for the trace below
+        env = _FORM_ENV_TO_XUANCE_ENV.get(env, env)
+
+        # Trace the exact values the form is about to emit. Grep the
+        # xuance_worker.stdout.log or runtime log for LOG_UI_TRAIN_FORM_TRACE
+        # to see what env/env_id/method landed in the config. This is the
+        # load-bearing observability point: if xuance later errors with
+        # "config file not found", this log line tells you the exact triple
+        # that failed the YAML lookup.
+        try:
+            log_constant(
+                _LOGGER,
+                LOG_UI_TRAIN_FORM_TRACE,
+                message="xuance form emitted (algo, env, env_id)",
+                extra={
+                    "worker_id":       "xuance_worker",
+                    "method":          method,
+                    "form_family_key": _form_family_key,  # what UI showed (e.g. "gfootball")
+                    "env":             env,               # what xuance will consume (e.g. "football")
+                    "env_id":          env_id,            # e.g. "3v1", must match a YAML basename
+                    "expected_yaml":   f"./xuance/configs/{method.lower()}/{env}/{env_id}.yaml",
+                },
+            )
+        except Exception:
+            pass  # tracing must never break config emission
+
         seed_value = self._seed_spin.value()
         seed = seed_value if seed_value > 0 else None
 
-        # Collect algorithm parameters
+        # Collect algorithm parameters.
+        # Environments with worker-side YAML configs (football/GRF, SMAC/sc2)
+        # define all hyperparameters in YAML — collecting multigrid widget
+        # defaults here would inject stale values (buffer_size:32, etc.) into
+        # parser_args and pollute the XuanCe config merge.
+        _YAML_MANAGED_FAMILIES = {"gfootball", "smac", "smacv2"}
         algo_params: Dict[str, Any] = {}
-        for key, widget in self._algo_param_inputs.items():
-            if isinstance(widget, QtWidgets.QSpinBox):
-                algo_params[key] = int(widget.value())
-            elif isinstance(widget, QtWidgets.QDoubleSpinBox):
-                algo_params[key] = float(widget.value())
-            elif isinstance(widget, QtWidgets.QCheckBox):
-                algo_params[key] = widget.isChecked()
-            elif isinstance(widget, QtWidgets.QLineEdit):
-                algo_params[key] = widget.text().strip()
+        if _form_family_key not in _YAML_MANAGED_FAMILIES:
+            for key, widget in self._algo_param_inputs.items():
+                if isinstance(widget, QtWidgets.QSpinBox):
+                    algo_params[key] = int(widget.value())
+                elif isinstance(widget, QtWidgets.QDoubleSpinBox):
+                    algo_params[key] = float(widget.value())
+                elif isinstance(widget, QtWidgets.QCheckBox):
+                    algo_params[key] = widget.isChecked()
+                elif isinstance(widget, QtWidgets.QLineEdit):
+                    algo_params[key] = widget.text().strip()
 
-        # Add procedural generation to algo_params
-        algo_params["procedural_generation"] = self._procedural_generation_checkbox.isChecked()
+            # procedural_generation is multigrid-specific — skip for YAML-managed envs
+            algo_params["procedural_generation"] = self._procedural_generation_checkbox.isChecked()
 
         # Collect FastLane settings
         video_mode_data = self._video_mode_combo.currentData()
         video_mode = video_mode_data if isinstance(video_mode_data, str) else VideoModes.SINGLE
+
+        # Collect SMAC render settings
+        smac_render_mode = self._smac_render_mode_combo.currentData() or "heatmap"
+        smac_render_size = self._smac_render_size_spin.value()
 
         # Custom script selection
         script_data = self._custom_script_combo.currentData()
@@ -1503,10 +1717,21 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
             custom_script_path=custom_script_path,
             custom_script_name=custom_script_name,
             fastlane_enabled=self._fastlane_checkbox.isChecked(),
-            fastlane_only=self._fastlane_only_checkbox.isChecked(),
+            # fastlane_only can only be True when fastlane_enabled is True.
+            # Guards against stale widget state where the checkbox stayed
+            # checked while the parent FastLane switch was off — that
+            # combination previously produced ui.fastlane_only=True in
+            # metadata and triggered the FastLane tab handler to open an
+            # "unavailable" live tab for runs the user never opted in to.
+            fastlane_only=(
+                self._fastlane_checkbox.isChecked()
+                and self._fastlane_only_checkbox.isChecked()
+            ),
             fastlane_slot=self._fastlane_slot_spin.value(),
             fastlane_video_mode=video_mode,
             fastlane_grid_limit=self._grid_limit_spin.value(),
+            smac_render_mode=smac_render_mode,
+            smac_render_size=smac_render_size,
         )
 
     def _build_config(
@@ -1560,6 +1785,9 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
             "fastlane_slot": state.fastlane_slot,
             "fastlane_video_mode": state.fastlane_video_mode,
             "fastlane_grid_limit": state.fastlane_grid_limit,
+            # SMAC render settings (consumed by StarCraft2FastLane_Env)
+            "smac_render_mode": state.smac_render_mode,
+            "smac_render_size": state.smac_render_size,
         }
         if state.notes:
             extras["notes"] = state.notes
@@ -1680,6 +1908,12 @@ class XuanCeTrainForm(QtWidgets.QDialog, LogConstantMixin):
             )
             # Also set the master switch for XuanCe sitecustomize
             environment["MOSAIC_FASTLANE_ENABLED"] = "1"
+
+        # SMAC render env vars — always emitted for smac/smacv2 so the
+        # wrapper can read them regardless of whether FastLane is enabled.
+        if state.env in ("sc2", "smac", "smacv2"):
+            environment["MOSAIC_SMAC_RENDER_MODE"] = state.smac_render_mode
+            environment["MOSAIC_SMAC_RENDER_SIZE"] = str(state.smac_render_size)
 
         if state.custom_script_path:
             # Custom script mode: run via /bin/bash

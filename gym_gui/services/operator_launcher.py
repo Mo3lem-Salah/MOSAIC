@@ -128,7 +128,7 @@ class OperatorProcessHandle:
             return False
 
         try:
-            line = json.dumps(cmd) + "\n"
+            line = (json.dumps(cmd) + "\n").encode("utf-8")
             self.process.stdin.write(line)
             self.process.stdin.flush()
             LOGGER.debug("Sent command to operator %s: %s", self.operator_id, cmd)
@@ -299,6 +299,18 @@ class OperatorProcessHandle:
     def try_read_response(self, timeout: float = 0.0) -> Optional[Dict[str, Any]]:
         """Try to read one JSON response from stdout (non-blocking).
 
+        Uses ``os.read()`` on the raw file descriptor, bypassing Python's
+        ``TextIOWrapper``. This avoids the well-known bug where
+        ``bufsize=1 + text=True`` wraps stdout in a buffered reader whose
+        internal state lags behind the OS pipe: the subprocess flushes a
+        line but readline() returns empty until enough bytes accumulate
+        or another write happens. With raw ``os.read()``, bytes become
+        visible immediately after the subprocess flushes them.
+
+        Accumulates bytes in ``self._stdout_buffer`` and extracts one
+        newline-terminated line per call. Skips blank and non-JSON lines
+        (xuance's startup prints) and returns the first valid JSON dict.
+
         Args:
             timeout: Seconds to wait for data (0 = no wait, instant check).
 
@@ -314,23 +326,71 @@ class OperatorProcessHandle:
         if self.process.stdout is None:
             return None
 
-        try:
-            # Use select for non-blocking check (Unix only)
-            readable, _, _ = select.select([self.process.stdout], [], [], timeout)
-            if not readable:
-                return None
+        import os as _os
+        import time as _time
 
-            line = self.process.stdout.readline()
-            if not line:
-                return None
+        # Lazy-init the byte buffer on first call.
+        if not hasattr(self, "_stdout_buffer"):
+            self._stdout_buffer: bytes = b""
 
-            return json.loads(line.strip())
-        except (json.JSONDecodeError, OSError, ValueError) as exc:
-            LOGGER.debug(
-                "Failed to read response from operator %s: %s",
-                self.operator_id, exc
-            )
-            return None
+        stdout_fd = self.process.stdout.fileno()
+        # NOTE: when timeout <= 0 we must not compute a deadline and then
+        # re-check monotonic() against it -- by the time the check runs,
+        # wall-clock time has already advanced past "now", so `remaining`
+        # is always a small negative number and select() is never called,
+        # even when data is already sitting in the pipe. Instead, treat
+        # timeout<=0 as "one immediate non-blocking check": pass 0 straight
+        # into select() so it never blocks but still polls the fd once.
+        non_blocking = timeout <= 0
+        deadline = _time.monotonic() + timeout
+
+        while True:
+            # First: try to extract a complete line already in the buffer.
+            if b"\n" in self._stdout_buffer:
+                line_bytes, _, self._stdout_buffer = self._stdout_buffer.partition(b"\n")
+                try:
+                    stripped = line_bytes.decode("utf-8", errors="replace").strip()
+                except Exception:
+                    stripped = ""
+                if not stripped:
+                    continue  # blank line
+                try:
+                    return json.loads(stripped)
+                except json.JSONDecodeError:
+                    LOGGER.debug(
+                        "Skipped non-JSON stdout from operator %s: %s",
+                        self.operator_id, stripped[:120],
+                    )
+                    continue
+
+            # No complete line buffered; check if more data is available.
+            if non_blocking:
+                select_timeout = 0.0
+            else:
+                remaining = deadline - _time.monotonic()
+                if remaining <= 0:
+                    return None
+                select_timeout = remaining
+
+            try:
+                readable, _, _ = select.select([stdout_fd], [], [], select_timeout)
+                if not readable:
+                    return None
+                chunk = _os.read(stdout_fd, 4096)
+                if not chunk:
+                    return None  # EOF
+                self._stdout_buffer += chunk
+                if non_blocking and b"\n" not in self._stdout_buffer:
+                    # Non-blocking mode only gets one read attempt; if that
+                    # read didn't complete a line, don't loop again (that
+                    # would effectively block waiting for more data).
+                    return None
+            except (OSError, ValueError) as exc:
+                LOGGER.debug(
+                    "Failed to read response from operator %s: %s",
+                    self.operator_id, exc,
+                )
+                return None
 
     def poll_responses(self, max_responses: int = 100) -> list[Dict[str, Any]]:
         """Read all available responses from stdout (non-blocking).
@@ -572,8 +632,129 @@ class OperatorLauncher:
         Args:
             python_executable: Path to Python executable (defaults to current).
         """
+        from gym_gui.config.deployment import (
+            IS_REMOTE_MODE, SERVER_SSH_HOST, SERVER_PROJECT_ROOT, SERVER_PYTHON,
+        )
+        self._remote_mode: bool = IS_REMOTE_MODE
+        self._server_host: str = SERVER_SSH_HOST
+        self._server_root: str = SERVER_PROJECT_ROOT
+        self._server_python: str = SERVER_PYTHON
+        # In remote mode, self._python_executable is still the LOCAL python
+        # (used by local workers like human_worker). Remote workers are wrapped
+        # via _maybe_wrap_cmd_for_remote using the server python path.
         self._python_executable = python_executable or sys.executable
         self._handles: Dict[str, OperatorProcessHandle] = {}
+
+        # Cache the server's PYTHONPATH at init time (one SSH call) so that
+        # every subsequent worker spawn can reuse it without extra latency.
+        self._server_pythonpath: str = ""
+        if self._remote_mode:
+            self._server_pythonpath = self._discover_server_pythonpath()
+
+    def _discover_server_pythonpath(self) -> str:
+        """Return the server's full PYTHONPATH via a single SSH call.
+
+        Reads sys.path from the server's venv Python so that ALL editable
+        worker installs are automatically included; no static list needed.
+        Adding a new worker on the server (pip install -e .) is all that's
+        required to make it discoverable here.
+        """
+        import subprocess as _sp
+        try:
+            result = _sp.run(
+                ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8",
+                 self._server_host,
+                 f"{self._server_python} -c "
+                 f"'import sys; print(chr(58).join(p for p in sys.path if p))'"],
+                capture_output=True, text=True, timeout=15,
+            )
+            server_path = result.stdout.strip()
+            if server_path:
+                return server_path
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).warning(
+                "Could not query server PYTHONPATH via SSH: %s. "
+                "Falling back to known worker paths.", exc
+            )
+
+        # Fallback: known static worker paths relative to server root
+        r = self._server_root
+        return ":".join([
+            f"{r}/3rd_party/workers/xuance_worker",
+            f"{r}/3rd_party/workers/xuance_worker/xuance",
+            f"{r}/3rd_party/workers/cleanrl_worker",
+            f"{r}/3rd_party/workers/mosaic/random_worker",
+            f"{r}/3rd_party/workers/mosaic/passive_worker",
+            f"{r}/3rd_party/workers/mosaic/llm_worker",
+            f"{r}/3rd_party/workers/balrog_worker",
+            f"{r}/3rd_party/workers/ray_worker",
+            f"{r}/3rd_party/workers/jaxmarl_worker",
+            f"{r}/3rd_party/workers/tianshou_worker",
+            f"{r}/src",
+        ])
+
+    def _maybe_wrap_cmd_for_remote(
+        self, cmd: list, env: Optional[Dict[str, str]] = None
+    ) -> list:
+        """In IS_REMOTE_MODE, wrap a local worker command with SSH.
+
+        Replaces the local Python executable with the server Python, prepends
+        key environment variables, and wraps everything in an SSH call so the
+        subprocess runs on the server while stdin/stdout flow transparently
+        through the SSH pipe.
+
+        In local mode returns cmd unchanged.
+        """
+        if not self._remote_mode:
+            return cmd
+
+        import shlex
+
+        # Remap local Python to server Python in the command
+        server_cmd = list(cmd)
+        if server_cmd and server_cmd[0] == self._python_executable:
+            server_cmd[0] = self._server_python
+
+        # Env vars that must reach the server process.
+        # Note: we do NOT forward the client's PYTHONPATH because it contains
+        # client-side paths (e.g. /home/hamid/Desktop/...) that don't exist on
+        # the server. Instead we construct the server's PYTHONPATH from
+        # SERVER_PROJECT_ROOT so all worker packages are importable on the server.
+        r = self._server_root
+        server_pythonpath = ":".join([
+            f"{r}/3rd_party/workers/xuance_worker",
+            f"{r}/3rd_party/workers/xuance_worker/xuance",
+            f"{r}/3rd_party/workers/cleanrl_worker",
+            f"{r}/3rd_party/workers/mosaic/random_worker",
+            f"{r}/3rd_party/workers/mosaic/passive_worker",
+            f"{r}/3rd_party/workers/balrog_worker",
+            f"{r}/3rd_party/workers/jaxmarl_worker",
+            f"{r}/src",
+        ])
+        _forward = [
+            "MOSAIC_VIEW_SIZE", "CUDA_VISIBLE_DEVICES",
+            "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION", "MPI4PY_RC_INITIALIZE",
+            "TQDM_DISABLE", "WANDB_MODE",
+        ]
+        env_parts = [f"PYTHONPATH={shlex.quote(server_pythonpath)}"]
+        env_parts += [
+            f"{k}={shlex.quote((env or {}).get(k, ''))}"
+            for k in _forward
+            if (env or {}).get(k)
+        ]
+        env_prefix = " ".join(env_parts)
+
+        # Build one shell string: cd + env vars + command
+        cmd_str = " ".join(shlex.quote(str(a)) for a in server_cmd)
+        shell_cmd = (
+            f"cd {shlex.quote(self._server_root)} && "
+            + (f"{env_prefix} " if env_prefix else "")
+            + cmd_str
+        )
+
+        return ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                self._server_host, "/bin/bash", "-c", shell_cmd]
 
     def launch_operator(
         self,
@@ -620,6 +801,18 @@ class OperatorLauncher:
             cmd = self._build_random_command(config, run_id, interactive=interactive)
         elif config.operator_type == "passive":
             cmd = self._build_passive_command(config, run_id, interactive=interactive)
+        elif config.operator_type == "multiagent":
+            # jaxmarl_worker owns its own JAX env and policy internally -- it is NOT
+            # a parallel action-selector.  All agents share one subprocess.
+            # _build_rl_command handles link_groups policy_path fallback already.
+            if any(w.worker_id == "jaxmarl_worker" for w in config.workers.values()):
+                cmd = self._build_rl_command(config, run_id, interactive=interactive)
+            else:
+                log_file.close()
+                raise OperatorLaunchError(
+                    f"Unknown multi-agent operator type for {config.operator_id}: "
+                    f"workers={[w.worker_id for w in config.workers.values()]}"
+                )
         else:
             log_file.close()
             raise OperatorLaunchError(f"Unknown operator type: {config.operator_type}")
@@ -646,6 +839,10 @@ class OperatorLauncher:
         if config.view_size is not None:
             env["MOSAIC_VIEW_SIZE"] = str(config.view_size)
 
+        # Prevent JAX from preallocating ~75% of GPU memory in jaxmarl_worker subprocesses
+        if config.worker_id == "jaxmarl_worker":
+            env.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
+
         LOGGER.info(
             "Launching operator %s (%s) with run_id=%s interactive=%s",
             config.operator_id,
@@ -655,17 +852,30 @@ class OperatorLauncher:
         )
         LOGGER.debug("Command: %s", " ".join(cmd))
 
+        # In IS_REMOTE_MODE, reroute the subprocess to the server via SSH.
+        # The SSH pipe is transparent to the IPC protocol: stdin/stdout flow
+        # through the SSH tunnel unchanged, so the handle works identically.
+        cmd = self._maybe_wrap_cmd_for_remote(cmd, env)
+
         try:
             # In interactive mode, we need stdin pipe for sending commands
-            # and stdout pipe for receiving telemetry
+            # and stdout pipe for receiving telemetry.
+            #
+            # CRITICAL: use bufsize=0 and binary mode (text=False). With
+            # the default bufsize=1 + text=True combination, Python wraps
+            # stdout in a TextIOWrapper with its own buffer that does not
+            # always release data when the subprocess flushes. This causes
+            # worker responses (print(..., flush=True)) to get stuck in
+            # the wrapper's buffer for many seconds even though the OS
+            # pipe has the bytes. try_read_response handles the decode
+            # and line splitting manually.
             if interactive:
                 process = validated_popen(
                     cmd,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=log_file,
-                    text=True,
-                    bufsize=1,
+                    bufsize=0,
                     env=env,
                 )
             else:
@@ -1078,6 +1288,17 @@ class OperatorLauncher:
         policy_path = settings.get("policy_path")
         algorithm = settings.get("algorithm", "ppo")
 
+        # Fall back to link_groups policy_path when individual agent settings are empty.
+        # This happens when all agents share one checkpoint via a LinkGroup (e.g. jaxmarl_worker
+        # with 6 linked agents where only the group-level policy_path is set).
+        if not policy_path and config.link_groups:
+            for lg in config.link_groups.values():
+                if lg.policy_path:
+                    policy_path = lg.policy_path
+                    if lg.algorithm:
+                        algorithm = lg.algorithm
+                    break
+
         # Validate required settings
         if not policy_path:
             raise OperatorLaunchError(
@@ -1092,7 +1313,33 @@ class OperatorLauncher:
             )
 
         # Dispatch based on worker_id
-        if config.worker_id == "xuance_worker":
+        if config.worker_id == "jaxmarl_worker":
+            # JaxMARL worker — JAX-native env + actor, loads .npz directly
+            cmd = [
+                self._python_executable,
+                "-m", "jaxmarl_worker.cli",
+                "--interactive",
+                "--env-id", env_id,
+                "--policy-path", str(policy_path),
+            ]
+
+            view_size = settings.get("view_size")
+            if view_size is not None:
+                cmd.extend(["--view-size", str(view_size)])
+
+            # Pass the configured agent count so the environment is created
+            # with the right number of agents.  len(config.workers) is the
+            # authoritative count (one WorkerAssignment per agent).
+            n_workers = len(config.workers)
+            if n_workers > 1:
+                cmd.extend(["--num-agents", str(n_workers)])
+
+            seed = settings.get("seed")
+            if seed is not None:
+                # jaxmarl runtime passes seed in the reset command, not at startup
+                pass
+
+        elif config.worker_id == "xuance_worker":
             # XuanCe MARL worker (IPPO, MAPPO, etc.)
             # InteractiveRuntime reads commands from stdin/stdout.
             cmd = [
@@ -1103,6 +1350,14 @@ class OperatorLauncher:
                 "--method", algorithm,
                 "--policy-path", str(policy_path),
             ]
+
+            # Use CUDA if available for faster policy inference.
+            # For interactive (action-selector) mode the model is small
+            # and CPU is fine, but CUDA avoids CPU-GPU transfer overhead
+            # if the model was trained on GPU.
+            import torch as _torch
+            if _torch.cuda.is_available():
+                cmd.extend(["--device", "cuda:0"])
 
             seed = settings.get("seed")
             if seed is not None:

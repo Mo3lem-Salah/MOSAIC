@@ -962,9 +962,9 @@ class MultiAgentTab(QtWidgets.QWidget):
     """Main Multi-Agent Mode tab with subtabs for different game modes.
 
     Contains:
-    - Human vs Agent: Play against trained AI
     - Cooperation: Train cooperative teams with headless training
     - Competition: Train competitive agents with headless training
+    - Human vs Agent: Play against trained AI
     """
 
     # Forwarded signals
@@ -1000,9 +1000,9 @@ class MultiAgentTab(QtWidgets.QWidget):
         self._competition_tab = MultiAgentCompetitionTab(self)
 
         # Add subtabs
-        self._subtabs.addTab(self._human_vs_agent_tab, "Human vs Agent")
         self._subtabs.addTab(self._cooperation_tab, "Cooperation")
         self._subtabs.addTab(self._competition_tab, "Competition")
+        self._subtabs.addTab(self._human_vs_agent_tab, "Human vs Agent")
 
         layout.addWidget(self._subtabs)
 

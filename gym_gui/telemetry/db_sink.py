@@ -46,13 +46,13 @@ from gym_gui.logging_config.log_constants import (
     LOG_SERVICE_DB_SINK_STOP_TIMEOUT,
     LOG_SERVICE_DB_SINK_STOPPED,
 )
-from gym_gui.replay import ReplayWriter
+from gym_gui.replays import ReplayWriter
 from gym_gui.telemetry.events import TelemetryEvent, Topic
 from gym_gui.telemetry.run_bus import RunBus
 from gym_gui.telemetry.sqlite_store import TelemetrySQLiteStore
 
 if TYPE_CHECKING:
-    from gym_gui.replay import ReplayWriter
+    from gym_gui.replays import ReplayWriter
 
 
 _LOGGER = logging.getLogger(__name__)

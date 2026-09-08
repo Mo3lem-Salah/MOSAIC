@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 
 from qtpy import QtCore, QtGui, QtWidgets
 
-from gym_gui.config.cleanrl_eval_presets import get_eval_preset
+from gym_gui.policy_discovery.cleanrl_eval_presets import get_eval_preset
 from gym_gui.config.paths import VAR_TRAINER_DIR
 from gym_gui.core.enums import EnvironmentFamily, GameId
 from gym_gui.fastlane.worker_helpers import apply_fastlane_environment

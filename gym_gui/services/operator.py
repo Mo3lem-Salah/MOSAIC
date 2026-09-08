@@ -220,7 +220,7 @@ class WorkerAssignment:
 
     Attributes:
         worker_id: References WorkerDefinition (e.g., "balrog_worker", "cleanrl_worker").
-        worker_type: Type of worker - "llm", "vlm", "rl", "human", "random", or "passive".
+        worker_type: Type of worker; one of "llm", "vlm", "rl", "human", "random", or "passive".
         settings: Worker-specific settings (client_name, model_id, api_key, etc.).
     """
 
@@ -363,8 +363,8 @@ class OperatorConfig:
     an operator (LLM or RL worker) in the multi-operator comparison view.
 
     An Operator binds one or more workers to a single environment:
-    - Single-agent envs (babyai, minigrid): 1 worker → 1 environment
-    - Multi-agent envs (chess, connect4): N workers → 1 environment
+    - Single-agent envs (babyai, minigrid): 1 worker per 1 environment
+    - Multi-agent envs (chess, connect4): N workers per 1 environment
 
     Attributes:
         operator_id: Unique ID for this operator instance (e.g., "operator_0").
@@ -516,6 +516,82 @@ class OperatorConfig:
         return len(self.get_human_agents()) > 0
 
     # -------------------------------------------------------------------------
+    # Ghost Agent Replacement (GAR) Helpers
+    # -------------------------------------------------------------------------
+
+    def get_real_agents(self) -> list[str]:
+        """Get agents whose RL policy actions are submitted to the environment.
+
+        An agent is 'real' if it belongs to a LinkGroup AND its
+        WorkerAssignment.worker_type == "rl". These agents are physically
+        present in the environment and their MAPPO/IPPO actions reach
+        env.step().
+
+        See PLAN_UPDATE_1.md Section 1.1 and Paper 2 Definition 2
+        (N \\ G: agents whose trained policy actions are submitted).
+
+        Returns:
+            List of agent_id strings.
+        """
+        real: list[str] = []
+        for group in self.link_groups.values():
+            for agent_id in group.all_agents():
+                assignment = self.workers.get(agent_id)
+                if assignment and assignment.worker_type == "rl":
+                    real.append(agent_id)
+        return real
+
+    def get_ghost_agents(self) -> dict[str, str]:
+        """Identify ghost agents: in a LinkGroup but worker_type != 'rl'.
+
+        A ghost agent's RL inference is computed (to satisfy the identity
+        vector, e.g. one-hot agents_id for MAPPO) but its action is
+        discarded. The replacement worker at the same agent_id provides
+        the action that reaches the environment.
+
+        Ghost status is derived, not declared: if an agent is in a
+        LinkGroup but its WorkerAssignment is not RL, it is a ghost.
+        No new dataclass, no new flags.
+
+        See PLAN_UPDATE_1.md Section 1.2 and Paper 2 Definition 1.
+
+        Returns:
+            Dict mapping ghost agent_id -> link_group_id.
+        """
+        ghosts: dict[str, str] = {}
+        for group_id, group in self.link_groups.items():
+            for agent_id in group.all_agents():
+                assignment = self.workers.get(agent_id)
+                if assignment and assignment.worker_type != "rl":
+                    ghosts[agent_id] = group_id
+        return ghosts
+
+    def get_replacement_agents(self) -> dict[str, "WorkerAssignment"]:
+        """Get the replacement WorkerAssignments for ghost agent slots.
+
+        Returns the same agent_ids as get_ghost_agents(), but viewed from
+        the environment side: the replacement's action IS what reaches
+        env.step(). The WorkerAssignment tells you which subprocess
+        (LLM, random, passive, another RL) provides that action.
+
+        Invariant: set(get_ghost_agents().keys()) ==
+                   set(get_replacement_agents().keys())
+
+        See PLAN_UPDATE_1.md Section 1.3 and Paper 2 Definition 2
+        (agents in G whose pi_ext provides the submitted action).
+
+        Returns:
+            Dict mapping ghost agent_id -> WorkerAssignment.
+        """
+        replacements: dict[str, "WorkerAssignment"] = {}
+        for group in self.link_groups.values():
+            for agent_id in group.all_agents():
+                assignment = self.workers.get(agent_id)
+                if assignment and assignment.worker_type != "rl":
+                    replacements[agent_id] = assignment
+        return replacements
+
+    # -------------------------------------------------------------------------
     # Factory Methods
     # -------------------------------------------------------------------------
 
@@ -587,8 +663,8 @@ class OperatorConfig:
             env_name: Environment family (e.g., "pettingzoo").
             task: Specific task (e.g., "chess_v6").
             player_workers: Dict mapping player_id to WorkerAssignment.
-            execution_mode: Execution paradigm - "aec" (turn-based) or "parallel" (simultaneous).
-            observation_mode: Observation mode for MultiGrid - "egocentric" or "visible_teammates".
+            execution_mode: Execution paradigm; either "aec" (turn-based) or "parallel" (simultaneous).
+            observation_mode: Observation mode for MultiGrid; either "egocentric" or "visible_teammates".
             coordination_level: Coordination strategy level (1=Emergent, 2=Basic Hints, 3=Role-Based).
             max_steps: Maximum steps per episode before truncation.
             view_size: Agent view size for MOSAIC (None = env default of 3).

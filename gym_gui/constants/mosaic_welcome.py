@@ -309,6 +309,16 @@ SATELLITES = [
         ring_index=5
     ),
     SatelliteConfig(
+        name="SocialJax",
+        color=(106, 27, 154),  # Purple
+        orbit_radius=1.0,
+        speed=0.33,
+        phase=270,
+        description="SocialJax - Sequential Social Dilemma Environments (FLAIROx)",
+        features=["9 social dilemma environments", "Pure JAX (JIT-compiled)", "Coin Game, Clean Up, Coop Mining & more", "github.com/FLAIROx/SocialJax"],
+        ring_index=5
+    ),
+    SatelliteConfig(
         name="Melting Pot",
         color=(239, 108, 0),  # Orange
         orbit_radius=1.0,

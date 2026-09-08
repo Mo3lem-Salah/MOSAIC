@@ -10,7 +10,7 @@ from typing import Any, List, Sequence, Tuple, Type
 
 import gymnasium as gym
 
-from gym_gui.config.game_configs import (
+from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_BLACKJACK_CONFIG,
     DEFAULT_CLIFF_WALKING_CONFIG,
     DEFAULT_FROZEN_LAKE_CONFIG,
@@ -913,7 +913,7 @@ class CliffWalkingAdapter(ToyTextAdapter):
 
 
 class TaxiAdapter(ToyTextAdapter):
-    """Adapter for Taxi-v4 environment with game-specific configuration."""
+    """Adapter for Taxi-v3 environment with game-specific configuration."""
 
     id = GameId.TAXI.value
     toy_text_defaults = TAXI_DEFAULTS

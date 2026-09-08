@@ -13,7 +13,7 @@ import pytest
 
 pytest.importorskip("minigrid")
 
-from gym_gui.config.game_configs import (
+from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_MINIGRID_EMPTY_5x5_CONFIG,
     DEFAULT_MINIGRID_EMPTY_6x6_CONFIG,
     DEFAULT_MINIGRID_EMPTY_8x8_CONFIG,

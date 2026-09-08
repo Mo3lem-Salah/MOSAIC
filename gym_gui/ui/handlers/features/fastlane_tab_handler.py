@@ -108,7 +108,7 @@ class FastLaneTabHandler:
         else:
             # CleanRL or other workers: single tab
             self.open_single_fastlane_tab(
-                run_id, canonical_agent_id, run_mode, env_id, worker_id
+                run_id, canonical_agent_id, run_mode, env_id, worker_id, metadata
             )
 
     # Board game environments that should use BoardGameFastLaneTab
@@ -267,6 +267,7 @@ class FastLaneTabHandler:
         run_mode: str,
         env_id: str,
         worker_id: str,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Open a single FastLane tab (for CleanRL and other non-Ray workers)."""
         from gym_gui.ui.widgets.fastlane_tab import FastLaneTab
@@ -279,6 +280,10 @@ class FastLaneTabHandler:
             )
             return
 
+        ui_meta = metadata.get("ui", {}) if isinstance(metadata, dict) else {}
+        video_mode = ui_meta.get("fastlane_video_mode", "single")
+        grid_limit = int(ui_meta.get("fastlane_grid_limit", 4) or 4)
+
         try:
             mode_label = "Fast lane (evaluation)" if run_mode == "policy_eval" else "Fast lane"
             tab = FastLaneTab(
@@ -286,6 +291,8 @@ class FastLaneTabHandler:
                 agent_id,
                 mode_label=mode_label,
                 run_mode=run_mode,
+                video_mode=video_mode,
+                grid_limit=grid_limit,
                 parent=self._render_tabs,
             )
         except Exception as exc:

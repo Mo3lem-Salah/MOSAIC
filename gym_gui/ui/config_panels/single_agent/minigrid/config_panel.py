@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.config.game_configs import (
+from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_MINIGRID_LAVAGAP_S7_CONFIG,
     DEFAULT_MINIGRID_DOORKEY_5x5_CONFIG,
     DEFAULT_MINIGRID_DOORKEY_6x6_CONFIG,

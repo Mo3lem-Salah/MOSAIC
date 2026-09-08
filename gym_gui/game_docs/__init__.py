@@ -189,6 +189,7 @@ from gym_gui.game_docs.MiniGrid import (
     get_redbluedoors_html,
 )
 from gym_gui.game_docs.Mosaic_MultiGrid import (
+    MOSAIC_AMERICAN_FOOTBALL_HTML,
     MOSAIC_BASKETBALL_HTML,
     MOSAIC_COLLECT2VS2_BASE_HTML,
     MOSAIC_COLLECT2VS2_HTML,
@@ -198,6 +199,12 @@ from gym_gui.game_docs.Mosaic_MultiGrid import (
     MOSAIC_SOCCER_1VS1_HTML,
     MOSAIC_SOCCER_BASE_HTML,
     MOSAIC_SOCCER_HTML,
+    MOSAIC_SOLO_AMERICAN_FOOTBALL_BLUE_HTML,
+    MOSAIC_SOLO_AMERICAN_FOOTBALL_GREEN_HTML,
+    MOSAIC_SOLO_BASKETBALL_BLUE_HTML,
+    MOSAIC_SOLO_BASKETBALL_GREEN_HTML,
+    MOSAIC_SOLO_SOCCER_BLUE_HTML,
+    MOSAIC_SOLO_SOCCER_GREEN_HTML,
     get_mosaic_multigrid_html,
 )
 
@@ -251,17 +258,72 @@ from gym_gui.game_docs.Procgen import (
     PROCGEN_STARPILOT_HTML,
 )
 from gym_gui.game_docs.SMAC import (
+    SMAC_1C3S5Z_HTML,
+    SMAC_2C_VS_64ZG_HTML,
+    SMAC_2M_VS_1Z_HTML,
     SMAC_2S3Z_HTML,
+    SMAC_2S_VS_1SC_HTML,
     SMAC_3M_HTML,
     SMAC_3S5Z_HTML,
+    SMAC_3S5Z_VS_3S6Z_HTML,
+    SMAC_3S_VS_3Z_HTML,
+    SMAC_3S_VS_4Z_HTML,
+    SMAC_3S_VS_5Z_HTML,
     SMAC_5M_VS_6M_HTML,
+    SMAC_6H_VS_8Z_HTML,
     SMAC_8M_HTML,
+    SMAC_8M_VS_9M_HTML,
+    SMAC_10M_VS_11M_HTML,
+    SMAC_25M_HTML,
+    SMAC_27M_VS_30M_HTML,
+    SMAC_BANE_VS_BANE_HTML,
+    SMAC_CORRIDOR_HTML,
+    SMAC_MMM_HTML,
     SMAC_MMM2_HTML,
+    SMAC_SO_MANY_BANELING_HTML,
 )
 from gym_gui.game_docs.SMACv2 import (
     SMACV2_PROTOSS_HTML,
+    SMACV2_PROTOSS_5V5_HTML,
+    SMACV2_PROTOSS_10V10_HTML,
+    SMACV2_PROTOSS_10V11_HTML,
+    SMACV2_PROTOSS_20V20_HTML,
+    SMACV2_PROTOSS_20V23_HTML,
     SMACV2_TERRAN_HTML,
+    SMACV2_TERRAN_5V5_HTML,
+    SMACV2_TERRAN_10V10_HTML,
+    SMACV2_TERRAN_10V11_HTML,
+    SMACV2_TERRAN_20V20_HTML,
+    SMACV2_TERRAN_20V23_HTML,
     SMACV2_ZERG_HTML,
+    SMACV2_ZERG_5V5_HTML,
+    SMACV2_ZERG_10V10_HTML,
+    SMACV2_ZERG_10V11_HTML,
+    SMACV2_ZERG_20V20_HTML,
+    SMACV2_ZERG_20V23_HTML,
+)
+from gym_gui.game_docs.GRF import (
+    # Academy (single-agent)
+    GRF_ACADEMY_EMPTY_GOAL_HTML,
+    GRF_ACADEMY_EMPTY_GOAL_CLOSE_HTML,
+    GRF_ACADEMY_RUN_TO_SCORE_HTML,
+    GRF_ACADEMY_RUN_TO_SCORE_WITH_KEEPER_HTML,
+    GRF_ACADEMY_PASS_AND_SHOOT_HTML,
+    GRF_ACADEMY_RUN_PASS_AND_SHOOT_HTML,
+    GRF_ACADEMY_COUNTERATTACK_EASY_HTML,
+    GRF_ACADEMY_COUNTERATTACK_HARD_HTML,
+    GRF_ACADEMY_CORNER_HTML,
+    GRF_ACADEMY_3VS1_WITH_KEEPER_HTML,
+    GRF_ACADEMY_SINGLE_GOAL_VS_LAZY_HTML,
+    # Full match (multi-agent)
+    GRF_1V1_EASY_HTML,
+    GRF_5V5_HTML,
+    GRF_11V11_EASY_HTML,
+    GRF_11V11_HTML,
+    GRF_11V11_HARD_HTML,
+)
+from gym_gui.game_docs.Olympics import (
+    OLYMPICS_WRESTLING_HTML,
 )
 
 try:  # Optional dependency for ViZDoom docs (kept lightweight)
@@ -424,40 +486,179 @@ GAME_INFO[GameId.AMERICAN_CHECKERS] = AMERICAN_CHECKERS_HTML
 GAME_INFO[GameId.RUSSIAN_CHECKERS] = RUSSIAN_CHECKERS_HTML
 GAME_INFO[GameId.INTERNATIONAL_DRAUGHTS] = INTERNATIONAL_DRAUGHTS_HTML
 
-# MOSAIC MultiGrid mappings (competitive team-based environments)
-# Deprecated originals
-GAME_INFO[GameId.MOSAIC_MULTIGRID_SOCCER] = MOSAIC_SOCCER_BASE_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT] = MOSAIC_COLLECT_BASE_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT2VS2] = MOSAIC_COLLECT2VS2_BASE_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT_1VS1] = MOSAIC_OVERVIEW_HTML
-# IndAgObs variants
-GAME_INFO[GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_INDAGOBS] = MOSAIC_SOCCER_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_SOCCER_1VS1_INDAGOBS] = MOSAIC_SOCCER_1VS1_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT_INDAGOBS] = MOSAIC_COLLECT_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT2VS2_INDAGOBS] = MOSAIC_COLLECT2VS2_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT_1VS1_INDAGOBS] = MOSAIC_COLLECT2VS2_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_BASKETBALL_INDAGOBS] = MOSAIC_BASKETBALL_HTML
-# TeamObs variants
-GAME_INFO[GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_TEAMOBS] = MOSAIC_SOCCER_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_COLLECT2VS2_TEAMOBS] = MOSAIC_COLLECT2VS2_HTML
-GAME_INFO[GameId.MOSAIC_MULTIGRID_BASKETBALL_TEAMOBS] = MOSAIC_BASKETBALL_HTML
+# MOSAIC MultiGrid mappings (v7.0.0 — S/BB/AF/C prefix scheme, TeamObs removed)
+# Soccer
+GAME_INFO[GameId.MOSAIC_MULTIGRID_S_1V1_INDAGOBS] = MOSAIC_SOCCER_1VS1_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_S_2V2_INDAGOBS] = MOSAIC_SOCCER_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_S_3V3_INDAGOBS] = MOSAIC_SOCCER_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_S_G_1V0] = MOSAIC_SOLO_SOCCER_GREEN_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_S_B_0V1] = MOSAIC_SOLO_SOCCER_BLUE_HTML
+# Basketball
+GAME_INFO[GameId.MOSAIC_MULTIGRID_BB_1V1_INDAGOBS] = MOSAIC_BASKETBALL_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_BB_2V2_INDAGOBS] = MOSAIC_BASKETBALL_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_BB_3V3_INDAGOBS] = MOSAIC_BASKETBALL_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_BB_G_1V0] = MOSAIC_SOLO_BASKETBALL_GREEN_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_BB_B_0V1] = MOSAIC_SOLO_BASKETBALL_BLUE_HTML
+# American Football
+GAME_INFO[GameId.MOSAIC_MULTIGRID_AF_1V1_INDAGOBS] = MOSAIC_AMERICAN_FOOTBALL_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_AF_2V2_INDAGOBS] = MOSAIC_AMERICAN_FOOTBALL_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_AF_3V3_INDAGOBS] = MOSAIC_AMERICAN_FOOTBALL_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_AF_G_1V0] = MOSAIC_SOLO_AMERICAN_FOOTBALL_GREEN_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_AF_B_0V1] = MOSAIC_SOLO_AMERICAN_FOOTBALL_BLUE_HTML
+# Collect
+GAME_INFO[GameId.MOSAIC_MULTIGRID_C_INDAGOBS] = MOSAIC_COLLECT_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_C_1V1_INDAGOBS] = MOSAIC_COLLECT2VS2_HTML
+GAME_INFO[GameId.MOSAIC_MULTIGRID_C_2V2_INDAGOBS] = MOSAIC_COLLECT2VS2_HTML
+# One-sided cooperative + 4v4 symmetric + asymmetric variants (v7.0.0 full inventory)
+# reuse their sport blurb
+GAME_INFO.update({
+    # Soccer one-sided cooperative
+    GameId.MOSAIC_MULTIGRID_S_G_2V0_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_G_3V0_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_G_4V0_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_G_5V0_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_G_6V0_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_B_0V2_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_B_0V3_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_B_0V4_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_B_0V5_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_B_0V6_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_4V4_INDAGOBS: MOSAIC_SOCCER_HTML,
+    # Soccer asymmetric competitive (v7.0.0)
+    GameId.MOSAIC_MULTIGRID_S_1V2_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_2V1_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_1V3_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_3V1_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_1V4_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_4V1_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_2V3_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_3V2_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_2V4_INDAGOBS: MOSAIC_SOCCER_HTML,
+    GameId.MOSAIC_MULTIGRID_S_4V2_INDAGOBS: MOSAIC_SOCCER_HTML,
+    # Basketball one-sided cooperative
+    GameId.MOSAIC_MULTIGRID_BB_G_2V0_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_G_3V0_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_G_4V0_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_G_5V0_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_G_6V0_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V2_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V3_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V4_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V5_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V6_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_4V4_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    # Basketball asymmetric competitive (v7.0.0)
+    GameId.MOSAIC_MULTIGRID_BB_1V2_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_2V1_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_1V3_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_3V1_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_1V4_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_4V1_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_2V3_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_3V2_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_2V4_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_BB_4V2_INDAGOBS: MOSAIC_BASKETBALL_HTML,
+    # American Football one-sided cooperative
+    GameId.MOSAIC_MULTIGRID_AF_G_2V0_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_G_3V0_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_G_4V0_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_G_5V0_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_G_6V0_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V2_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V3_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V4_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V5_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V6_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_4V4_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    # American Football asymmetric competitive (v7.0.0)
+    GameId.MOSAIC_MULTIGRID_AF_1V2_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_2V1_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_1V3_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_3V1_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_1V4_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_4V1_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_2V3_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_3V2_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_2V4_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+    GameId.MOSAIC_MULTIGRID_AF_4V2_INDAGOBS: MOSAIC_AMERICAN_FOOTBALL_HTML,
+})
 
-# SMAC v1 mappings (hand-designed cooperative micromanagement maps)
+# SMAC v1 mappings (hand-designed cooperative micromanagement maps, all 23 maps)
 GAME_INFO.update({
     GameId.SMAC_3M: SMAC_3M_HTML,
     GameId.SMAC_8M: SMAC_8M_HTML,
+    GameId.SMAC_25M: SMAC_25M_HTML,
     GameId.SMAC_2S3Z: SMAC_2S3Z_HTML,
     GameId.SMAC_3S5Z: SMAC_3S5Z_HTML,
     GameId.SMAC_5M_VS_6M: SMAC_5M_VS_6M_HTML,
+    GameId.SMAC_8M_VS_9M: SMAC_8M_VS_9M_HTML,
+    GameId.SMAC_10M_VS_11M: SMAC_10M_VS_11M_HTML,
+    GameId.SMAC_27M_VS_30M: SMAC_27M_VS_30M_HTML,
+    GameId.SMAC_MMM: SMAC_MMM_HTML,
     GameId.SMAC_MMM2: SMAC_MMM2_HTML,
+    GameId.SMAC_3S5Z_VS_3S6Z: SMAC_3S5Z_VS_3S6Z_HTML,
+    GameId.SMAC_3S_VS_3Z: SMAC_3S_VS_3Z_HTML,
+    GameId.SMAC_3S_VS_4Z: SMAC_3S_VS_4Z_HTML,
+    GameId.SMAC_3S_VS_5Z: SMAC_3S_VS_5Z_HTML,
+    GameId.SMAC_1C3S5Z: SMAC_1C3S5Z_HTML,
+    GameId.SMAC_2M_VS_1Z: SMAC_2M_VS_1Z_HTML,
+    GameId.SMAC_CORRIDOR: SMAC_CORRIDOR_HTML,
+    GameId.SMAC_6H_VS_8Z: SMAC_6H_VS_8Z_HTML,
+    GameId.SMAC_2S_VS_1SC: SMAC_2S_VS_1SC_HTML,
+    GameId.SMAC_SO_MANY_BANELING: SMAC_SO_MANY_BANELING_HTML,
+    GameId.SMAC_BANE_VS_BANE: SMAC_BANE_VS_BANE_HTML,
+    GameId.SMAC_2C_VS_64ZG: SMAC_2C_VS_64ZG_HTML,
 })
 
-# SMACv2 mappings (procedural unit generation)
+# SMACv2 mappings (procedural unit generation: 3 base maps + 15 scenario presets)
 GAME_INFO.update({
     GameId.SMACV2_TERRAN: SMACV2_TERRAN_HTML,
     GameId.SMACV2_PROTOSS: SMACV2_PROTOSS_HTML,
     GameId.SMACV2_ZERG: SMACV2_ZERG_HTML,
+    GameId.SMACV2_TERRAN_5V5: SMACV2_TERRAN_5V5_HTML,
+    GameId.SMACV2_TERRAN_10V10: SMACV2_TERRAN_10V10_HTML,
+    GameId.SMACV2_TERRAN_20V20: SMACV2_TERRAN_20V20_HTML,
+    GameId.SMACV2_TERRAN_10V11: SMACV2_TERRAN_10V11_HTML,
+    GameId.SMACV2_TERRAN_20V23: SMACV2_TERRAN_20V23_HTML,
+    GameId.SMACV2_PROTOSS_5V5: SMACV2_PROTOSS_5V5_HTML,
+    GameId.SMACV2_PROTOSS_10V10: SMACV2_PROTOSS_10V10_HTML,
+    GameId.SMACV2_PROTOSS_20V20: SMACV2_PROTOSS_20V20_HTML,
+    GameId.SMACV2_PROTOSS_10V11: SMACV2_PROTOSS_10V11_HTML,
+    GameId.SMACV2_PROTOSS_20V23: SMACV2_PROTOSS_20V23_HTML,
+    GameId.SMACV2_ZERG_5V5: SMACV2_ZERG_5V5_HTML,
+    GameId.SMACV2_ZERG_10V10: SMACV2_ZERG_10V10_HTML,
+    GameId.SMACV2_ZERG_20V20: SMACV2_ZERG_20V20_HTML,
+    GameId.SMACV2_ZERG_10V11: SMACV2_ZERG_10V11_HTML,
+    GameId.SMACV2_ZERG_20V23: SMACV2_ZERG_20V23_HTML,
 })
+
+
+# GRF Academy mappings (single-agent training drills)
+GAME_INFO.update({
+    GameId.GRF_ACADEMY_EMPTY_GOAL: GRF_ACADEMY_EMPTY_GOAL_HTML,
+    GameId.GRF_ACADEMY_EMPTY_GOAL_CLOSE: GRF_ACADEMY_EMPTY_GOAL_CLOSE_HTML,
+    GameId.GRF_ACADEMY_RUN_TO_SCORE: GRF_ACADEMY_RUN_TO_SCORE_HTML,
+    GameId.GRF_ACADEMY_RUN_TO_SCORE_WITH_KEEPER: GRF_ACADEMY_RUN_TO_SCORE_WITH_KEEPER_HTML,
+    GameId.GRF_ACADEMY_PASS_AND_SHOOT: GRF_ACADEMY_PASS_AND_SHOOT_HTML,
+    GameId.GRF_ACADEMY_RUN_PASS_AND_SHOOT: GRF_ACADEMY_RUN_PASS_AND_SHOOT_HTML,
+    GameId.GRF_ACADEMY_COUNTERATTACK_EASY: GRF_ACADEMY_COUNTERATTACK_EASY_HTML,
+    GameId.GRF_ACADEMY_COUNTERATTACK_HARD: GRF_ACADEMY_COUNTERATTACK_HARD_HTML,
+    GameId.GRF_ACADEMY_CORNER: GRF_ACADEMY_CORNER_HTML,
+    GameId.GRF_ACADEMY_3V1_WITH_KEEPER: GRF_ACADEMY_3VS1_WITH_KEEPER_HTML,
+    GameId.GRF_ACADEMY_SINGLE_GOAL_VS_LAZY: GRF_ACADEMY_SINGLE_GOAL_VS_LAZY_HTML,
+})
+
+# GRF Full Match mappings (multi-agent scenarios)
+GAME_INFO.update({
+    GameId.GRF_1V1_EASY: GRF_1V1_EASY_HTML,
+    GameId.GRF_5V5: GRF_5V5_HTML,
+    GameId.GRF_11V11_EASY: GRF_11V11_EASY_HTML,
+    GameId.GRF_11V11: GRF_11V11_HTML,
+    GameId.GRF_11V11_HARD: GRF_11V11_HARD_HTML,
+})
+
+# Olympics mappings (competitive physics-based sports)
+GAME_INFO[GameId.OLYMPICS_WRESTLING] = OLYMPICS_WRESTLING_HTML
 
 # Griddly mappings (C++ backend grid world platform)
 GAME_INFO.update({
@@ -685,6 +886,113 @@ if _MOSAIC_MALMO_DOCS_AVAILABLE:  # pragma: no cover - experimental
 from gym_gui.game_docs.mosaic_welcome import MULTI_KEYBOARD_HTML
 
 
+def _socialjax_controls_html(env_name: str) -> str:
+    """Build a Controls section HTML table for a SocialJax environment.
+
+    Uses SOCIALJAX_ACTIONS_BY_ENV for action names and a per-env key map
+    so the table always matches the actual keyboard bindings.
+    """
+    from gym_gui.core.adapters.socialjax import SOCIALJAX_ACTIONS_BY_ENV
+
+    # Key display for each action index per env.
+    # lb_foraging has no turning; coop_mining uses egocentric movement.
+    # All other envs share the same base 7-key layout.
+    _KEY_MAP: dict[str, dict[int, str]] = {
+        "lb_foraging": {
+            0: "Space",
+            1: "W or Up",
+            2: "S or Down",
+            3: "A or Left",
+            4: "D or Right",
+            5: "F or Enter",
+        },
+        "coop_mining": {
+            0: "Q",
+            1: "E",
+            2: "A or Left (strafe left)",
+            3: "D or Right (strafe right)",
+            4: "W or Up (forward)",
+            5: "S or Down (backward)",
+            6: "Space",
+            7: "F",
+        },
+    }
+    _BASE_7: dict[int, str] = {
+        0: "Q",
+        1: "E",
+        2: "A or Left",
+        3: "D or Right",
+        4: "W or Up",
+        5: "S or Down",
+        6: "Space",
+        7: "F",
+        8: "Z",
+    }
+
+    actions = SOCIALJAX_ACTIONS_BY_ENV.get(env_name, ())
+    if not actions:
+        return ""
+
+    key_map = _KEY_MAP.get(env_name, _BASE_7)
+
+    rows = ""
+    for idx, label in enumerate(actions):
+        key = key_map.get(idx, "")
+        rows += (
+            f'<tr><td style="border:1px solid #ddd;padding:5px;text-align:center;">'
+            f'<code>{idx}</code></td>'
+            f'<td style="border:1px solid #ddd;padding:5px;">{label}</td>'
+            f'<td style="border:1px solid #ddd;padding:5px;font-family:monospace;">{key}</td></tr>\n'
+        )
+
+    return (
+        "\n<h3>Actions &amp; Keyboard Controls</h3>\n"
+        '<table style="border-collapse:collapse;width:100%;margin-top:8px;">\n'
+        '<tr style="background-color:#f2f2f2;">'
+        '<th style="border:1px solid #ddd;padding:5px;">Index</th>'
+        '<th style="border:1px solid #ddd;padding:5px;">Action</th>'
+        '<th style="border:1px solid #ddd;padding:5px;">Key</th></tr>\n'
+        + rows
+        + "</table>\n"
+    )
+
+
+def _get_socialjax_doc(env_id: str) -> str:
+    """Return HTML documentation for a SocialJax environment.
+
+    Extracts the env name from env_id (e.g. ``"socialjax/coop_mining"`` -> ``"coop_mining"``)
+    and maps it to the corresponding documentation module.
+    """
+    from gym_gui.game_docs.SocialJax import (
+        SOCIALJAX_COIN_GAME_HTML,
+        SOCIALJAX_HARVEST_COMMON_OPEN_HTML,
+        SOCIALJAX_CLEAN_UP_HTML,
+        SOCIALJAX_COOP_MINING_HTML,
+        SOCIALJAX_TERRITORY_OPEN_HTML,
+        SOCIALJAX_PD_ARENA_HTML,
+        SOCIALJAX_MUSHROOMS_HTML,
+        SOCIALJAX_GIFT_HTML,
+        SOCIALJAX_LB_FORAGING_HTML,
+    )
+
+    _DOC_MAP = {
+        "coin_game": SOCIALJAX_COIN_GAME_HTML,
+        "harvest_common_open": SOCIALJAX_HARVEST_COMMON_OPEN_HTML,
+        "clean_up": SOCIALJAX_CLEAN_UP_HTML,
+        "coop_mining": SOCIALJAX_COOP_MINING_HTML,
+        "territory_open": SOCIALJAX_TERRITORY_OPEN_HTML,
+        "pd_arena": SOCIALJAX_PD_ARENA_HTML,
+        "mushrooms": SOCIALJAX_MUSHROOMS_HTML,
+        "gift": SOCIALJAX_GIFT_HTML,
+        "lb_foraging": SOCIALJAX_LB_FORAGING_HTML,
+    }
+
+    env_name = env_id.replace("socialjax/", "")
+    base_html = _DOC_MAP.get(env_name, f"<p>SocialJax environment: <code>{env_name}</code></p>")
+    controls = _socialjax_controls_html(env_name)
+    return base_html + controls
+
+
 def _get_meltingpot_doc(env_id: str) -> str:
     """Return HTML documentation for a MeltingPot substrate.
 
@@ -743,6 +1051,21 @@ def _get_overcooked_doc(env_id: str) -> str:
     layout = env_id.split("/", 1)[-1]
 
     return _DOC_MAP.get(layout, _DEFAULT_DOC)
+
+
+def _get_hemac_doc(env_id: str) -> str:
+    """Return HTML documentation for a HeMAC scenario."""
+    from gym_gui.game_docs.hemac import (
+        get_complex_fleet_html,
+        get_fleet_html,
+        get_simple_fleet_html,
+    )
+
+    if "simple-fleet" in env_id:
+        return get_simple_fleet_html(env_id)
+    if "complex-fleet" in env_id:
+        return get_complex_fleet_html(env_id)
+    return get_fleet_html(env_id)
 
 
 def get_game_info(game_id: GameId) -> str:
@@ -810,42 +1133,17 @@ def get_game_info(game_id: GameId) -> str:
         ini_doc = get_ini_multigrid_html(game_id.value)
         return ini_doc + "\n\n" + MULTI_KEYBOARD_HTML
 
-    # Handle MOSAIC MultiGrid variants dynamically
-    _mosaic_multigrid_variants = (
-        # Deprecated originals
-        GameId.MOSAIC_MULTIGRID_SOCCER,
-        GameId.MOSAIC_MULTIGRID_COLLECT,
-        GameId.MOSAIC_MULTIGRID_COLLECT2VS2,
-        GameId.MOSAIC_MULTIGRID_COLLECT_1VS1,
-        # IndAgObs variants
-        GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_INDAGOBS,
-        GameId.MOSAIC_MULTIGRID_SOCCER_1VS1_INDAGOBS,
-        GameId.MOSAIC_MULTIGRID_COLLECT_INDAGOBS,
-        GameId.MOSAIC_MULTIGRID_COLLECT2VS2_INDAGOBS,
-        GameId.MOSAIC_MULTIGRID_COLLECT_1VS1_INDAGOBS,
-        GameId.MOSAIC_MULTIGRID_BASKETBALL_INDAGOBS,
-        # TeamObs variants
-        GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_TEAMOBS,
-        GameId.MOSAIC_MULTIGRID_COLLECT2VS2_TEAMOBS,
-        GameId.MOSAIC_MULTIGRID_BASKETBALL_TEAMOBS,
-        # American Football variants (v6.2.0)
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_1V1,
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_2V2,
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_3V3,
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_2V2_TEAMOBS,
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_3V3_TEAMOBS,
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_SOLO_GREEN,
-        GameId.MOSAIC_MULTIGRID_AMERICAN_FOOTBALL_SOLO_BLUE,
-    )
-    if game_id in _mosaic_multigrid_variants:
-        mosaic_doc = get_mosaic_multigrid_html(game_id.value)
-        return mosaic_doc + "\n\n" + MULTI_KEYBOARD_HTML
-
-    # Handle MeltingPot variants by substrate name
+    # Handle MOSAIC MultiGrid variants via family check (v6.8.0+)
     from gym_gui.core.enums import ENVIRONMENT_FAMILY_BY_GAME, EnvironmentFamily
     family = ENVIRONMENT_FAMILY_BY_GAME.get(game_id)
+    if family == EnvironmentFamily.MOSAIC_MULTIGRID:
+        mosaic_doc = get_mosaic_multigrid_html(game_id.value)
+        return mosaic_doc + "\n\n" + MULTI_KEYBOARD_HTML
     if family == EnvironmentFamily.MALMOENV:
         return GAME_INFO.get(game_id, _DEFAULT_DOC)
+
+    if family == EnvironmentFamily.SOCIALJAX:
+        return _get_socialjax_doc(game_id.value)
 
     if family == EnvironmentFamily.MELTINGPOT:
         doc = _get_meltingpot_doc(game_id.value)
@@ -854,6 +1152,10 @@ def get_game_info(game_id: GameId) -> str:
     # Handle Overcooked variants by layout name
     if family == EnvironmentFamily.OVERCOOKED:
         doc = _get_overcooked_doc(game_id.value)
+        return doc + "\n\n" + MULTI_KEYBOARD_HTML
+
+    if family == EnvironmentFamily.HEMAC:
+        doc = _get_hemac_doc(game_id.value)
         return doc + "\n\n" + MULTI_KEYBOARD_HTML
 
     # Get base documentation from flat dict
