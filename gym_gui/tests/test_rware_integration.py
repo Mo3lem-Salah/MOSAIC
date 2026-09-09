@@ -118,7 +118,7 @@ class TestRWAREConfig:
     """Test RWAREConfig dataclass has expected defaults."""
 
     def test_config_defaults(self) -> None:
-        from gym_gui.config.game_configs import RWAREConfig
+        from gym_gui.core.ui.game_config.game_configs import RWAREConfig
 
         cfg = RWAREConfig()
         assert cfg.observation_type == "flattened"

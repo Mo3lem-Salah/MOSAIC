@@ -59,15 +59,22 @@ from gym_gui.ui.handlers.env_loaders import (
 
 # Feature handlers (cross-cutting concerns)
 from gym_gui.ui.handlers.features import (
+    AutoStepHandler,
     FastLaneTabHandler,
     GameConfigHandler,
     GodotHandler,
     HumanVsAgentHandler,
+    KeyboardBridgeHandler,
     LogHandler,
     MPCHandler,
     MultiAgentGameHandler,
+    OperatorLifecycleHandler,
+    ParallelMultiAgentHandler,
+    PettingzooHandler,
     PolicyEvaluationHandler,
+    ScriptModeHandler,
     TrainingFormHandler,
+    TrainingLifecycleHandler,
     TrainingMonitorHandler,
 )
 
@@ -88,13 +95,19 @@ __all__ = [
     "SudokuHandler",
     "CheckersHandler",
     # Feature handlers
+    "AutoStepHandler",
     "GameConfigHandler",
     "MPCHandler",
     "GodotHandler",
     "LogHandler",
     "HumanVsAgentHandler",
+    "OperatorLifecycleHandler",
+    "ParallelMultiAgentHandler",
+    "PettingzooHandler",
     "PolicyEvaluationHandler",
+    "ScriptModeHandler",
     "FastLaneTabHandler",
+    "TrainingLifecycleHandler",
     "TrainingMonitorHandler",
     "TrainingFormHandler",
     "MultiAgentGameHandler",

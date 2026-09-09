@@ -339,16 +339,21 @@ class TestOperatorProcessHandleStdoutReader(unittest.TestCase):
             is_running: Whether the process is running.
             stdout_data: Data to return from stdout.readline().
         """
-        import io
+        import os
 
         mock_process = MagicMock(spec=subprocess.Popen)
         mock_process.poll.return_value = None if is_running else 0
 
-        # Create a real StringIO for stdout so select() can work with it
+        # try_read_response() uses os.read() on the raw file descriptor
+        # (see docstring in operator_launcher.py), so the mock stdout must
+        # be backed by a real OS pipe -- io.StringIO has no fileno() and
+        # cannot satisfy that code path.
+        read_fd, write_fd = os.pipe()
         if stdout_data:
-            mock_stdout = io.StringIO(stdout_data)
-        else:
-            mock_stdout = io.StringIO("")
+            os.write(write_fd, stdout_data.encode("utf-8"))
+        os.close(write_fd)
+        mock_stdout = os.fdopen(read_fd, "rb", buffering=0)
+        self.addCleanup(mock_stdout.close)
         mock_process.stdout = mock_stdout
 
         mock_config = MagicMock(spec=OperatorConfig)
@@ -549,8 +554,7 @@ for line in sys.stdin:
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
+            bufsize=0,
         )
 
         mock_config = MagicMock(spec=OperatorConfig)

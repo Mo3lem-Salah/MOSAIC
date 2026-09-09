@@ -242,3 +242,4 @@ message VideoFrameControl {
     bool close = 4;           // Close the stream
   }
 }
+

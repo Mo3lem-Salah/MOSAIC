@@ -19,7 +19,13 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class FastLaneTab(QtWidgets.QWidget):
-    """Qt Quick-based view that renders frames from the fast lane."""
+    """Qt Quick-based view that renders frames from the fast lane.
+
+    Single mode (default): one tile consuming from run_id.
+    Grid mode: grid_limit tiles in a 2-column grid, each consuming from
+    run_id-{i}. Worker env processes must publish to those per-slot names
+    (claim-a-slot pattern) for distinct frames to appear in each tile.
+    """
 
     def __init__(
         self,
@@ -28,6 +34,8 @@ class FastLaneTab(QtWidgets.QWidget):
         *,
         mode_label: str | None = None,
         run_mode: str | None = None,
+        video_mode: str = "single",
+        grid_limit: int = 4,
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -38,24 +46,59 @@ class FastLaneTab(QtWidgets.QWidget):
         self._summary_text = ""
         self._summary_path: Path | None = None
         self._summary_timer: QtCore.QTimer | None = None
-        self._consumer = FastLaneConsumer(run_id, parent=self)
-        self._consumer.frame_ready.connect(self._on_frame_ready)
-        self._consumer.status_changed.connect(self._on_status_changed)
+
+        is_grid = video_mode == "grid" and grid_limit > 1
+        n_tiles = grid_limit if is_grid else 1
+
+        outer = QtWidgets.QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
         self._status_label = QtWidgets.QLabel(f"{self._mode_label}: connecting…", self)
+        outer.addWidget(self._status_label)
 
-        layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        layout.addWidget(self._status_label)
-
-        self._quick = QtQuickWidgets.QQuickWidget(self)
-        self._quick.setResizeMode(QtQuickWidgets.QQuickWidget.ResizeMode.SizeRootObjectToView)
         qml_path = Path(__file__).resolve().parent.parent / "qml" / "FastLaneView.qml"
-        self._quick.engine().addImportPath(str(qml_path.parent))
-        self._quick.setSource(QtCore.QUrl.fromLocalFile(str(qml_path)))
-        layout.addWidget(self._quick, 1)
+        qml_url = QtCore.QUrl.fromLocalFile(str(qml_path))
+        qml_import = str(qml_path.parent)
 
-        self._root_obj = self._quick.rootObject()
+        if is_grid:
+            tile_host = QtWidgets.QWidget(self)
+            tile_layout = QtWidgets.QGridLayout(tile_host)
+            tile_layout.setContentsMargins(0, 0, 0, 0)
+            tile_layout.setSpacing(2)
+            outer.addWidget(tile_host, 1)
+        else:
+            tile_host = self
+            tile_layout = None
+
+        self._consumers: list[FastLaneConsumer] = []
+        self._quicks: list[QtQuickWidgets.QQuickWidget] = []
+        self._root_objs: list = [None] * n_tiles
+
+        for i in range(n_tiles):
+            slot_id = f"{run_id}-{i}" if is_grid else run_id
+            consumer = FastLaneConsumer(slot_id, parent=self)
+            if is_grid:
+                consumer.frame_ready.connect(
+                    lambda ev, idx=i: self._on_tile_frame_ready(ev, idx)
+                )
+            else:
+                consumer.frame_ready.connect(self._on_frame_ready)
+                consumer.status_changed.connect(self._on_status_changed)
+            self._consumers.append(consumer)
+
+            quick = QtQuickWidgets.QQuickWidget(tile_host)
+            quick.setResizeMode(QtQuickWidgets.QQuickWidget.ResizeMode.SizeRootObjectToView)
+            quick.engine().addImportPath(qml_import)
+            quick.setSource(qml_url)
+            self._quicks.append(quick)
+
+            if is_grid:
+                row, col = divmod(i, 2)
+                tile_layout.addWidget(quick, row, col)
+            else:
+                outer.addWidget(quick, 1)
+
         if self._run_mode == "policy_eval":
             self._bootstrap_eval_summary()
 
@@ -63,15 +106,33 @@ class FastLaneTab(QtWidgets.QWidget):
         self._status_label.setText(f"{self._mode_label}: {status}")
 
     def _on_frame_ready(self, event: FastLaneFrameEvent) -> None:
-        if self._root_obj is None:
-            self._root_obj = self._quick.rootObject()
-        if self._root_obj is None:
+        if self._root_objs[0] is None:
+            self._root_objs[0] = self._quicks[0].rootObject()
+        root_obj = self._root_objs[0]
+        if root_obj is None:
             return
         hud_text = event.hud_text
         if self._summary_text:
             hud_text = f"{hud_text}\n{self._summary_text}"
-        self._root_obj.setProperty("hudText", hud_text)
-        canvas = self._root_obj.findChild(QtCore.QObject, "fastlaneCanvas")
+        root_obj.setProperty("hudText", hud_text)
+        canvas = root_obj.findChild(QtCore.QObject, "fastlaneCanvas")
+        if canvas is None:
+            return
+        QtCore.QMetaObject.invokeMethod(
+            canvas,
+            "setFrame",
+            QtCore.Qt.ConnectionType.QueuedConnection,
+            QtCore.Q_ARG(QtGui.QImage, event.image),
+        )
+
+    def _on_tile_frame_ready(self, event: FastLaneFrameEvent, idx: int) -> None:
+        if self._root_objs[idx] is None:
+            self._root_objs[idx] = self._quicks[idx].rootObject()
+        root_obj = self._root_objs[idx]
+        if root_obj is None:
+            return
+        root_obj.setProperty("hudText", event.hud_text)
+        canvas = root_obj.findChild(QtCore.QObject, "fastlaneCanvas")
         if canvas is None:
             return
         QtCore.QMetaObject.invokeMethod(
@@ -86,8 +147,10 @@ class FastLaneTab(QtWidgets.QWidget):
             self._summary_timer.stop()
             self._summary_timer.deleteLater()
             self._summary_timer = None
-        self._consumer.stop()
-        self._quick.setSource(QtCore.QUrl())
+        for consumer in self._consumers:
+            consumer.stop()
+        for quick in self._quicks:
+            quick.setSource(QtCore.QUrl())
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         self.cleanup()

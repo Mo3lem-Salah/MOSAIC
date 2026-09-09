@@ -20,6 +20,7 @@ import psutil
 from PyQt6.QtCore import QTimer, pyqtSignal
 from qtpy import QtCore, QtWidgets
 
+from gym_gui.config.deployment import IS_REMOTE_MODE, vllm_base_url, vllm_health_url, vllm_host
 from gym_gui.config.paths import VAR_MODELS_HF_CACHE, VAR_VLLM_DIR
 from gym_gui.config.settings import get_settings
 from gym_gui.logging_config.helpers import log_constant
@@ -515,8 +516,13 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
 
     def _on_stop_all(self) -> None:
         """Stop all running servers."""
-        for server_id in list(self._processes.keys()):
-            self._stop_server(server_id)
+        if IS_REMOTE_MODE:
+            running = [sid for sid, s in self._server_states.items() if s.status in ("running", "starting")]
+            for server_id in running:
+                self._stop_server(server_id)
+        else:
+            for server_id in list(self._processes.keys()):
+                self._stop_server(server_id)
 
     def _refresh_models(self) -> None:
         """Refresh model list in all server rows."""
@@ -550,6 +556,16 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
         model_path = model_info["model_path"]
         model_id = model_info["model_id"]
 
+        if IS_REMOTE_MODE:
+            # Remote daemon: vLLM runs on the server, not the GUI client.
+            # Poll the remote host's health endpoint instead of spawning locally.
+            state.status = "starting"
+            self._update_row_state(server_id, state)
+            if not self._health_timer.isActive():
+                self._health_timer.start(2000)
+            QTimer.singleShot(2000, lambda: self._check_server_startup(server_id))
+            return
+
         # Record GPU memory before starting to calculate delta later
         gpu_before = self._get_gpu_free_memory()
         self._server_gpu_usage[server_id] = 0.0  # Will be updated after loading
@@ -564,7 +580,7 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
         # Use served-model-name for proper API compatibility
         cmd = [
             "vllm", "serve", model_path,
-            "--host", "127.0.0.1",
+            "--host", vllm_host(),
             "--port", str(port),
             "--served-model-name", model_id,
             "--gpu-memory-utilization", str(per_server_gpu),
@@ -625,6 +641,20 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
         This method ensures all child processes are killed and GPU memory is freed.
         vLLM spawns child processes (EngineCore, etc.) that must be terminated.
         """
+        if IS_REMOTE_MODE:
+            # Remote daemon: can't kill server-side vLLM from the GUI client.
+            # Just stop local health polling and mark as stopped.
+            state = self._server_states.get(server_id)
+            if state:
+                state.status = "stopped"
+                state.memory_gb = 0.0
+                state.error_message = None
+                self._update_row_state(server_id, state)
+            self.server_status_changed.emit(server_id, "stopped", "")
+            if not self._processes:
+                self._health_timer.stop()
+            return
+
         process = self._processes.get(server_id)
         if not process:
             # Even if we don't have a tracked process, try to clean up any orphans
@@ -846,23 +876,24 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
         if not state or state.status != "starting":
             return
 
-        process = self._processes.get(server_id)
-        if not process:
-            return
+        if not IS_REMOTE_MODE:
+            process = self._processes.get(server_id)
+            if not process:
+                return
 
-        # Check if process is still running
-        if process.poll() is not None:
-            # Process exited
-            state.status = "error"
-            state.error_message = "Server process exited unexpectedly"
-            self._update_row_state(server_id, state)
-            self._processes.pop(server_id, None)
-            return
+            # Check if process is still running
+            if process.poll() is not None:
+                # Process exited
+                state.status = "error"
+                state.error_message = "Server process exited unexpectedly"
+                self._update_row_state(server_id, state)
+                self._processes.pop(server_id, None)
+                return
 
         # Try to connect to the server
         import urllib.request
         port = VLLM_BASE_PORT + server_id - 1
-        url = f"http://127.0.0.1:{port}/health"
+        url = vllm_health_url(port)
 
         try:
             response = urllib.request.urlopen(url, timeout=2)
@@ -879,7 +910,7 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
                 self._update_info_label()
 
                 # Emit status change with base URL
-                base_url = f"http://127.0.0.1:{port}/v1"
+                base_url = vllm_base_url(port)
                 self.server_status_changed.emit(server_id, "running", base_url)
                 log_constant(
                     _LOGGER, LOG_VLLM_SERVER_RUNNING,
@@ -903,7 +934,7 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
                 continue
 
             port = VLLM_BASE_PORT + server_id - 1
-            url = f"http://127.0.0.1:{port}/health"
+            url = vllm_health_url(port)
 
             # Try health endpoint first (more reliable than process.poll())
             server_responding = False
@@ -928,7 +959,7 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
                     self._update_row_state(server_id, state)
                     self._update_info_label()
 
-                    base_url = f"http://127.0.0.1:{port}/v1"
+                    base_url = vllm_base_url(port)
                     self.server_status_changed.emit(server_id, "running", base_url)
                     log_constant(
                         _LOGGER, LOG_VLLM_SERVER_RUNNING,
@@ -967,7 +998,7 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
         state = self._server_states.get(server_id)
         if state and state.status == "running":
             port = VLLM_BASE_PORT + server_id - 1
-            return f"http://127.0.0.1:{port}/v1"
+            return vllm_base_url(port)
         return None
 
     def get_server_model_id(self, server_id: int) -> Optional[str]:

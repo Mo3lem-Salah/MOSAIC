@@ -8,7 +8,15 @@ from typing import Any, Dict, Iterable, Optional, Tuple
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import pyqtSignal  # type: ignore[attr-defined]
 
-from gym_gui.config.game_configs import (
+from gym_gui.core.adapters.vizdoom import ViZDoomConfig
+from gym_gui.core.enums import (
+    ENVIRONMENT_FAMILY_BY_GAME,
+    ControlMode,
+    EnvironmentFamily,
+    GameId,
+    get_game_display_name,
+)
+from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_FROZEN_LAKE_V2_CONFIG,
     ALEConfig,
     BipedalWalkerConfig,
@@ -24,19 +32,15 @@ from gym_gui.config.game_configs import (
     SMACConfig,
     TaxiConfig,
 )
-from gym_gui.core.adapters.vizdoom import ViZDoomConfig
-from gym_gui.core.enums import (
-    ENVIRONMENT_FAMILY_BY_GAME,
-    ControlMode,
-    EnvironmentFamily,
-    GameId,
-    get_game_display_name,
-)
 from gym_gui.services.operator import OperatorConfig, OperatorDescriptor
 from gym_gui.telemetry.semconv import (
     TELEMETRY_MODE_DESCRIPTORS,
     TelemetryModeDescriptor,
     TelemetryModes,
+)
+from gym_gui.ui.config_panels.multi_agent.hemac import (
+    ALL_HEMAC_GAME_IDS,
+    build_hemac_controls,
 )
 from gym_gui.ui.config_panels.multi_agent.meltingpot import (
     MELTINGPOT_GAME_IDS,
@@ -62,6 +66,13 @@ from gym_gui.ui.config_panels.multi_agent.smac import (
 )
 from gym_gui.ui.config_panels.multi_agent.smac import (
     ControlCallbacks as SMACControlCallbacks,
+)
+from gym_gui.ui.config_panels.multi_agent.socialjax import (
+    SOCIALJAX_GAME_IDS,
+    build_socialjax_controls,
+)
+from gym_gui.ui.config_panels.multi_agent.socialjax import (
+    ControlCallbacks as SocialJaxControlCallbacks,
 )
 from gym_gui.ui.config_panels.single_agent.ale import (
     ALE_GAME_IDS,
@@ -172,6 +183,8 @@ class ControlPanelWidget(QtWidgets.QWidget):
     step_player_requested = pyqtSignal(str, int)  # Step specific player (player_id, seed)
     reset_all_requested = pyqtSignal(int)  # Reset all operators with seed (fair comparison)
     stop_operators_requested = pyqtSignal()  # Stop all running operators
+    auto_step_requested = pyqtSignal(int, int)  # seed, interval_ms
+    auto_step_stop_requested = pyqtSignal()
     initialize_operator_requested = pyqtSignal(str, object, int)  # operator_id, config, seed - preview env
     human_action_requested = pyqtSignal(str, int)  # operator_id, action - human operator action from action buttons
     train_agent_requested = pyqtSignal(str)  # Start fresh headless training
@@ -801,6 +814,8 @@ class ControlPanelWidget(QtWidgets.QWidget):
         self._operators_tab.stop_operators_requested.connect(self._on_stop_operators_clicked)
         self._operators_tab.initialize_operator_requested.connect(self._on_initialize_operator_requested)
         self._operators_tab.human_action_requested.connect(self._on_human_action_requested)
+        self._operators_tab.auto_step_requested.connect(self.auto_step_requested)
+        self._operators_tab.auto_step_stop_requested.connect(self.auto_step_stop_requested)
 
         # Single-Agent Mode Tab with Workers subtab (training)
         self._single_agent_tab = SingleAgentTab(self)
@@ -888,9 +903,15 @@ class ControlPanelWidget(QtWidgets.QWidget):
         layout.addWidget(self._load_button, 3, 0, 1, 3)
         return group
 
+    _FAMILY_DISPLAY_NAMES: dict[EnvironmentFamily, str] = {
+        EnvironmentFamily.OTHER: "Other",
+        EnvironmentFamily.SOCIALJAX: "SocialJax",
+        EnvironmentFamily.MELTINGPOT: "MeltingPot",
+    }
+
     def _format_family_label(self, family: EnvironmentFamily) -> str:
-        if family == EnvironmentFamily.OTHER:
-            return "Other"
+        if family in self._FAMILY_DISPLAY_NAMES:
+            return self._FAMILY_DISPLAY_NAMES[family]
         return family.value.replace("_", " ").title()
 
     def _family_for_game(self, game: Optional[GameId]) -> EnvironmentFamily:
@@ -1817,6 +1838,19 @@ class ControlPanelWidget(QtWidgets.QWidget):
                 defaults=defaults,
                 callbacks=callbacks,
             )
+        elif self._current_game is not None and self._current_game in SOCIALJAX_GAME_IDS:
+            current_game = self._current_game
+            overrides = self._game_overrides.setdefault(current_game, {})
+            callbacks = SocialJaxControlCallbacks(on_change=self._on_socialjax_config_changed)
+            defaults = None
+            build_socialjax_controls(
+                parent=self._config_group,
+                layout=self._config_layout,
+                game_id=current_game,
+                overrides=overrides,
+                defaults=defaults,
+                callbacks=callbacks,
+            )
         elif self._current_game is not None and self._current_game in MELTINGPOT_GAME_IDS:
             current_game = self._current_game
             overrides = self._game_overrides.setdefault(current_game, {})
@@ -1855,6 +1889,16 @@ class ControlPanelWidget(QtWidgets.QWidget):
                 overrides=overrides,
                 defaults=defaults,
                 callbacks=callbacks,
+            )
+        elif self._current_game is not None and self._current_game in ALL_HEMAC_GAME_IDS:
+            current_game = self._current_game
+            overrides = self._game_overrides.setdefault(current_game, {})
+            build_hemac_controls(
+                parent=self._config_group,
+                layout=self._config_layout,
+                game_id=current_game,
+                overrides=overrides,
+                on_change=self._on_hemac_config_changed,
             )
         elif self._current_game is not None and self._current_game in ALL_RWARE_GAME_IDS:
             current_game = self._current_game
@@ -1908,6 +1952,13 @@ class ControlPanelWidget(QtWidgets.QWidget):
         overrides = self._game_overrides.setdefault(current_game, {})
         overrides[param_name] = value
 
+    def _on_socialjax_config_changed(self, param_name: str, value: object) -> None:
+        current_game = self._current_game
+        if current_game is None:
+            return
+        overrides = self._game_overrides.setdefault(current_game, {})
+        overrides[param_name] = value
+
     def _on_meltingpot_config_changed(self, param_name: str, value: object) -> None:
         current_game = self._current_game
         if current_game is None:
@@ -1928,6 +1979,10 @@ class ControlPanelWidget(QtWidgets.QWidget):
             return
         overrides = self._game_overrides.setdefault(current_game, {})
         overrides[param_name] = value
+
+    def _on_hemac_config_changed(self, overrides: Dict[str, Any]) -> None:
+        """Handle HeMAC config changes (overrides dict already mutated in-place)."""
+        pass  # overrides dict is shared; mutation already applied by build_hemac_controls
 
     def _on_rware_config_changed(self, overrides: Dict[str, Any]) -> None:
         """Handle RWARE config changes (overrides dict already mutated in-place)."""

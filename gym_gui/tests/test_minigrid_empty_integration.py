@@ -13,7 +13,10 @@ import pytest
 
 pytest.importorskip("minigrid")
 
-from gym_gui.config.game_configs import (
+from gym_gui.core.adapters.base import AdapterContext
+from gym_gui.core.adapters.minigrid import MiniGridAdapter
+from gym_gui.core.enums import ControlMode, GameId
+from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_MINIGRID_EMPTY_5x5_CONFIG,
     DEFAULT_MINIGRID_EMPTY_6x6_CONFIG,
     DEFAULT_MINIGRID_EMPTY_8x8_CONFIG,
@@ -22,9 +25,6 @@ from gym_gui.config.game_configs import (
     DEFAULT_MINIGRID_EMPTY_RANDOM_6x6_CONFIG,
     MiniGridConfig,
 )
-from gym_gui.core.adapters.base import AdapterContext
-from gym_gui.core.adapters.minigrid import MiniGridAdapter
-from gym_gui.core.enums import ControlMode, GameId
 from gym_gui.game_docs import get_game_info
 from gym_gui.logging_config.log_constants import (
     LOG_ENV_MINIGRID_BOOT,
@@ -67,7 +67,7 @@ class TestEmptyEnvironmentRegistration:
 
     def test_all_empty_configs_exported(self) -> None:
         """Verify all Empty default configs are exported."""
-        from gym_gui.config import game_configs
+        from gym_gui.core.ui.game_config import game_configs
 
         expected_configs = [
             "DEFAULT_MINIGRID_EMPTY_5x5_CONFIG",

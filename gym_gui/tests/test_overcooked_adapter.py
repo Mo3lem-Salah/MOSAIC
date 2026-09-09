@@ -7,9 +7,9 @@ NOTE: These tests require the overcooked_ai package to be installed:
 import numpy as np
 import pytest
 
-from gym_gui.config.game_configs import DEFAULT_OVERCOOKED_CRAMPED_ROOM_CONFIG, OvercookedConfig
 from gym_gui.core.enums import EnvironmentFamily, GameId
 from gym_gui.core.factories.adapters import create_adapter, get_adapter_cls
+from gym_gui.core.ui.game_config.game_configs import DEFAULT_OVERCOOKED_CRAMPED_ROOM_CONFIG, OvercookedConfig
 
 # Mark all tests as requiring overcooked
 pytestmark = pytest.mark.skipif(

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 TAXI_HTML = (
-    "<h3>Taxi-v3</h3>"
+    "<h3>Taxi-v4</h3>"
     "<p>Pickup and drop off passengers on a small grid with walls.</p>"
     "<h4>Starting state</h4>"
     "<p>The initial state is sampled uniformly from positions where the passenger is not in the taxi and not at their destination. There are 300 possible initial states.</p>"
@@ -34,7 +34,7 @@ TAXI_HTML = (
     "<li>Dropoff → E</li>"
     "</ul>"
     "<h4>Arguments / Config</h4>"
-    "<p><strong>Note:</strong> The current Gymnasium Taxi-v3 environment uses deterministic movement and does not support stochastic variants.</p>"
+    "<p><strong>Note:</strong> The current Gymnasium Taxi-v4 environment uses deterministic movement and does not support stochastic variants.</p>"
     "<p><code>is_raining</code> and <code>fickle_passenger</code> parameters shown in the UI are for reference only and have no effect in the current implementation.</p>"
     "<p>See the docs: <a href=\"https://gymnasium.farama.org/environments/toy_text/taxi/\">Taxi (Gymnasium)</a></p>"
 )

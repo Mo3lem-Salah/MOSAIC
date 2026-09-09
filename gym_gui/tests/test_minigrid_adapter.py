@@ -9,10 +9,10 @@ import pytest
 
 pytest.importorskip("minigrid")
 
-from gym_gui.config.game_configs import MiniGridConfig
 from gym_gui.core.adapters.base import AdapterContext
 from gym_gui.core.adapters.minigrid import MiniGridAdapter
 from gym_gui.core.enums import ControlMode, GameId
+from gym_gui.core.ui.game_config.game_configs import MiniGridConfig
 from gym_gui.logging_config.log_constants import (
     LOG_ENV_MINIGRID_BOOT,
     LOG_ENV_MINIGRID_STEP,

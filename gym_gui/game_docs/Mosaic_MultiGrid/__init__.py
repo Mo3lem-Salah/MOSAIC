@@ -1,15 +1,15 @@
 """MOSAIC MultiGrid game documentation module.
 
 MOSAIC MultiGrid is our custom multi-agent grid-world package built on
-Gymnasium.  It provides competitive team-based environments (Soccer, Collect,
-Basketball) with two execution modes, partial observability, and multi-keyboard
-support.
+Gymnasium.  It provides competitive team-based environments (Soccer, Basketball,
+AmericanFootball, Collect) with two execution modes, partial observability, and
+multi-keyboard support.
 
 Package location: 3rd_party/mosaic_multigrid/
-PyPI: mosaic-multigrid (v6.0.0)
+PyPI: mosaic_multigrid (v6.8.0)
 API: Gymnasium (env.reset(seed=N), 5-tuple step returns)
 
-Action space (v6.0.0):
+Action space (v6.8.0):
     Discrete(8): 0=NOOP, 1=LEFT, 2=RIGHT, 3=FORWARD, 4=PICKUP, 5=DROP, 6=TOGGLE, 7=DONE
     NOOP (0) is a genuine no-op — the agent stays in place and does nothing.
     This enables AEC (sequential physics) mode via GymnasiumMultiAgentAECWrapper.
@@ -26,31 +26,37 @@ Execution modes:
         Requires GymnasiumMultiAgentAECWrapper (gym_gui/services/aec_wrapper.py).
         Only available because NOOP=0 is a genuine no-op (v5.0.0+).
 
-Environments:
-    Deprecated (v1.0.2):
-        - MosaicMultiGrid-Soccer-v0: 2v2 soccer, 15x10 grid
-        - MosaicMultiGrid-Collect-v0: 3-agent individual competition
-        - MosaicMultiGrid-Collect-2vs2-v0: 2v2 team collection
-        - MosaicMultiGrid-Collect-1vs1-v0: 1v1 collection
+v6.8.0 environments (all sports):
 
-    IndAgObs (v4.0.0+) -- RECOMMENDED:
-        - MosaicMultiGrid-Soccer-2vs2-IndAgObs-v0: 2v2 soccer, 16x11 FIFA grid
-        - MosaicMultiGrid-Soccer-1vs1-IndAgObs-v0: 1v1 soccer, same grid
-        - MosaicMultiGrid-Collect-IndAgObs-v0: 3-agent with natural termination
-        - MosaicMultiGrid-Collect-2vs2-IndAgObs-v0: 2v2 with natural termination
-        - MosaicMultiGrid-Collect-1vs1-IndAgObs-v0: 1v1 with natural termination
-        - MosaicMultiGrid-Basketball-3vs3-IndAgObs-v0: 3v3 basketball, court rendering
+Soccer (S) — 16x11 grid:
+  MosaicMultiGrid-S-G-1v0-v1          Solo Green
+  MosaicMultiGrid-S-B-0v1-v1          Solo Blue
+  MosaicMultiGrid-S-1v1-IndAgObs-v1   1v1
+  MosaicMultiGrid-S-2v2-IndAgObs-v1   2v2
+  MosaicMultiGrid-S-3v3-IndAgObs-v1   3v3
+  MosaicMultiGrid-S-G-2v0-IndAgObs-v1
+  MosaicMultiGrid-S-G-3v0-IndAgObs-v1
+  MosaicMultiGrid-S-B-0v2-IndAgObs-v1
+  MosaicMultiGrid-S-B-0v3-IndAgObs-v1
 
-    TeamObs (v4.0.0+) -- SMAC-style teammate awareness:
-        - MosaicMultiGrid-Soccer-2vs2-TeamObs-v0: IndAgObs + teammate features
-        - MosaicMultiGrid-Collect-2vs2-TeamObs-v0: IndAgObs + teammate features
-        - MosaicMultiGrid-Basketball-3vs3-TeamObs-v0: IndAgObs + teammate features
+Basketball (BB) — 19x11 grid:
+  MosaicMultiGrid-BB-G-1v0-v1 / BB-B-0v1-v1
+  MosaicMultiGrid-BB-1v1-IndAgObs-v1
+  MosaicMultiGrid-BB-2v2-IndAgObs-v1
+  MosaicMultiGrid-BB-3v3-IndAgObs-v1
+  MosaicMultiGrid-BB-G-2v0/G-3v0/B-0v2/B-0v3 IndAgObs
 
-    Solo (v6.0.0) -- Single-agent, no opponent, for curriculum pre-training:
-        - MosaicMultiGrid-Soccer-Solo-Green-IndAgObs-v0: 1 Green agent, scores right
-        - MosaicMultiGrid-Soccer-Solo-Blue-IndAgObs-v0: 1 Blue agent, scores left
-        - MosaicMultiGrid-Basketball-Solo-Green-IndAgObs-v0: 1 Green agent, scores right
-        - MosaicMultiGrid-Basketball-Solo-Blue-IndAgObs-v0: 1 Blue agent, scores left
+American Football (AF) — 16x11 grid:
+  MosaicMultiGrid-AF-G-1v0-v1 / AF-B-0v1-v1
+  MosaicMultiGrid-AF-1v1-IndAgObs-v1
+  MosaicMultiGrid-AF-2v2-IndAgObs-v1
+  MosaicMultiGrid-AF-3v3-IndAgObs-v1
+  MosaicMultiGrid-AF-G-2v0/G-3v0/B-0v2/B-0v3 IndAgObs
+
+Collect (C) — 10x10 grid:
+  MosaicMultiGrid-C-IndAgObs-v1
+  MosaicMultiGrid-C-1v1-IndAgObs-v1
+  MosaicMultiGrid-C-2v2-IndAgObs-v1
 """
 
 from __future__ import annotations
@@ -235,7 +241,7 @@ strategy space (pass beats solo-carry, marking beats pass, solo-carry beats mark
 <p style="background-color: #ffecb3; padding: 8px; border-radius: 4px; margin-top: 10px;">
 <strong>Note:</strong> MOSAIC MultiGrid uses <code>NOOP (0)</code> as the idle action when no key is pressed.
 This is different from INI MultiGrid which uses <code>DONE (6)</code>.
-NOOP=0 is a genuine no-op (v5.0.0+, current v6.0.0) and enables AEC mode via <code>GymnasiumMultiAgentAECWrapper</code>.
+NOOP=0 is a genuine no-op (current v6.8.0) and enables AEC mode via <code>GymnasiumMultiAgentAECWrapper</code>.
 </p>
 
 <h4>Improvements over Deprecated Soccer-v0</h4>
@@ -577,12 +583,6 @@ Each agent observes the intermediate state produced by all preceding agents
 in the current round before choosing its action.
 </p>
 
-<h4>TeamObs Variant</h4>
-<p>
-<code>MosaicMultiGrid-Basketball-3vs3-TeamObs-v0</code> extends IndAgObs
-with SMAC-style teammate awareness: each agent's observation includes
-relative positions and states of all teammates.
-</p>
 
 <h4>References</h4>
 <ul>
@@ -599,11 +599,11 @@ relative positions and states of all teammates.
 def _get_american_football_html() -> str:
     """American Football documentation."""
     return """
-<h2>MosaicMultiGrid-AmericanFootball (1v1, 2v2, 3v3)</h2>
+<h2>MosaicMultiGrid-AF (American Football — v6.8.0)</h2>
 
 <p style="background-color: #e8f5e9; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-<strong>NEW</strong> in v6.3.0. American Football with brown field rendering, end zones,
-touchdown scoring, and ball stealing mechanics.
+American Football on a brown
+field with end zones, touchdown scoring, and ball stealing mechanics.
 Gymnasium API: <code>env.reset(seed=N)</code> returns <code>(obs, info)</code>.
 Supports <strong>Parallel</strong> (default) and <strong>AEC</strong> execution modes.
 </p>
@@ -611,23 +611,25 @@ Supports <strong>Parallel</strong> (default) and <strong>AEC</strong> execution 
 <p>
 Multi-agent American Football game on a 16x11 brown field with end zones.
 Two teams compete to score touchdowns by advancing the ball into the opponent's end zone.
-Available in 1v1 (2 agents), 2v2 (4 agents), and 3v3 (6 agents) configurations.
+Available as solo, 1v1, 2v2, 3v3, and cooperative (G-Nv0 / B-0vN) configurations.
 </p>
 
-<h4>Environment Variants</h4>
+<h4>Environment Variants (v6.8.0)</h4>
 <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
     <tr style="background-color: #f0f0f0;">
         <th style="border: 1px solid #ddd; padding: 8px;">Environment</th>
         <th style="border: 1px solid #ddd; padding: 8px;">Agents</th>
         <th style="border: 1px solid #ddd; padding: 8px;">Features</th>
     </tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-1v1-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">2 (1v1)</td><td style="border: 1px solid #ddd; padding: 8px;">Individual play</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-2v2-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">4 (2v2)</td><td style="border: 1px solid #ddd; padding: 8px;">Team coordination</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-3v3-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">6 (3v3)</td><td style="border: 1px solid #ddd; padding: 8px;">Full team play</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-2v2-TeamObs-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">4 (2v2)</td><td style="border: 1px solid #ddd; padding: 8px;">+ teammate awareness</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-3v3-TeamObs-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">6 (3v3)</td><td style="border: 1px solid #ddd; padding: 8px;">+ teammate awareness</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-Solo-Green-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">1</td><td style="border: 1px solid #ddd; padding: 8px;">Solo training (Green)</td></tr>
-    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AmericanFootball-Solo-Blue-v0</code></td><td style="border: 1px solid #ddd; padding: 8px;">1</td><td style="border: 1px solid #ddd; padding: 8px;">Solo training (Blue)</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-G-1v0-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">1</td><td style="border: 1px solid #ddd; padding: 8px;">Solo Green (scores right)</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-B-0v1-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">1</td><td style="border: 1px solid #ddd; padding: 8px;">Solo Blue (scores left)</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-1v1-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">2 (1v1)</td><td style="border: 1px solid #ddd; padding: 8px;">Competitive play</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-2v2-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">4 (2v2)</td><td style="border: 1px solid #ddd; padding: 8px;">Team coordination</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-3v3-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">6 (3v3)</td><td style="border: 1px solid #ddd; padding: 8px;">Full team play</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-G-2v0-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">2</td><td style="border: 1px solid #ddd; padding: 8px;">Green cooperative 2v0</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-G-3v0-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">3</td><td style="border: 1px solid #ddd; padding: 8px;">Green cooperative 3v0</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-B-0v2-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">2</td><td style="border: 1px solid #ddd; padding: 8px;">Blue cooperative 0v2</td></tr>
+    <tr><td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-AF-B-0v3-IndAgObs-v1</code></td><td style="border: 1px solid #ddd; padding: 8px;">3</td><td style="border: 1px solid #ddd; padding: 8px;">Blue cooperative 0v3</td></tr>
 </table>
 
 <h4>Environment Details</h4>
@@ -670,12 +672,6 @@ Available in 1v1 (2 agents), 2v2 (4 agents), and 3v3 (6 agents) configurations.
     <li><strong>Team Rewards:</strong> Shared positive rewards for team members on touchdown</li>
 </ul>
 
-<h4>TeamObs Variant</h4>
-<p>
-<code>MosaicMultiGrid-AmericanFootball-*-TeamObs-v0</code> variants extend IndAgObs
-with SMAC-style teammate awareness: each agent's observation includes
-relative positions, directions, and ball-carrying status of all teammates.
-</p>
 
 <h4>References</h4>
 <ul>
@@ -691,21 +687,21 @@ relative positions, directions, and ball-carrying status of all teammates.
 # ---------------------------------------------------------------------------
 
 def _get_solo_html(env_id: str) -> str:
-    """Solo environment (v6.0.0) documentation."""
-    if "Soccer" in env_id:
+    """Solo environment documentation."""
+    if "Soccer" in env_id or "-S-" in env_id:
         sport = "Soccer"
         grid = "16 x 11 (14 x 9 playable, FIFA 1.54 ratio)"
-    elif "Basketball" in env_id:
+    elif "Basketball" in env_id or "-BB-" in env_id:
         sport = "Basketball"
         grid = "19 x 11 (17 x 9 playable)"
-    elif "AmericanFootball" in env_id:
+    elif "AmericanFootball" in env_id or "-AF-" in env_id:
         sport = "American Football"
         grid = "16 x 11 (14 x 9 playable)"
     else:
         sport = "Unknown"
         grid = "Unknown"
 
-    if "Green" in env_id:
+    if "Green" in env_id or "-G-" in env_id:
         color = "Green"
         team = "1"
         direction = "right"
@@ -776,8 +772,8 @@ def _get_overview_html() -> str:
 
 <p>
 <strong>MOSAIC MultiGrid</strong> is a competitive multi-agent grid-world package
-built on Gymnasium. It provides team-based environments (Soccer, Collect, Basketball)
-with partial observability (3x3 view) and multi-keyboard support.
+built on Gymnasium. It provides team-based environments (Soccer, Basketball,
+AmericanFootball, Collect) with partial observability and multi-keyboard support.
 </p>
 
 <h4>Execution Modes</h4>
@@ -802,7 +798,7 @@ with partial observability (3x3 view) and multi-keyboard support.
     </tr>
 </table>
 <p style="background-color: #ffecb3; padding: 8px; border-radius: 4px;">
-<strong>AEC requires NOOP=0</strong> (mosaic_multigrid v5.0.0+, current v6.0.0). Non-acting agents receive NOOP
+<strong>AEC requires NOOP=0</strong> (mosaic_multigrid current v6.8.0). Non-acting agents receive NOOP
 so only the active agent's action affects the physics. AEC is <em>not available</em> for
 <code>ini_multigrid</code> (action 0 = LEFT) or <code>overcooked</code> (no NOOP).
 </p>
@@ -852,24 +848,6 @@ so only the active agent's action affects the physics. AEC is <em>not available<
         <td style="border: 1px solid #ddd; padding: 8px;">Recommended</td>
     </tr>
     <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-Soccer-2vs2-TeamObs-v0</code></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">4 (2v2)</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Soccer + teammate obs</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">SMAC-style</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-Collect-2vs2-TeamObs-v0</code></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">4 (2v2)</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Collection + teammate obs</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">SMAC-style</td>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-Basketball-3vs3-TeamObs-v0</code></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">6 (3v3)</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">Basketball + teammate obs</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">SMAC-style</td>
-    </tr>
-    <tr>
         <td style="border: 1px solid #ddd; padding: 8px;"><code>MosaicMultiGrid-Soccer-Solo-Green-IndAgObs-v0</code></td>
         <td style="border: 1px solid #ddd; padding: 8px;">1</td>
         <td style="border: 1px solid #ddd; padding: 8px;">Solo soccer (Green, scores right)</td>
@@ -900,11 +878,11 @@ so only the active agent's action affects the physics. AEC is <em>not available<
 Uses <strong>Gymnasium</strong> API:
 <code>env.reset(seed=42)</code> returns <code>(obs, info)</code>.
 <code>env.step(actions)</code> returns <code>(obs, rewards, terminated, truncated, info)</code>.
-Action space v6.0.0: <code>Discrete(8)</code> — 0=NOOP, 1=LEFT, 2=RIGHT, 3=FORWARD, 4=PICKUP, 5=DROP, 6=TOGGLE, 7=DONE.
+Action space v6.8.0: <code>Discrete(8)</code> — 0=NOOP, 1=LEFT, 2=RIGHT, 3=FORWARD, 4=PICKUP, 5=DROP, 6=TOGGLE, 7=DONE.
 </p>
 
 <h4>Source</h4>
-<p><code>3rd_party/mosaic_multigrid/</code> &nbsp;|&nbsp; PyPI: <code>mosaic-multigrid</code></p>
+<p><code>3rd_party/mosaic_multigrid/</code> &nbsp;|&nbsp; PyPI: <code>mosaic_multigrid</code></p>
 """
 
 
@@ -921,8 +899,7 @@ def get_mosaic_multigrid_html(env_id: str) -> str:
     Returns:
         HTML string containing environment documentation.
     """
-    _is_modern = ("IndAgObs" in env_id or "TeamObs" in env_id
-                   or "Enhanced" in env_id)
+    _is_modern = ("IndAgObs" in env_id or "Enhanced" in env_id)
     if "Solo" in env_id:
         return _get_solo_html(env_id)
     elif "Basketball" in env_id:
@@ -943,7 +920,7 @@ def get_mosaic_multigrid_html(env_id: str) -> str:
         if _is_modern:
             return _get_collect_enhanced_html()
         return _get_collect_base_html()
-    elif "AmericanFootball" in env_id:
+    elif "-AF-" in env_id:
         return _get_american_football_html()
     else:
         return _get_overview_html()
@@ -964,8 +941,8 @@ MOSAIC_SOLO_SOCCER_GREEN_HTML = _get_solo_html("MosaicMultiGrid-Soccer-Solo-Gree
 MOSAIC_SOLO_SOCCER_BLUE_HTML = _get_solo_html("MosaicMultiGrid-Soccer-Solo-Blue-IndAgObs-v0")
 MOSAIC_SOLO_BASKETBALL_GREEN_HTML = _get_solo_html("MosaicMultiGrid-Basketball-Solo-Green-IndAgObs-v0")
 MOSAIC_SOLO_BASKETBALL_BLUE_HTML = _get_solo_html("MosaicMultiGrid-Basketball-Solo-Blue-IndAgObs-v0")
-MOSAIC_SOLO_AMERICAN_FOOTBALL_GREEN_HTML = _get_solo_html("MosaicMultiGrid-AmericanFootball-Solo-Green-v0")
-MOSAIC_SOLO_AMERICAN_FOOTBALL_BLUE_HTML = _get_solo_html("MosaicMultiGrid-AmericanFootball-Solo-Blue-v0")
+MOSAIC_SOLO_AMERICAN_FOOTBALL_GREEN_HTML = _get_solo_html("MosaicMultiGrid-AF-G-1v0-v1")
+MOSAIC_SOLO_AMERICAN_FOOTBALL_BLUE_HTML = _get_solo_html("MosaicMultiGrid-AF-B-0v1-v1")
 
 __all__ = [
     "get_mosaic_multigrid_html",

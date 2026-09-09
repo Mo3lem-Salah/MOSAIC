@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package gymgui.inference;
+
+// InferenceService — vLLM server lifecycle on the daemon machine.
+//
+// Used by VLLMServerWidget in remote mode (IS_REMOTE_MODE=True) to start,
+// stop, and observe vLLM servers running on the compute server instead of
+// spawning local subprocesses.
+
+service InferenceService {
+  rpc StartVLLMServer (StartVLLMRequest)  returns (StartVLLMResponse);
+  rpc StopVLLMServer  (StopVLLMRequest)  returns (StopVLLMResponse);
+  // Streams one event per state change; sends a snapshot of all servers on connect.
+  rpc WatchVLLMServers(WatchVLLMRequest) returns (stream VLLMServerEvent);
+}
+
+message StartVLLMRequest {
+  uint32 server_id              = 1;
+  string model_path             = 2;
+  float  gpu_memory_utilization = 3;
+  bool   enforce_eager          = 4;
+}
+
+message StartVLLMResponse {
+  uint32 port    = 1;
+  string status  = 2;   // "starting" | "running" | "error"
+  string message = 3;
+}
+
+message StopVLLMRequest  { uint32 server_id = 1; }
+message StopVLLMResponse { string status    = 1; }
+message WatchVLLMRequest {}
+
+message VLLMServerEvent {
+  uint32 server_id           = 1;
+  uint32 port                = 2;
+  string status              = 3;  // "stopped" | "starting" | "running" | "error"
+  string model_id            = 4;
+  float  gpu_memory_used_gb  = 5;
+  float  gpu_memory_total_gb = 6;
+  string error_message       = 7;
+}

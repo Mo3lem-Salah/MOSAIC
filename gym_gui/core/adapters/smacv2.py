@@ -114,6 +114,20 @@ SMACV2_CAPABILITY_CONFIGS: Dict[str, Dict[str, Any]] = {
 }
 
 
+def _smacv2_extract_player_status(smac_env: Any) -> Dict[str, Any]:
+    """Extract SMAC Dashboard status for SMACv2 (unwraps the capability wrapper).
+
+    SMACv2's ``StarCraftCapabilityEnvWrapper`` proxies ``_obs``/``_controller``
+    via ``__getattr__`` to the inner ``StarCraft2Env``, but
+    ``smac._extract_player_status`` accesses ``smac_env._obs`` directly
+    (bypassing ``__getattr__`` since it's an instance attribute lookup, not
+    a method call), so it needs the actual inner env, not the wrapper.
+    """
+    from gym_gui.core.adapters.smac import _extract_player_status
+    inner_env = getattr(smac_env, "env", smac_env)
+    return _extract_player_status(inner_env)
+
+
 class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
     """Adapter bridging SMACv2's procedural environment to MOSAIC.
 
@@ -134,7 +148,7 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
     ) -> None:
         super().__init__(context)
 
-        from gym_gui.config.game_configs import SMACConfig
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
 
         if config is None:
             config = SMACConfig(map_name="10gen_terran")
@@ -151,9 +165,6 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
         self._episode_limit: int = 0
         self._step_counter: int = 0
         self._camera_center: tuple[float, float] | None = None
-        self._camera_width: float = 24.0
-        self._zoom_level: float = 1.0  # 1.0 = full FOV, 2.0 = 2x zoom in
-        self._pan_offset: tuple[float, float] = (0.0, 0.0)  # world units
 
     @property
     def stepping_paradigm(self) -> SteppingParadigm:  # type: ignore[override]
@@ -221,10 +232,29 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
         from smacv2.env.starcraft2.wrapper import StarCraftCapabilityEnvWrapper
 
         # Build capability_config for procedural generation
-        capability_config = SMACV2_CAPABILITY_CONFIGS.get(
+        capability_config = dict(SMACV2_CAPABILITY_CONFIGS.get(
             self._map_name,
             SMACV2_CAPABILITY_CONFIGS["10gen_terran"],  # fallback
-        )
+        ))
+
+        # Override unit counts if the user configured a specific scenario
+        # size (matches EPyMARL's published scenario table: 5v5, 10v10,
+        # 20v20, 10v11, 20v23, etc.). None (the default) keeps the map's
+        # built-in count (10v10 for all three 10gen_* maps).
+        n_units = getattr(self._config, "smacv2_n_units", None)
+        n_enemies = getattr(self._config, "smacv2_n_enemies", None)
+        if n_units is not None or n_enemies is not None:
+            capability_config = dict(capability_config)  # shallow copy, don't mutate the module-level default
+            resolved_units = n_units if n_units is not None else capability_config["n_units"]
+            resolved_enemies = n_enemies if n_enemies is not None else resolved_units
+            capability_config["n_units"] = resolved_units
+            capability_config["n_enemies"] = resolved_enemies
+            # start_positions.n_enemies must also track the enemy count for
+            # the "surrounded_and_reflect" distribution to place them correctly.
+            start_positions = dict(capability_config.get("start_positions", {}))
+            if start_positions:
+                start_positions["n_enemies"] = resolved_enemies
+                capability_config["start_positions"] = start_positions
 
         env_kwargs: Dict[str, Any] = {
             "capability_config": capability_config,
@@ -251,9 +281,15 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
         # Patch _launch() for 3D GPU rendering before any reset() call.
         # SMACv2 wrapper's __getattr__ proxies to env (StarCraft2Env).
         if getattr(self._config, "renderer", "3d") == "3d":
-            from gym_gui.core.adapters.smac import _patch_launch_for_3d
+            from gym_gui.core.adapters.smac import (
+                _3D_RENDER_SIZE,
+                _patch_launch_for_3d,
+            )
             inner_env = getattr(self._smac_env, "env", self._smac_env)
-            _patch_launch_for_3d(inner_env)
+            _patch_launch_for_3d(
+                inner_env,
+                render_size=getattr(self._config, "render_resolution", _3D_RENDER_SIZE),
+            )
 
         env_info = self._smac_env.get_env_info()
         self._n_agents = env_info["n_agents"]
@@ -291,8 +327,6 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
 
         self._smac_env.reset()
         self._step_counter = 0
-        self._pan_offset = (0.0, 0.0)  # Reset pan for new episode
-        self._zoom_level = 1.0
 
         # Cache playable area after first reset (SC2 is now running)
         if not hasattr(self, "_playable_area"):
@@ -306,13 +340,28 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
                 my = getattr(getattr(self._smac_env, "env", self._smac_env), "map_y", 32)
                 self._playable_area = (0.0, 0.0, float(mx), float(my))
 
-        # Center 3D camera on the battle area (default camera misses SMAC units)
-        if getattr(self._config, "renderer", "3d") == "3d":
-            from gym_gui.core.adapters.smac import _center_camera_on_units
+        # Center 3D camera on the map's fixed midpoint (default camera sits
+        # at world origin (0,0), which typically misses the battle area).
+        # Skippable via SMACConfig.camera_auto_center=False. The camera's
+        # field of view is fixed per-map by the SC2 engine and not
+        # adjustable (see smac.py module docstring for the full
+        # investigation into why ``render.width`` has no effect), so this
+        # always starts centered on the map as a stable reference point;
+        # the user can pan from there with the mouse.
+        if (
+            getattr(self._config, "renderer", "3d") == "3d"
+            and getattr(self._config, "camera_auto_center", True)
+        ):
+            from gym_gui.core.adapters.smac import _center_camera_on_map
             inner_env = getattr(self._smac_env, "env", self._smac_env)
-            center = _center_camera_on_units(inner_env)
+            center = _center_camera_on_map(inner_env)
             if center is not None:
                 self._camera_center = center
+            else:
+                _LOGGER.debug(
+                    "SMACv2 camera auto-center failed (no units observed yet or "
+                    "camera_move action rejected); leaving default camera position."
+                )
 
         # Re-query env info -- SMACv2 can change agent/action counts per episode
         env_info = self._smac_env.get_env_info()
@@ -350,6 +399,7 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
                 "avail_actions": avail_actions,
                 "action_masks": avail_actions,
                 "step": 0,
+                **_smacv2_extract_player_status(self._smac_env),
             },
         )
 
@@ -381,6 +431,7 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
             "battle_won": battle_won,
             "step": self._step_counter,
         }
+        step_info.update(_smacv2_extract_player_status(self._smac_env))
         step_info.update(info)
 
         self.log_constant(
@@ -446,6 +497,15 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
         try:
             # SMACv2 wrapper proxies _obs via __getattr__ to inner env
             env_inner = getattr(self._smac_env, "env", self._smac_env)
+
+            if getattr(self._config, "unit_health_bars", True):
+                # Debug draws (like camera moves) take effect on the NEXT
+                # observation, so draw first, then re-observe, so the
+                # frame we extract pixels from already has the bars in it.
+                from gym_gui.core.adapters.smac import _draw_unit_health_bars
+                _draw_unit_health_bars(env_inner)
+                env_inner._obs = env_inner._controller.observe()
+
             obs = env_inner._obs
             if obs is None:
                 return None
@@ -461,12 +521,23 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
             )
             if channels == 4:
                 frame = frame[:, :, :3]
-            # Apply software pan + zoom (numpy crop, no SC2 API calls)
-            if self._zoom_level > 1.0 or self._pan_offset != (0.0, 0.0):
-                from gym_gui.core.adapters.smac import _apply_pan_zoom
-                frame = _apply_pan_zoom(
-                    frame, self._pan_offset, self._zoom_level,
-                    self._camera_width,
+            if getattr(self._config, "minimap_inset", True):
+                from gym_gui.core.adapters.smac import _composite_minimap_inset
+                frame = _composite_minimap_inset(
+                    frame,
+                    obs,
+                    getattr(self, "_playable_area", None),
+                    self._camera_center,
+                    asset_family="SMACv2",
+                )
+            if getattr(self._config, "smac_hud", True):
+                from gym_gui.core.adapters.smac import _composite_resource_hud
+                status = _smacv2_extract_player_status(self._smac_env)
+                frame = _composite_resource_hud(
+                    frame,
+                    status.get("player_common"),
+                    status.get("ally_unit_names"),
+                    asset_family="SMACv2",
                 )
             return {
                 "mode": RenderMode.RGB_ARRAY.value,
@@ -559,41 +630,41 @@ class SMACv2Adapter(EnvironmentAdapter[List[np.ndarray], List[int]]):
     # ─────────────────────────────────────────────────────────────────
     # 3D Camera control (mouse panning in the render widget)
     # ─────────────────────────────────────────────────────────────────
+    #
+    # NOTE: there is no engine-level zoom/FOV control available during live
+    # gameplay -- see the identical note in ``gym_gui.core.adapters.smac``
+    # (module used for the underlying ``_move_camera_to`` helper) for the
+    # full investigation into why ``render.width`` and
+    # ``ObserverAction.camera_move`` distance don't work here.
 
     def move_camera(self, dx_world: float, dy_world: float) -> None:
-        """Pan the viewport by a world-coordinate delta (pure numpy).
+        """Pan the real in-engine 3D camera via ``ActionRaw.camera_move``.
 
-        Does NOT call SC2's ``ActionRaw.camera_move`` because SMAC's
-        controller does not reliably support camera moves during gameplay.
-        Instead, the pan offset is applied as a numpy crop in ``_render_3d()``.
+        This sends an actual SC2 API action and re-observes, so it moves
+        the true render camera (not a numpy crop of a static frame).
+        Clamped to stay within the map's playable area.
 
         Args:
             dx_world: Pan right (positive) or left (negative) in world units.
             dy_world: Pan up (positive) or down (negative) in world units.
         """
-        px, py = self._pan_offset
-        max_pan = self._camera_width / 2.0
-        self._pan_offset = (
-            max(-max_pan, min(max_pan, px + dx_world)),
-            max(-max_pan, min(max_pan, py + dy_world)),
-        )
+        if self._smac_env is None:
+            return
+        from gym_gui.core.adapters.smac import _move_camera_to
 
-    def zoom_camera(self, direction: int) -> None:
-        """Adjust the software zoom level.
+        inner_env = getattr(self._smac_env, "env", self._smac_env)
+        cx, cy = self._camera_center or (0.0, 0.0)
+        new_cx = cx + dx_world
+        new_cy = cy + dy_world
 
-        Args:
-            direction: +1 to zoom in, -1 to zoom out.
-        """
-        step = 0.15  # ~15% per scroll notch
-        if direction > 0:
-            self._zoom_level = min(4.0, self._zoom_level * (1.0 + step))
-        else:
-            self._zoom_level = max(1.0, self._zoom_level * (1.0 - step))
+        pa = getattr(self, "_playable_area", None)
+        if pa is not None:
+            x0, y0, x1, y1 = pa
+            new_cx = max(x0, min(x1, new_cx))
+            new_cy = max(y0, min(y1, new_cy))
 
-    @property
-    def camera_width(self) -> float:
-        """Effective world units visible (base width / zoom)."""
-        return self._camera_width / self._zoom_level
+        _move_camera_to(inner_env, new_cx, new_cy)
+        self._camera_center = (new_cx, new_cy)
 
     def build_step_state(
         self,
@@ -667,7 +738,7 @@ class SMACv2TerranAdapter(SMACv2Adapter):
     id = GameId.SMACV2_TERRAN.value
 
     def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
-        from gym_gui.config.game_configs import SMACConfig
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
         if config is None:
             config = SMACConfig(map_name="10gen_terran")
         super().__init__(context, config=config)
@@ -679,7 +750,7 @@ class SMACv2ProtossAdapter(SMACv2Adapter):
     id = GameId.SMACV2_PROTOSS.value
 
     def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
-        from gym_gui.config.game_configs import SMACConfig
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
         if config is None:
             config = SMACConfig(map_name="10gen_protoss")
         super().__init__(context, config=config)
@@ -691,9 +762,196 @@ class SMACv2ZergAdapter(SMACv2Adapter):
     id = GameId.SMACV2_ZERG.value
 
     def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
-        from gym_gui.config.game_configs import SMACConfig
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
         if config is None:
             config = SMACConfig(map_name="10gen_zerg")
+        super().__init__(context, config=config)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# EPyMARL scenario preset adapters (n_units vs n_enemies overrides on top
+# of the same 3 base maps above). Matches the published scenario table in
+# https://github.com/uoe-agents/epymarl exactly.
+# ─────────────────────────────────────────────────────────────────────────
+
+
+class SMACv2Terran5v5Adapter(SMACv2Adapter):
+    """5 vs 5 random Terran units (EPyMARL: protoss_5_vs_5-style, Terran variant)."""
+
+    id = GameId.SMACV2_TERRAN_5V5.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_terran", smacv2_n_units=5, smacv2_n_enemies=5)
+        super().__init__(context, config=config)
+
+
+class SMACv2Terran10v10Adapter(SMACv2Adapter):
+    """10 vs 10 random Terran units (same as SMACV2_TERRAN, explicit preset name)."""
+
+    id = GameId.SMACV2_TERRAN_10V10.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_terran", smacv2_n_units=10, smacv2_n_enemies=10)
+        super().__init__(context, config=config)
+
+
+class SMACv2Terran20v20Adapter(SMACv2Adapter):
+    """20 vs 20 random Terran units."""
+
+    id = GameId.SMACV2_TERRAN_20V20.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_terran", smacv2_n_units=20, smacv2_n_enemies=20)
+        super().__init__(context, config=config)
+
+
+class SMACv2Terran10v11Adapter(SMACv2Adapter):
+    """10 vs 11 random Terran units (asymmetric, harder)."""
+
+    id = GameId.SMACV2_TERRAN_10V11.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_terran", smacv2_n_units=10, smacv2_n_enemies=11)
+        super().__init__(context, config=config)
+
+
+class SMACv2Terran20v23Adapter(SMACv2Adapter):
+    """20 vs 23 random Terran units (asymmetric, harder)."""
+
+    id = GameId.SMACV2_TERRAN_20V23.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_terran", smacv2_n_units=20, smacv2_n_enemies=23)
+        super().__init__(context, config=config)
+
+
+class SMACv2Protoss5v5Adapter(SMACv2Adapter):
+    """5 vs 5 random Protoss units."""
+
+    id = GameId.SMACV2_PROTOSS_5V5.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_protoss", smacv2_n_units=5, smacv2_n_enemies=5)
+        super().__init__(context, config=config)
+
+
+class SMACv2Protoss10v10Adapter(SMACv2Adapter):
+    """10 vs 10 random Protoss units."""
+
+    id = GameId.SMACV2_PROTOSS_10V10.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_protoss", smacv2_n_units=10, smacv2_n_enemies=10)
+        super().__init__(context, config=config)
+
+
+class SMACv2Protoss20v20Adapter(SMACv2Adapter):
+    """20 vs 20 random Protoss units."""
+
+    id = GameId.SMACV2_PROTOSS_20V20.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_protoss", smacv2_n_units=20, smacv2_n_enemies=20)
+        super().__init__(context, config=config)
+
+
+class SMACv2Protoss10v11Adapter(SMACv2Adapter):
+    """10 vs 11 random Protoss units (asymmetric, harder)."""
+
+    id = GameId.SMACV2_PROTOSS_10V11.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_protoss", smacv2_n_units=10, smacv2_n_enemies=11)
+        super().__init__(context, config=config)
+
+
+class SMACv2Protoss20v23Adapter(SMACv2Adapter):
+    """20 vs 23 random Protoss units (asymmetric, harder)."""
+
+    id = GameId.SMACV2_PROTOSS_20V23.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_protoss", smacv2_n_units=20, smacv2_n_enemies=23)
+        super().__init__(context, config=config)
+
+
+class SMACv2Zerg5v5Adapter(SMACv2Adapter):
+    """5 vs 5 random Zerg units."""
+
+    id = GameId.SMACV2_ZERG_5V5.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_zerg", smacv2_n_units=5, smacv2_n_enemies=5)
+        super().__init__(context, config=config)
+
+
+class SMACv2Zerg10v10Adapter(SMACv2Adapter):
+    """10 vs 10 random Zerg units."""
+
+    id = GameId.SMACV2_ZERG_10V10.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_zerg", smacv2_n_units=10, smacv2_n_enemies=10)
+        super().__init__(context, config=config)
+
+
+class SMACv2Zerg20v20Adapter(SMACv2Adapter):
+    """20 vs 20 random Zerg units."""
+
+    id = GameId.SMACV2_ZERG_20V20.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_zerg", smacv2_n_units=20, smacv2_n_enemies=20)
+        super().__init__(context, config=config)
+
+
+class SMACv2Zerg10v11Adapter(SMACv2Adapter):
+    """10 vs 11 random Zerg units (asymmetric, harder)."""
+
+    id = GameId.SMACV2_ZERG_10V11.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_zerg", smacv2_n_units=10, smacv2_n_enemies=11)
+        super().__init__(context, config=config)
+
+
+class SMACv2Zerg20v23Adapter(SMACv2Adapter):
+    """20 vs 23 random Zerg units (asymmetric, harder)."""
+
+    id = GameId.SMACV2_ZERG_20V23.value
+
+    def __init__(self, context: AdapterContext | None = None, *, config: Any | None = None) -> None:
+        from gym_gui.core.ui.game_config.game_configs import SMACConfig
+        if config is None:
+            config = SMACConfig(map_name="10gen_zerg", smacv2_n_units=20, smacv2_n_enemies=23)
         super().__init__(context, config=config)
 
 
@@ -705,6 +963,21 @@ SMACV2_ADAPTERS: Dict[GameId, type[SMACv2Adapter]] = {
     GameId.SMACV2_TERRAN: SMACv2TerranAdapter,
     GameId.SMACV2_PROTOSS: SMACv2ProtossAdapter,
     GameId.SMACV2_ZERG: SMACv2ZergAdapter,
+    GameId.SMACV2_TERRAN_5V5: SMACv2Terran5v5Adapter,
+    GameId.SMACV2_TERRAN_10V10: SMACv2Terran10v10Adapter,
+    GameId.SMACV2_TERRAN_20V20: SMACv2Terran20v20Adapter,
+    GameId.SMACV2_TERRAN_10V11: SMACv2Terran10v11Adapter,
+    GameId.SMACV2_TERRAN_20V23: SMACv2Terran20v23Adapter,
+    GameId.SMACV2_PROTOSS_5V5: SMACv2Protoss5v5Adapter,
+    GameId.SMACV2_PROTOSS_10V10: SMACv2Protoss10v10Adapter,
+    GameId.SMACV2_PROTOSS_20V20: SMACv2Protoss20v20Adapter,
+    GameId.SMACV2_PROTOSS_10V11: SMACv2Protoss10v11Adapter,
+    GameId.SMACV2_PROTOSS_20V23: SMACv2Protoss20v23Adapter,
+    GameId.SMACV2_ZERG_5V5: SMACv2Zerg5v5Adapter,
+    GameId.SMACV2_ZERG_10V10: SMACv2Zerg10v10Adapter,
+    GameId.SMACV2_ZERG_20V20: SMACv2Zerg20v20Adapter,
+    GameId.SMACV2_ZERG_10V11: SMACv2Zerg10v11Adapter,
+    GameId.SMACV2_ZERG_20V23: SMACv2Zerg20v23Adapter,
 }
 
 __all__ = [
@@ -715,4 +988,19 @@ __all__ = [
     "SMACv2TerranAdapter",
     "SMACv2ProtossAdapter",
     "SMACv2ZergAdapter",
+    "SMACv2Terran5v5Adapter",
+    "SMACv2Terran10v10Adapter",
+    "SMACv2Terran20v20Adapter",
+    "SMACv2Terran10v11Adapter",
+    "SMACv2Terran20v23Adapter",
+    "SMACv2Protoss5v5Adapter",
+    "SMACv2Protoss10v10Adapter",
+    "SMACv2Protoss20v20Adapter",
+    "SMACv2Protoss10v11Adapter",
+    "SMACv2Protoss20v23Adapter",
+    "SMACv2Zerg5v5Adapter",
+    "SMACv2Zerg10v10Adapter",
+    "SMACv2Zerg20v20Adapter",
+    "SMACv2Zerg10v11Adapter",
+    "SMACv2Zerg20v23Adapter",
 ]

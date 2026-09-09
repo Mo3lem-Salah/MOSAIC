@@ -46,10 +46,12 @@ def create_default_renderer_registry() -> RendererRegistry:
 
     from gym_gui.rendering.strategies.grid import GridRendererStrategy
     from gym_gui.rendering.strategies.rgb import RgbRendererStrategy
+    from gym_gui.rendering.strategies.socialjax_grid import SocialJaxGridStrategy
 
     registry = RendererRegistry()
     registry.register(RenderMode.GRID, lambda parent=None: GridRendererStrategy(parent=parent))
     registry.register(RenderMode.RGB_ARRAY, lambda parent=None: RgbRendererStrategy(parent=parent))
+    registry.register(RenderMode.SOCIALJAX_GRID, lambda parent=None: SocialJaxGridStrategy(parent=parent))
 
     # Optional: MosaicMalmo renderer (experimental)
     try:

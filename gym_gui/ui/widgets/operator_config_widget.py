@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from PyQt6.QtCore import pyqtSignal  # type: ignore[attr-defined]
 from qtpy import QtCore, QtGui, QtWidgets
 
+from gym_gui.config.deployment import IS_REMOTE_MODE, vllm_base_url
 from gym_gui.config.paths import VAR_MODELS_HF_CACHE
 from gym_gui.constants.constants_operator import (
     BALROG_DEFAULT_TASK,
@@ -183,7 +184,7 @@ ENV_FAMILIES: Dict[str, Tuple[str, ...]] = {
     "textworld": ("treasure_hunter", "the_cooking_game", "coin_collector"),
     "toytext": (
         "FrozenLake-v1",
-        "Taxi-v3",
+        "Taxi-v4",
         "CliffWalking-v1",
         "Blackjack-v1",
     ),
@@ -201,25 +202,45 @@ ENV_FAMILIES: Dict[str, Tuple[str, ...]] = {
         "draughts/russian_checkers",     # Custom: 8x8, men capture backward, flying kings
         "draughts/international_draughts",  # Custom: 10x10, backward captures, flying kings
     ),
-    # mosaic_multigrid: competitive team sports (view_size=3, simultaneous stepping)
-    # PyPI: https://pypi.org/project/mosaic-multigrid/
+    # mosaic_multigrid: competitive team sports (view_size=7, simultaneous stepping)
+    # PyPI: https://pypi.org/project/mosaic_multigrid/
+    # IDs follow GameId enum in gym_gui/core/enums.py — do NOT hardcode display names here;
+    # _mosaic_display_name() maps abbreviations to human-readable sport names at render time.
     "mosaic_multigrid": (
-        # Original (Deprecated)
-        "MosaicMultiGrid-Soccer-v0",
-        "MosaicMultiGrid-Collect-v0",
-        "MosaicMultiGrid-Collect-2vs2-v0",
-        "MosaicMultiGrid-Collect-1vs1-v0",
-        # IndAgObs v4.0.0 (Recommended for RL training)
-        "MosaicMultiGrid-Soccer-2vs2-IndAgObs-v0",
-        "MosaicMultiGrid-Soccer-1vs1-IndAgObs-v0",
-        "MosaicMultiGrid-Collect-IndAgObs-v0",
-        "MosaicMultiGrid-Collect-2vs2-IndAgObs-v0",
-        "MosaicMultiGrid-Collect-1vs1-IndAgObs-v0",
-        "MosaicMultiGrid-Basketball-3vs3-IndAgObs-v0",
-        # TeamObs v4.0.0 (SMAC-style teammate awareness)
-        "MosaicMultiGrid-Soccer-2vs2-TeamObs-v0",
-        "MosaicMultiGrid-Collect-2vs2-TeamObs-v0",
-        "MosaicMultiGrid-Basketball-3vs3-TeamObs-v0",
+        # ── Soccer (S) ──────────────────────────────────────────────────────
+        "MultiGridSports-S-G-1v0-v1",
+        "MultiGridSports-S-B-0v1-v1",
+        "MultiGridSports-S-1v1-IndAgObs-v1",
+        "MultiGridSports-S-2v2-IndAgObs-v1",
+        "MultiGridSports-S-3v3-IndAgObs-v1",
+        "MultiGridSports-S-G-2v0-IndAgObs-v1",
+        "MultiGridSports-S-G-3v0-IndAgObs-v1",
+        "MultiGridSports-S-B-0v2-IndAgObs-v1",
+        "MultiGridSports-S-B-0v3-IndAgObs-v1",
+        # ── Basketball (BB) ─────────────────────────────────────────────────
+        "MultiGridSports-BB-G-1v0-v1",
+        "MultiGridSports-BB-B-0v1-v1",
+        "MultiGridSports-BB-1v1-IndAgObs-v1",
+        "MultiGridSports-BB-2v2-IndAgObs-v1",
+        "MultiGridSports-BB-3v3-IndAgObs-v1",
+        "MultiGridSports-BB-G-2v0-IndAgObs-v1",
+        "MultiGridSports-BB-G-3v0-IndAgObs-v1",
+        "MultiGridSports-BB-B-0v2-IndAgObs-v1",
+        "MultiGridSports-BB-B-0v3-IndAgObs-v1",
+        # ── American Football (AF) ──────────────────────────────────────────
+        "MultiGridSports-AF-G-1v0-v1",
+        "MultiGridSports-AF-B-0v1-v1",
+        "MultiGridSports-AF-1v1-IndAgObs-v1",
+        "MultiGridSports-AF-2v2-IndAgObs-v1",
+        "MultiGridSports-AF-3v3-IndAgObs-v1",
+        "MultiGridSports-AF-G-2v0-IndAgObs-v1",
+        "MultiGridSports-AF-G-3v0-IndAgObs-v1",
+        "MultiGridSports-AF-B-0v2-IndAgObs-v1",
+        "MultiGridSports-AF-B-0v3-IndAgObs-v1",
+        # ── Collect (C) ─────────────────────────────────────────────────────
+        "MultiGridSports-C-IndAgObs-v1",
+        "MultiGridSports-C-1v1-IndAgObs-v1",
+        "MultiGridSports-C-2v2-IndAgObs-v1",
     ),
     # ini_multigrid: cooperative exploration environments (view_size=7, simultaneous stepping)
     # GitHub: https://github.com/ini/multigrid
@@ -237,6 +258,34 @@ ENV_FAMILIES: Dict[str, Tuple[str, ...]] = {
         "MultiGrid-LockedHallway-6Rooms-v0",
         "MultiGrid-BlockedUnlockPickup-v0",
         "MultiGrid-Playground-v0",
+    ),
+    # RWARE (Robotic Warehouse): cooperative multi-agent shelf delivery (simultaneous stepping)
+    # PyPI: https://pypi.org/project/rware/ — IDs follow GameId enum in gym_gui/core/enums.py
+    "rware": (
+        "rware-tiny-2ag-v2",
+        "rware-tiny-4ag-v2",
+        "rware-small-2ag-v2",
+        "rware-small-4ag-v2",
+        "rware-medium-2ag-v2",
+        "rware-medium-4ag-v2",
+        "rware-medium-4ag-easy-v2",
+        "rware-medium-4ag-hard-v2",
+        "rware-large-4ag-v2",
+        "rware-large-4ag-hard-v2",
+        "rware-large-8ag-v2",
+        "rware-large-8ag-hard-v2",
+    ),
+    # SocialJax sequential social dilemma environments (FLAIROx, pure JAX)
+    "socialjax": (
+        "socialjax/coin_game",
+        "socialjax/harvest_common_open",
+        "socialjax/clean_up",
+        "socialjax/coop_mining",
+        "socialjax/territory_open",
+        "socialjax/pd_arena",
+        "socialjax/mushrooms",
+        "socialjax/gift",
+        "socialjax/lb_foraging",
     ),
     # Melting Pot multi-agent social scenarios (DeepMind)
     "meltingpot": (),  # Loaded dynamically from available substrates
@@ -256,7 +305,7 @@ def _auto_detect_agent_count(env_family: str, env_id: str) -> int:
 
     Args:
         env_family: Environment family (e.g., "pettingzoo", "mosaic_multigrid")
-        env_id: Environment ID (e.g., "chess_v6", "MosaicMultiGrid-Soccer-v0")
+        env_id: Environment ID (e.g., "chess_v6", "MultiGridSports-Soccer-v0")
 
     Returns:
         Number of agents, or 0 if detection fails or single-agent
@@ -288,6 +337,22 @@ def _auto_detect_agent_count(env_family: str, env_id: str) -> int:
             num_agents = getattr(adapter, 'num_agents', 0)
             adapter.close()
             return num_agents
+
+        elif env_family == "socialjax":
+            # SocialJax: variable agent count per environment; use adapter to query
+            from gym_gui.core.enums import GameId
+            from gym_gui.core.factories.adapters import create_adapter
+
+            try:
+                game_id = GameId(env_id)
+                adapter = create_adapter(game_id)
+                adapter.load()
+                num_agents = getattr(adapter, '_agents', [])
+                count = len(num_agents) if isinstance(num_agents, list) else getattr(adapter, 'num_agents', 0)
+                adapter.close()
+                return count
+            except (ValueError, Exception):
+                return 0
 
         elif env_family == "meltingpot":
             # Melting Pot: variable agent count (2-16)
@@ -325,6 +390,20 @@ def _auto_detect_agent_count(env_family: str, env_id: str) -> int:
         return 0
 
 
+# Per-env defaults for SocialJax in the operator config: (num_agents, num_inner_steps)
+_SOCIALJAX_OPERATOR_DEFAULTS: Dict[str, tuple[int, int]] = {
+    "coin_game":           (2,  1000),
+    "harvest_common_open": (7,  1000),
+    "clean_up":            (7,  1000),
+    "coop_mining":         (4,  1000),
+    "territory_open":      (9,  1000),
+    "pd_arena":            (2,  50),
+    "mushrooms":           (6,  1000),
+    "gift":                (6,  1000),
+    "lb_foraging":         (4,  100),
+}
+
+
 def _get_execution_mode(env_family: str) -> str:
     """Get the default execution mode for an environment family.
 
@@ -336,7 +415,7 @@ def _get_execution_mode(env_family: str) -> str:
     """
     if env_family in ("pettingzoo", "pettingzoo_classic", "open_spiel"):
         return "aec"  # Turn-based by default
-    elif env_family in ("mosaic_multigrid", "meltingpot"):
+    elif env_family in ("mosaic_multigrid", "meltingpot", "socialjax"):
         return "parallel"  # Simultaneous by default — but AEC is also supported
     elif env_family in ("ini_multigrid", "overcooked"):
         return "parallel"  # Simultaneous only (no NOOP action — AEC not available)
@@ -353,7 +432,7 @@ LLM_ENV_FAMILIES = tuple(ENV_FAMILIES.keys())
 # Maps client_name -> (display_name, requires_api_key, default_base_url)
 LLM_CLIENTS: Dict[str, Tuple[str, bool, Optional[str]]] = {
     "openrouter": ("OpenRouter", True, "https://openrouter.ai/api/v1"),
-    "vllm": ("vLLM (Local)", False, "http://localhost:8000/v1"),
+    "vllm": ("vLLM (Remote)" if IS_REMOTE_MODE else "vLLM (Local)", False, vllm_base_url()),
     "openai": ("OpenAI (Direct)", True, None),
     "anthropic": ("Anthropic (Direct)", True, None),
     "google": ("Google (Direct)", True, None),
@@ -1088,19 +1167,95 @@ class PlayerAssignmentRow(QtWidgets.QWidget):
         self._browse_btn.clicked.connect(self._on_browse_policy)
         rl_layout.addWidget(self._browse_btn)
 
-        # Algorithm dropdown (xuance_worker: ippo, mappo; others: ppo, dqn, etc.)
+        # Algorithm dropdown
         rl_layout.addWidget(QtWidgets.QLabel("Algorithm:", self._rl_row))
         self._algorithm_combo = QtWidgets.QComboBox(self._rl_row)
-        self._algorithm_combo.setFixedWidth(90)
-        self._algorithm_combo.addItem("IPPO", "ippo")
-        self._algorithm_combo.addItem("MAPPO", "mappo")
-        self._algorithm_combo.addItem("PPO", "ppo")
-        self._algorithm_combo.addItem("QMIX", "qmix")
+        self._algorithm_combo.setMinimumWidth(150)
+        self._algorithm_combo.setMaxVisibleItems(10)
+        self._algorithm_combo.setStyleSheet("QComboBox { combobox-popup: 0; }")
+        # ── Cooperative / Shared-parameter MARL ──────────────────────────────
+        self._algorithm_combo.addItem("MAPPO",        "mappo")
+        self._algorithm_combo.addItem("MAPPO_GLOBAL", "mappo")
+        self._algorithm_combo.addItem("MAPPO_TEAM",   "mappo")
+        self._algorithm_combo.addItem("HAPPO",        "happo")
+        self._algorithm_combo.addItem("VDPPO",        "vdppo")
+        self._algorithm_combo.addItem("MAT",          "mat")
+        # ── Independent MARL ─────────────────────────────────────────────────
+        self._algorithm_combo.addItem("IPPO",         "ippo")
+        self._algorithm_combo.addItem("IQL",          "iql")
+        self._algorithm_combo.addItem("IAC",          "iac")
+        self._algorithm_combo.addItem("ISAC",         "isac")
+        # ── Value-decomposition MARL ─────────────────────────────────────────
+        self._algorithm_combo.addItem("QMIX",         "qmix")
+        self._algorithm_combo.addItem("WQMIX",        "wqmix")
+        self._algorithm_combo.addItem("QTRAN",        "qtran")
+        self._algorithm_combo.addItem("VDN",          "vdn")
+        self._algorithm_combo.addItem("VDAC",         "vdac")
+        self._algorithm_combo.addItem("DCG",          "dcg")
+        # ── Multi-agent Actor-Critic / Deterministic ─────────────────────────
+        self._algorithm_combo.addItem("MADDPG",       "maddpg")
+        self._algorithm_combo.addItem("MASAC",        "masac")
+        self._algorithm_combo.addItem("MATD3",        "matd3")
+        self._algorithm_combo.addItem("IDDPG",        "iddpg")
+        self._algorithm_combo.addItem("COMA",         "coma")
+        self._algorithm_combo.addItem("MFQ",          "mfq")
+        self._algorithm_combo.addItem("MFAC",         "mfac")
+        # ── Communication-conditioned MARL ───────────────────────────────────
+        self._algorithm_combo.addItem("CommNet",      "commnet")
+        self._algorithm_combo.addItem("TarMAC",       "tarmac")
+        self._algorithm_combo.addItem("IC3Net",       "ic3net")
+        # ── Value-based (single-agent) ────────────────────────────────────────
+        self._algorithm_combo.addItem("DQN",          "dqn")
+        self._algorithm_combo.addItem("DDQN",         "ddqn")
+        self._algorithm_combo.addItem("DuelDQN",      "dueldqn")
+        self._algorithm_combo.addItem("PerDQN",       "perdqn")
+        self._algorithm_combo.addItem("NoisyDQN",     "noisydqn")
+        self._algorithm_combo.addItem("DRQN",         "drqn")
+        self._algorithm_combo.addItem("QRDQN",        "qrdqn")
+        self._algorithm_combo.addItem("C51",          "c51")
+        # ── Policy-based (single-agent) ───────────────────────────────────────
+        self._algorithm_combo.addItem("PPO",          "ppo")
+        self._algorithm_combo.addItem("PPOKL",        "ppokl")
+        self._algorithm_combo.addItem("PPG",          "ppg")
+        self._algorithm_combo.addItem("A2C",          "a2c")
+        self._algorithm_combo.addItem("PG",           "pg")
+        self._algorithm_combo.addItem("NPG",          "npg")
+        self._algorithm_combo.addItem("SAC",          "sac")
+        self._algorithm_combo.addItem("DDPG",         "ddpg")
+        self._algorithm_combo.addItem("TD3",          "td3")
+        self._algorithm_combo.addItem("PDQN",         "pdqn")
+        self._algorithm_combo.addItem("MPDQN",        "mpdqn")
+        self._algorithm_combo.addItem("SPDQN",        "spdqn")
         self._algorithm_combo.setToolTip(
-            "Algorithm that produced the checkpoint.\n"
-            "IPPO: per-agent networks, no one-hot, portable across team compositions.\n"
-            "MAPPO: shared network + agent one-hot, requires fixed n_agents.\n"
-            "Must match the --method used during training."
+            "Algorithm that produced the checkpoint. Must match training algorithm.\n\n"
+            "-- Cooperative MARL --\n"
+            "MAPPO / MAPPO_GLOBAL / MAPPO_TEAM: shared network + one-hot agent id.\n"
+            "  MAPPO_GLOBAL and MAPPO_TEAM are JaxMARL training modes.\n"
+            "HAPPO: heterogeneous-agent trust-region PPO.\n"
+            "VDPPO: value-decomposition PPO.\n"
+            "MAT: Multi-Agent Transformer (encoder-decoder, seq. update).\n\n"
+            "-- Independent MARL --\n"
+            "IPPO: independent PPO, per-agent networks.\n"
+            "IQL: Independent Q-Learning.\n"
+            "IAC: Independent Actor-Critic.\n"
+            "ISAC: Independent Soft Actor-Critic.\n\n"
+            "-- Value Decomposition MARL --\n"
+            "QMIX: Q-mixing network. WQMIX: Weighted QMIX.\n"
+            "QTRAN: Q-Transformation. VDN: Value Decomposition Networks.\n"
+            "VDAC: Value-Decomposition Actor-Critic. DCG: Deep Coordination Graphs.\n\n"
+            "-- Multi-agent Actor-Critic --\n"
+            "MADDPG: centralized critic + DDPG actors.\n"
+            "MASAC: Multi-agent SAC. MATD3: Multi-agent TD3.\n"
+            "IDDPG: Independent DDPG. COMA: Counterfactual baseline.\n"
+            "MFQ / MFAC: Mean-Field Q / Actor-Critic.\n\n"
+            "-- Communication-conditioned MARL --\n"
+            "CommNet: continuous broadcast channel (Sukhbaatar et al. 2016).\n"
+            "TarMAC: signature-based targeted multi-agent communication (Das et al. 2019).\n"
+            "IC3Net: gated communication for cooperative+competitive tasks.\n\n"
+            "-- Value-based single-agent --\n"
+            "DQN, DDQN, DuelDQN, PerDQN, NoisyDQN, DRQN, QRDQN, C51.\n\n"
+            "-- Policy-based single-agent --\n"
+            "PPO, PPOKL, PPG, A2C, PG, NPG, SAC, DDPG, TD3, PDQN, MPDQN, SPDQN."
         )
         self._algorithm_combo.currentIndexChanged.connect(self._on_changed)
         rl_layout.addWidget(self._algorithm_combo)
@@ -1250,15 +1405,117 @@ class PlayerAssignmentRow(QtWidgets.QWidget):
         self._worker_combo.setVisible(True)
 
     def _on_browse_policy(self) -> None:
-        """Open file dialog to browse for policy file."""
+        """Open file dialog to browse for policy file.
+
+        Local mode: Qt file dialog rooted at var/trainer/.
+        Remote mode: SSH listing of server checkpoints in a picker dialog,
+        returning the server-side absolute path.
+        """
+        from gym_gui.config.deployment import IS_REMOTE_MODE
+        if IS_REMOTE_MODE:
+            self._on_browse_policy_remote()
+        else:
+            self._on_browse_policy_local()
+
+    def _policy_file_filter(self) -> tuple[str, list[str]]:
+        """Return (Qt filter string, [glob patterns]) based on current worker."""
+        worker_id = self._worker_combo.currentData() or ""
+        if "jaxmarl" in worker_id:
+            return "JaxMARL Checkpoints (*.npz);;All Files (*)", ["*.npz"]
+        if "xuance" in worker_id or "cleanrl" in worker_id or "ray" in worker_id:
+            return "PyTorch Checkpoints (*.pt *.pth);;All Files (*)", ["*.pt", "*.pth"]
+        return "Policy Files (*.pt *.pth *.ckpt *.pkl *.zip);;All Files (*)", ["*.pt", "*.pth", "*.ckpt", "*.pkl", "*.zip"]
+
+    def _on_browse_policy_local(self) -> None:
+        import os
+        start_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__))
+            ))),
+            "var", "trainer",
+        )
+        if not os.path.isdir(start_dir):
+            start_dir = ""
+        qt_filter, _ = self._policy_file_filter()
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
             "Select Policy File",
-            "",
-            "Policy Files (*.pt *.pth *.zip *.pkl *.ckpt);;All Files (*)"
+            start_dir,
+            qt_filter,
+            options=QtWidgets.QFileDialog.Option.DontUseNativeDialog,
         )
         if file_path:
             self._policy_path_edit.setText(file_path)
+
+    def _on_browse_policy_remote(self) -> None:
+        """SSH into the server, list checkpoint files, show a picker dialog."""
+        import subprocess
+
+        from gym_gui.config.deployment import SERVER_PROJECT_ROOT, SERVER_SSH_HOST
+
+        trainer_dir = f"{SERVER_PROJECT_ROOT}/var/trainer"
+        _, globs = self._policy_file_filter()
+        find_args: list[str] = []
+        for g in globs:
+            if find_args:
+                find_args.append("-o")
+            find_args += ["-name", g]
+        try:
+            result = subprocess.run(
+                ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5",
+                 SERVER_SSH_HOST, "find", trainer_dir] + find_args,
+                capture_output=True, text=True, timeout=10,
+            )
+            files = sorted(ln.strip() for ln in result.stdout.splitlines() if ln.strip())
+        except Exception as exc:
+            QtWidgets.QMessageBox.warning(
+                self, "Server Unreachable",
+                f"Could not list files on {SERVER_SSH_HOST}:\n{exc}\n\n"
+                "Type the server path directly into the policy field."
+            )
+            return
+
+        ext_desc = " / ".join(globs)
+        if not files:
+            QtWidgets.QMessageBox.information(
+                self, "No Checkpoints Found",
+                f"No {ext_desc} files found under:\n{trainer_dir}\n\n"
+                "Make sure checkpoints were synced to the server."
+            )
+            return
+
+        dlg = QtWidgets.QDialog(self)
+        dlg.setWindowTitle(f"Select Policy on {SERVER_SSH_HOST}")
+        dlg.resize(720, 460)
+        layout = QtWidgets.QVBoxLayout(dlg)
+
+        layout.addWidget(QtWidgets.QLabel(
+            f"<b>Server:</b> {SERVER_SSH_HOST} &nbsp;&nbsp; "
+            f"<b>Trainer dir:</b> {trainer_dir}<br>"
+            f"Found {len(files)} checkpoints. Double-click or select + OK."
+        ))
+
+        lw = QtWidgets.QListWidget(dlg)
+        lw.setAlternatingRowColors(True)
+        for f in files:
+            item = QtWidgets.QListWidgetItem(f.replace(SERVER_PROJECT_ROOT + "/", ""))
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, f)
+            lw.addItem(item)
+        lw.itemDoubleClicked.connect(dlg.accept)
+        layout.addWidget(lw)
+
+        btns = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok |
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+        )
+        btns.accepted.connect(dlg.accept)
+        btns.rejected.connect(dlg.reject)
+        layout.addWidget(btns)
+
+        if dlg.exec() == QtWidgets.QDialog.DialogCode.Accepted and lw.currentItem():
+            self._policy_path_edit.setText(
+                lw.currentItem().data(QtCore.Qt.ItemDataRole.UserRole)
+            )
 
     def set_rl_row_visible(self, visible: bool) -> None:
         """Set RL row visibility based on link state.
@@ -1397,7 +1654,7 @@ class PlayerAssignmentRow(QtWidgets.QWidget):
                     settings["base_url"] = server_info.base_url
                 else:
                     settings["model_id"] = ""
-                    settings["base_url"] = "http://localhost:8000/v1"
+                    settings["base_url"] = vllm_base_url()
             else:
                 settings["model_id"] = self._model_combo.currentData() or ""
                 if client_name in LLM_CLIENTS:
@@ -1448,14 +1705,14 @@ class PlayerAssignmentPanel(QtWidgets.QWidget):
 
         Args:
             env_family: Environment family ("pettingzoo", "mosaic_multigrid", etc.)
-            env_id: Environment ID (e.g., "chess_v6", "MosaicMultiGrid-Soccer-v0")
+            env_id: Environment ID (e.g., "chess_v6", "MultiGridSports-Soccer-v0")
             num_agents: Number of agents in the environment
             agent_ids: Optional list of agent IDs (e.g., ["player_0", "player_1"])
                       If None, auto-generates ["agent_0", "agent_1", ...]
             agent_labels: Optional dict mapping agent_id to display label
                          If None, uses agent_id as label
             operator_id: Parent operator ID for scoping link group IDs
-                        (e.g., "operator_0" → link groups become "operator_0_link_0").
+                        (e.g., "operator_0" gives link groups like "operator_0_link_0").
             parent: Parent widget.
         """
         super().__init__(parent)
@@ -1483,6 +1740,7 @@ class PlayerAssignmentPanel(QtWidgets.QWidget):
         self._linking_supported_envs = {
             "mosaic_multigrid",
             "multigrid_ini",
+            "socialjax",
             "meltingpot",
             "overcooked",
         }
@@ -2263,27 +2521,28 @@ class OperatorConfigRow(QtWidgets.QWidget):
         main_layout.addLayout(row1)
 
         # ============================================================
-        # Row 2: Two-column layout for environment and display settings
+        # Row 2: Environment (left) + Rendering (right) section groups
         # ============================================================
         row2 = QtWidgets.QHBoxLayout()
         row2.setSpacing(16)
 
-        # --- Left Column: Environment Selection + Load Button ---
-        left_col = QtWidgets.QVBoxLayout()
+        # --- Left: Environment Section Group ---
+        env_group = QtWidgets.QGroupBox("Environment", self)
+        left_col = QtWidgets.QVBoxLayout(env_group)
         left_col.setSpacing(6)
 
         left_form = QtWidgets.QFormLayout()
         left_form.setSpacing(6)
         left_form.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
 
-        self._env_combo = QtWidgets.QComboBox(self)
+        self._env_combo = QtWidgets.QComboBox(env_group)
         self._env_combo.setMinimumWidth(200)
-        left_form.addRow("Env Family:", self._env_combo)
+        left_form.addRow("Family:", self._env_combo)
 
-        self._task_combo = QtWidgets.QComboBox(self)
+        self._task_combo = QtWidgets.QComboBox(env_group)
         self._task_combo.setMinimumWidth(200)
-        self._task_combo.setMaxVisibleItems(20)  # Limit dropdown height with scrollbar
-        self._task_combo.setStyleSheet("QComboBox { combobox-popup: 0; }")  # Force native popup limiting
+        self._task_combo.setMaxVisibleItems(20)
+        self._task_combo.setStyleSheet("QComboBox { combobox-popup: 0; }")
         task_view = self._task_combo.view()
         if task_view is not None:
             task_view.setVerticalScrollBarPolicy(
@@ -2326,10 +2585,11 @@ class OperatorConfigRow(QtWidgets.QWidget):
         btn_row.addStretch()
         left_col.addLayout(btn_row)
 
-        row2.addLayout(left_col)
+        row2.addWidget(env_group)
 
-        # --- Right Column: Display Settings ---
-        right_col = QtWidgets.QFormLayout()
+        # --- Right: Rendering Section Group ---
+        render_group = QtWidgets.QGroupBox("Rendering", self)
+        right_col = QtWidgets.QFormLayout(render_group)
         right_col.setSpacing(6)
         right_col.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
 
@@ -2395,16 +2655,16 @@ class OperatorConfigRow(QtWidgets.QWidget):
         self._game_resolution_combo.hide()  # Hidden by default
         right_col.addRow(self._game_resolution_label, self._game_resolution_combo)
 
-        # Square size dropdown (for board games - Chess, Go, Connect Four, Checkers)
-        self._square_size_label = QtWidgets.QLabel("Square:", self)
+        # Cell Size dropdown (for board games and grid envs - Chess, Go, MiniGrid, MultiGrid)
+        self._square_size_label = QtWidgets.QLabel("Cell Size:", self)
         self._square_size_label.setStyleSheet("font-weight: bold; color: #333;")
-        self._square_size_label.hide()  # Hidden by default, shown only for board games
+        self._square_size_label.hide()  # Hidden by default, shown only for board/grid games
 
         self._square_size_combo = QtWidgets.QComboBox(self)
         self._square_size_combo.setToolTip(
-            "Tile/square size in pixels.\n"
+            "Tile/cell size in pixels.\n"
             "For board games: size of each square on the board.\n"
-            "For multigrid: size of each grid cell (default 32px)."
+            "For grid envs (MiniGrid, MultiGrid): pixel size of each grid cell (default 32px)."
         )
         self._square_size_combo.addItem("Small (30px)", 30)
         self._square_size_combo.addItem("Medium (50px)", 50)
@@ -2416,7 +2676,7 @@ class OperatorConfigRow(QtWidgets.QWidget):
         self._square_size_combo.hide()  # Hidden by default
         right_col.addRow(self._square_size_label, self._square_size_combo)
 
-        row2.addLayout(right_col)
+        row2.addWidget(render_group)
 
         row2.addStretch()
 
@@ -2566,16 +2826,16 @@ class OperatorConfigRow(QtWidgets.QWidget):
         self._view_size_spin = QtWidgets.QSpinBox(self._multigrid_settings_container)
         self._view_size_spin.setRange(3, 15)
         self._view_size_spin.setSingleStep(2)  # Odd values preferred (3, 5, 7, 9, ...)
-        self._view_size_spin.setSpecialValueText("3 (default)")
-        self._view_size_spin.setValue(3)
+        self._view_size_spin.setValue(7)
         self._view_size_spin.setToolTip(
             "Agent view size (NxN partial observation window).\n"
-            "Default: 3 (9 cells visible, 7.1% of 16x11 grid).\n"
+            "All VIEWSIZE7 pre-trained policies expect 7 (147-dim obs).\n"
             "Larger values give agents more information:\n"
-            "  5 = 25 cells (19.8%)\n"
-            "  7 = 49 cells (38.9%)\n"
-            "  9 = 81 cells (64.3%)\n"
-            "Must be odd for symmetric view. Even values are rounded up."
+            "  3 = 9 cells  (27-dim obs)\n"
+            "  5 = 25 cells (75-dim obs)\n"
+            "  7 = 49 cells (147-dim obs) ← all pre-trained policies\n"
+            "  9 = 81 cells (243-dim obs)\n"
+            "Must be odd for symmetric view."
         )
         self._view_size_spin.setMinimumWidth(100)
         self._view_size_spin.valueChanged.connect(self._on_config_changed)
@@ -2635,6 +2895,54 @@ class OperatorConfigRow(QtWidgets.QWidget):
         self._multigrid_settings_container.hide()  # Hidden until MultiGrid selected
         main_layout.addWidget(self._multigrid_settings_container)
 
+        # === SocialJax Environment Configuration ===
+        self._socialjax_config_container = QtWidgets.QGroupBox("Environment Configuration", self)
+        sj_config_layout = QtWidgets.QFormLayout(self._socialjax_config_container)
+        sj_config_layout.setSpacing(6)
+        sj_config_layout.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+
+        # Num Agents
+        self._sj_num_agents_spin = QtWidgets.QSpinBox(self._socialjax_config_container)
+        self._sj_num_agents_spin.setRange(2, 16)
+        self._sj_num_agents_spin.setValue(4)
+        self._sj_num_agents_spin.setToolTip(
+            "Number of agents in the SocialJax environment.\n"
+            "Changing this rebuilds the agent assignment panel below.\n"
+            "Must match the num_agents used during training."
+        )
+        self._sj_num_agents_spin.setFixedWidth(80)
+        sj_config_layout.addRow("Num Agents:", self._sj_num_agents_spin)
+
+        # Episode Length (num_inner_steps)
+        self._sj_episode_length_spin = QtWidgets.QSpinBox(self._socialjax_config_container)
+        self._sj_episode_length_spin.setRange(10, 5000)
+        self._sj_episode_length_spin.setSingleStep(50)
+        self._sj_episode_length_spin.setValue(1000)
+        self._sj_episode_length_spin.setToolTip(
+            "Steps per episode (num_inner_steps).\n"
+            "Default varies per env (pd_arena=50, lb_foraging=100, others=1000).\n"
+            "Lower values make episodes shorter for faster iteration."
+        )
+        self._sj_episode_length_spin.setFixedWidth(80)
+        sj_config_layout.addRow("Episode Length:", self._sj_episode_length_spin)
+
+        # Shared Rewards
+        self._sj_shared_rewards_cb = QtWidgets.QCheckBox(self._socialjax_config_container)
+        self._sj_shared_rewards_cb.setChecked(False)
+        self._sj_shared_rewards_cb.setToolTip(
+            "If checked, all agents share the mean reward (fully cooperative).\n"
+            "If unchecked, each agent receives its own individual reward (social dilemma)."
+        )
+        sj_config_layout.addRow("Shared Rewards:", self._sj_shared_rewards_cb)
+
+        self._socialjax_config_container.hide()  # Hidden until SocialJax selected
+        main_layout.addWidget(self._socialjax_config_container)
+
+        # Connect SocialJax spinboxes — num_agents change rebuilds the player panel
+        self._sj_num_agents_spin.valueChanged.connect(self._on_socialjax_agents_changed)
+        self._sj_episode_length_spin.valueChanged.connect(self._on_config_changed)
+        self._sj_shared_rewards_cb.stateChanged.connect(self._on_config_changed)
+
         # === Multi-agent player assignment container ===
         # Created dynamically when multi-agent environment is selected
         self._player_panel_container = QtWidgets.QWidget(self)
@@ -2687,6 +2995,9 @@ class OperatorConfigRow(QtWidgets.QWidget):
         if self._updating:
             return
         self._update_task_dropdown()
+        # When switching to SocialJax, apply per-env defaults to spinboxes
+        if self._env_combo.currentText() == "socialjax":
+            self._update_socialjax_defaults(self._task_combo.currentText())
         self._update_multiagent_panel()
         self._update_type_specific_visibility()
         self._on_config_changed()
@@ -2695,11 +3006,32 @@ class OperatorConfigRow(QtWidgets.QWidget):
         """Handle task/game change within an environment family."""
         if self._updating:
             return
+        # When SocialJax task changes, refresh spinbox defaults for the new env
+        if self._env_combo.currentText() == "socialjax":
+            self._update_socialjax_defaults(self._task_combo.currentText())
         # For multi-agent envs, different games have different agent counts/players
         if self._is_multiagent_env_selected():
             self._update_multiagent_panel()
         # Update Configure button visibility based on game support
         self._update_configure_button_visibility()
+        self._on_config_changed()
+
+    def _update_socialjax_defaults(self, env_id: str) -> None:
+        """Update SocialJax spinboxes to match the selected environment's defaults."""
+        env_name = env_id.replace("socialjax/", "")
+        defaults = _SOCIALJAX_OPERATOR_DEFAULTS.get(env_name, (4, 1000))
+        default_agents, default_steps = defaults
+        self._updating = True
+        self._sj_num_agents_spin.setValue(default_agents)
+        self._sj_episode_length_spin.setValue(default_steps)
+        self._updating = False
+
+    def _on_socialjax_agents_changed(self, _value: int) -> None:
+        """Rebuild the player panel when SocialJax num_agents spinbox changes."""
+        if self._updating:
+            return
+        if self._env_combo.currentText() == "socialjax":
+            self._update_multiagent_panel()
         self._on_config_changed()
 
     def _update_configure_button_visibility(self) -> None:
@@ -2756,13 +3088,13 @@ class OperatorConfigRow(QtWidgets.QWidget):
         - pettingzoo: Turn-based games (Chess, Go, Connect Four)
         - pettingzoo_classic: Classic board games (Chess, Go, Connect Four, TicTacToe)
         - open_spiel: OpenSpiel board games (Checkers, etc.)
-        - mosaic_multigrid: Competitive team sports (Soccer, Collect, Basketball)
+        - mosaic_multigrid: Competitive team sports (Soccer, Basketball, American Football, Collect)
         - ini_multigrid: Cooperative exploration (Empty, LockedHallway, etc.)
         - meltingpot: DeepMind social scenarios
         - overcooked: Cooperative cooking
         """
         env_family = self._env_combo.currentText()
-        return env_family in ("pettingzoo", "pettingzoo_classic", "open_spiel", "mosaic_multigrid", "ini_multigrid", "meltingpot", "overcooked")
+        return env_family in ("pettingzoo", "pettingzoo_classic", "open_spiel", "mosaic_multigrid", "ini_multigrid", "socialjax", "meltingpot", "overcooked")
 
     def _update_multiagent_panel(self) -> None:
         """Update the multi-agent player assignment panel based on selected game."""
@@ -2787,12 +3119,16 @@ class OperatorConfigRow(QtWidgets.QWidget):
             self._execution_mode_container.hide()
             return
 
-        # Auto-detect number of agents
-        num_agents = _auto_detect_agent_count(env_family, env_id)
-        if num_agents == 0:
-            self._player_panel_container.hide()
-            self._execution_mode_container.hide()
-            return
+        # SocialJax: always use the spinbox value — no need to instantiate the adapter
+        if env_family == "socialjax":
+            num_agents = self._sj_num_agents_spin.value()
+        else:
+            # Auto-detect number of agents for other families
+            num_agents = _auto_detect_agent_count(env_family, env_id)
+            if num_agents == 0:
+                self._player_panel_container.hide()
+                self._execution_mode_container.hide()
+                return
 
         # Set default execution mode based on environment family
         default_mode = _get_execution_mode(env_family)
@@ -2856,6 +3192,14 @@ class OperatorConfigRow(QtWidgets.QWidget):
         else:
             self._multigrid_settings_container.hide()
 
+        # Show SocialJax environment configuration (num_agents, episode length, shared rewards)
+        if env_family == "socialjax":
+            self._socialjax_config_container.show()
+            # Use spinbox value for agent count — overrides auto-detect
+            num_agents = self._sj_num_agents_spin.value()
+        else:
+            self._socialjax_config_container.hide()
+
         # Get agent IDs and labels based on environment type
         agent_ids: Optional[List[str]] = None
         agent_labels: Optional[Dict[str, str]] = None
@@ -2865,7 +3209,7 @@ class OperatorConfigRow(QtWidgets.QWidget):
             game_info = PETTINGZOO_GAMES[env_id]
             agent_ids = game_info.get("players", None)
             agent_labels = game_info.get("player_labels", None)
-        elif env_family in ("mosaic_multigrid", "ini_multigrid", "meltingpot", "overcooked"):
+        elif env_family in ("mosaic_multigrid", "ini_multigrid", "meltingpot", "overcooked", "socialjax"):
             # Simultaneous multi-agent: auto-generate agent_0, agent_1, etc.
             agent_ids = [f"agent_{i}" for i in range(num_agents)]
             agent_labels = {aid: f"Agent {i}" for i, aid in enumerate(agent_ids)}
@@ -2947,7 +3291,7 @@ class OperatorConfigRow(QtWidgets.QWidget):
         env_id = self._task_combo.currentText()
 
         # Only create role selectors for MultiGrid Soccer
-        if env_family != "mosaic_multigrid" or "Soccer" not in env_id:
+        if env_family != "mosaic_multigrid" or not ("Soccer" in env_id or "MultiGridSports-S-" in env_id):
             return
 
         # Get number of agents
@@ -2988,11 +3332,21 @@ class OperatorConfigRow(QtWidgets.QWidget):
 
     def _on_browse_policy(self) -> None:
         """Open file dialog to browse for policy file."""
+        import os
+        start_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__))
+            ))),
+            "var", "trainer", "runs",
+        )
+        if not os.path.isdir(start_dir):
+            start_dir = ""
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
             "Select Policy File",
-            "",
-            "Policy Files (*.pt *.pth *.zip *.pkl *.ckpt);;All Files (*)"
+            start_dir,
+            "Policy Files (*.pt *.pth *.zip *.pkl *.ckpt);;All Files (*)",
+            options=QtWidgets.QFileDialog.Option.DontUseNativeDialog,
         )
         if file_path:
             self._policy_path_edit.setText(file_path)
@@ -3391,13 +3745,21 @@ class OperatorConfigRow(QtWidgets.QWidget):
                             role = self._role_selectors[player_id].currentData()
                             worker.settings["role"] = role
 
+                # SocialJax environment configuration (num_agents, episode length, shared rewards)
+                if env_name == "socialjax":
+                    sj_num_agents = self._sj_num_agents_spin.value()
+                    sj_episode_length = self._sj_episode_length_spin.value()
+                    sj_shared_rewards = self._sj_shared_rewards_cb.isChecked()
+                    player_workers[first_player].settings["num_agents"] = sj_num_agents
+                    player_workers[first_player].settings["num_inner_steps"] = sj_episode_length
+                    player_workers[first_player].settings["shared_rewards"] = sj_shared_rewards
+
                 # Include custom initial state (board/grid config) if set
                 if self._initial_state:
                     player_workers[first_player].settings["initial_state"] = self._initial_state
 
-            # Get view_size (MOSAIC only, None = default of 3)
             view_size_val = self._view_size_spin.value()
-            view_size = view_size_val if view_size_val != 3 else None
+            view_size = view_size_val  # always pass; MOSAIC_VIEW_SIZE must match trained policy
             if view_size is not None:
                 _logger = logging.getLogger(__name__)
                 log_constant(
@@ -3456,7 +3818,7 @@ class OperatorConfigRow(QtWidgets.QWidget):
                 else:
                     # No server selected - use empty values
                     settings["model_id"] = ""
-                    settings["base_url"] = "http://localhost:8000/v1"
+                    settings["base_url"] = vllm_base_url()
             else:
                 # Other providers: get model_id from dropdown
                 settings["model_id"] = self._model_combo.currentData() or ""

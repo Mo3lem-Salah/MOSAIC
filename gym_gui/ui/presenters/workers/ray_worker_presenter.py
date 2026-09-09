@@ -151,6 +151,9 @@ class RayWorkerPresenter:
         # Extract environment info from payload
         env_name = first_payload.get("env_name", "Multi-Agent")
         env_id = first_payload.get("env_id", "")
+        ui_meta = first_payload.get("metadata", {}).get("ui", {})
+        fastlane_video_mode = ui_meta.get("fastlane_video_mode", "single")
+        fastlane_grid_limit = int(ui_meta.get("fastlane_grid_limit", 4) or 4)
 
         # Check if this is a board game environment
         is_board_game = self._is_board_game_env(env_id)
@@ -184,6 +187,8 @@ class RayWorkerPresenter:
                     run_id=run_id,
                     agent_id=agent_id,
                     mode_label=tab_name,
+                    video_mode=fastlane_video_mode,
+                    grid_limit=fastlane_grid_limit,
                     parent=parent,
                 )
                 tabs.append(fastlane_tab)

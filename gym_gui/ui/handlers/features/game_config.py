@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from gym_gui.config.game_config_builder import GameConfigBuilder
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_config_builder import GameConfigBuilder
 from gym_gui.ui.config_panels.single_agent.vizdoom import VIZDOOM_GAME_IDS
 
 if TYPE_CHECKING:

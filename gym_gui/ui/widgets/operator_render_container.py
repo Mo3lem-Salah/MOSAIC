@@ -435,6 +435,7 @@ class OperatorRenderContainer(QtWidgets.QFrame):
         # Support multiple renderer types (GRID for text environments, RGB for visual)
         self._grid_renderer: Optional[Any] = None
         self._rgb_renderer: Optional[Any] = None
+        self._socialjax_renderer: Optional[Any] = None
         self._board_game_renderer: Optional[BoardGameRendererStrategy] = None
         self._renderer_strategy: Optional[Any] = None  # Currently active renderer
         self._active_render_mode: Optional[RenderMode] = None
@@ -1217,8 +1218,14 @@ class OperatorRenderContainer(QtWidgets.QFrame):
             payload: The render payload to analyze.
 
         Returns:
-            RenderMode.RGB_ARRAY for RGB frames, RenderMode.GRID otherwise.
+            The appropriate RenderMode for the payload type.
         """
+        # Check explicit mode field first -- avoids key-presence ambiguity.
+        # socialjax_grid payloads carry both "mode" and "grid" keys; checking
+        # "mode" here ensures they are not misrouted to the generic GRID renderer.
+        explicit_mode = payload.get("mode")
+        if explicit_mode == "socialjax_grid":
+            return RenderMode.SOCIALJAX_GRID
         # Check for RGB payload (used by BabyAI, MiniHack, Crafter, etc.)
         if "rgb" in payload or "frame" in payload:
             return RenderMode.RGB_ARRAY
@@ -1242,6 +1249,9 @@ class OperatorRenderContainer(QtWidgets.QFrame):
             if mode == RenderMode.RGB_ARRAY and self._rgb_renderer:
                 self._switch_to_renderer(self._rgb_renderer, mode)
                 return
+            if mode == RenderMode.SOCIALJAX_GRID and self._socialjax_renderer:
+                self._switch_to_renderer(self._socialjax_renderer, mode)
+                return
 
             # Create new renderer
             if not self._renderer_registry.is_registered(mode):
@@ -1255,6 +1265,8 @@ class OperatorRenderContainer(QtWidgets.QFrame):
                 self._grid_renderer = new_renderer
             elif mode == RenderMode.RGB_ARRAY:
                 self._rgb_renderer = new_renderer
+            elif mode == RenderMode.SOCIALJAX_GRID:
+                self._socialjax_renderer = new_renderer
 
             self._switch_to_renderer(new_renderer, mode)
             _LOGGER.info(f"Renderer {mode} initialized for {self._config.operator_id}")

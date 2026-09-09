@@ -73,10 +73,12 @@ class XuanCeWorkerPresenter:
         # Get env_id and paradigm from metadata
         env_id = ui_meta.get("env_id", "env")
         paradigm = ui_meta.get("paradigm", "single_agent")
+        fastlane_video_mode = ui_meta.get("fastlane_video_mode", "single")
+        fastlane_grid_limit = int(ui_meta.get("fastlane_grid_limit", 4) or 4)
 
         _LOGGER.info(
-            "XuanCe create_tabs: run_id=%s, env_id=%s, paradigm=%s, fastlane_enabled=%s",
-            run_id, env_id, paradigm, fastlane_enabled
+            "XuanCe create_tabs: run_id=%s, env_id=%s, paradigm=%s, fastlane_enabled=%s, video_mode=%s, grid_limit=%d",
+            run_id, env_id, paradigm, fastlane_enabled, fastlane_video_mode, fastlane_grid_limit
         )
 
         try:
@@ -97,6 +99,8 @@ class XuanCeWorkerPresenter:
                 agent_id=agent_id,
                 mode_label="Fast lane",
                 run_mode="train",
+                video_mode=fastlane_video_mode,
+                grid_limit=fastlane_grid_limit,
                 parent=parent,
             )
 

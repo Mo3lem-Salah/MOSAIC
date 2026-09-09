@@ -31,7 +31,7 @@ from gym_gui.logging_config.log_constants import (
 
 _LOGGER = logging.getLogger(__name__)
 try:  # pragma: no cover - avoid hard dependency in non-ALE test runs
-    from gym_gui.config.game_configs import ALEConfig  # type: ignore
+    from gym_gui.core.ui.game_config.game_configs import ALEConfig  # type: ignore
 except Exception:  # pragma: no cover - soft fallback if config not yet defined
     ALEConfig = None  # type: ignore[assignment]
 

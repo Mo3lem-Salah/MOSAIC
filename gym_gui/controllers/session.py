@@ -14,16 +14,6 @@ import numpy as np
 from PyQt6 import QtCore
 from PyQt6.QtCore import pyqtSignal  # type: ignore[attr-defined]
 
-from gym_gui.config.game_configs import (
-    BipedalWalkerConfig,
-    CarRacingConfig,
-    CliffWalkingConfig,
-    FrozenLakeConfig,
-    GameConfig,
-    LunarLanderConfig,
-    MiniGridConfig,
-    TaxiConfig,
-)
 from gym_gui.config.settings import Settings
 from gym_gui.constants import DEFAULT_RENDER_DELAY_MS, format_episode_id
 from gym_gui.constants.constants_telemetry import (
@@ -36,6 +26,7 @@ from gym_gui.constants.constants_vector import SUPPORTED_AUTORESET_MODES
 from gym_gui.controllers.interaction import (
     AleInteractionController,
     Box2DInteractionController,
+    GFootballInteractionController,
     GriddlyInteractionController,
     InteractionController,
     JumanjiArcadeInteractionController,
@@ -58,6 +49,16 @@ from gym_gui.core.factories.adapters import create_adapter, get_adapter_cls
 from gym_gui.core.run_counter_manager import RunCounterManager
 from gym_gui.core.schema import schema_registry
 from gym_gui.core.spaces.vector_metadata import extract_vector_step_details
+from gym_gui.core.ui.game_config.game_configs import (
+    BipedalWalkerConfig,
+    CarRacingConfig,
+    CliffWalkingConfig,
+    FrozenLakeConfig,
+    GameConfig,
+    LunarLanderConfig,
+    MiniGridConfig,
+    TaxiConfig,
+)
 from gym_gui.logging_config.helpers import LogConstantMixin
 from gym_gui.logging_config.log_constants import (
     LOG_NORMALIZATION_STATS_DROPPED,
@@ -177,14 +178,22 @@ class SessionController(QtCore.QObject, LogConstantMixin):
         self._game_config: GameConfig | None = None
         self._interaction: InteractionController | None = None
         self._input_controller: Any = None  # HumanInputController, set via set_input_controller
+        self._keyboard_action_source: Any = None  # Callable[[], Optional[int]]
 
     def set_input_controller(self, controller: Any) -> None:
-        """Set the HumanInputController for querying key state during idle ticks.
+        """Set the HumanInputController (thin config stub)."""
+        self._input_controller = controller
+
+    def set_keyboard_action_source(self, source: Any) -> None:
+        """Set a callable that returns the latest keyboard action.
+
+        For real-time games, the idle tick calls this at the env's native
+        rate to get the current action from the keyboard worker bridge.
 
         Args:
-            controller: The HumanInputController instance.
+            source: Callable[[], Optional[int]] returning the latest action.
         """
-        self._input_controller = controller
+        self._keyboard_action_source = source
 
     # ------------------------------------------------------------------
     # Public API
@@ -390,6 +399,11 @@ class SessionController(QtCore.QObject, LogConstantMixin):
         if family == EnvironmentFamily.PROCGEN:
             # Procgen docs suggest 15 Hz, but 30 FPS feels more responsive in a GUI
             return ProcgenInteractionController(self, target_hz=30)
+        if family == EnvironmentFamily.GFOOTBALL:
+            # Football is real-time: the ball moves and the built-in AI keeps
+            # playing whether or not the human presses a key, so idle-tick with
+            # action 0 (idle). 10 Hz matches GRF's own step cadence.
+            return GFootballInteractionController(self, target_hz=10)
         # Check for Jumanji arcade-style games (PacMan, Snake, Tetris)
         if family == EnvironmentFamily.JUMANJI and self._game_id in self._JUMANJI_ARCADE_GAMES:
             # 10 FPS for arcade feel - ghosts/snake/blocks move automatically
@@ -1060,27 +1074,27 @@ class SessionController(QtCore.QObject, LogConstantMixin):
             self._stop_idle_tick()
             return
         interaction = getattr(self, "_interaction", None)
-        # For ALE, ViZDoom, Procgen, Jumanji arcade, Griddly, and SMAC games, do not gate on awaiting_human
+        # For ALE, ViZDoom, Procgen, Jumanji arcade, Griddly, GFootball, and SMAC games,
+        # do not gate on awaiting_human.
         # These are continuous games where the world should keep moving regardless of player input
-        require_awaiting = not isinstance(interaction, (AleInteractionController, ViZDoomInteractionController, ProcgenInteractionController, JumanjiArcadeInteractionController, GriddlyInteractionController, SMACInteractionController))
+        require_awaiting = not isinstance(interaction, (AleInteractionController, ViZDoomInteractionController, ProcgenInteractionController, JumanjiArcadeInteractionController, GriddlyInteractionController, GFootballInteractionController, SMACInteractionController))
         if require_awaiting and not self._awaiting_human:
             return
 
-        # Determine idle action - prioritize input controller's key state
+        # Determine idle action from the keyboard worker bridge (subprocess).
+        # The bridge tracks the latest action reported by the worker.
+        # If a key is held, last_action reflects that. If no key is held,
+        # last_action is the NOOP the worker returned on tick timeout.
         action = None
         input_label = "idle_tick"
 
-        # Check if the input controller has keys pressed (state-based input)
-        if self._input_controller is not None:
-            # Check if using state-based input and has keys pressed
-            if hasattr(self._input_controller, 'is_state_based') and self._input_controller.is_state_based():
-                if hasattr(self._input_controller, 'get_current_action'):
-                    key_action = self._input_controller.get_current_action()
-                    if key_action is not None:
-                        action = key_action
-                        input_label = "key_combo"
+        if self._keyboard_action_source is not None:
+            bridge_action = self._keyboard_action_source()
+            if bridge_action is not None:
+                action = bridge_action
+                input_label = "keyboard"
 
-        # Fall back to passive action if no key action
+        # Fall back to passive action if bridge has no action
         if action is None:
             if interaction is not None:
                 action = interaction.maybe_passive_action()

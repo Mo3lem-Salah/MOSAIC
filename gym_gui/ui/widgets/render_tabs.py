@@ -28,7 +28,7 @@ from gym_gui.rendering import (
     create_default_renderer_registry,
 )
 from gym_gui.rendering.strategies.board_game import BoardGameRendererStrategy
-from gym_gui.replays import EpisodeReplay, EpisodeReplayLoader
+from gym_gui.replays import EpisodeLoader, EpisodeReplay
 from gym_gui.services.operator import OperatorConfig
 from gym_gui.services.service_locator import get_service_locator
 from gym_gui.services.telemetry import TelemetryService
@@ -1068,7 +1068,7 @@ class _ReplayTab(QtWidgets.QWidget):
     """Displays recent episodes from telemetry for quick replay selection."""
 
     _telemetry: TelemetryService | None
-    _loader: EpisodeReplayLoader | None
+    _loader: EpisodeLoader | None
     _current_game: GameId | None
     _load_button: QtWidgets.QPushButton
     _delete_button: QtWidgets.QPushButton
@@ -1095,7 +1095,7 @@ class _ReplayTab(QtWidgets.QWidget):
         super().__init__(parent)
         self._logger = _LOGGER
         self._telemetry = telemetry_service
-        self._loader = EpisodeReplayLoader(telemetry_service) if telemetry_service else None
+        self._loader = EpisodeLoader(telemetry_service) if telemetry_service else None
         self._current_game = None
         self._sort_descending = True
         self._renderer_registry = renderer_registry or create_default_renderer_registry()

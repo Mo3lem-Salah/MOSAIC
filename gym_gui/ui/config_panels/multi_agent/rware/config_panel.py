@@ -6,8 +6,8 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.config.game_configs import RWAREConfig
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_configs import RWAREConfig
 
 ALL_RWARE_GAME_IDS: tuple[GameId, ...] = (
     GameId.RWARE_TINY_2AG,

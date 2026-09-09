@@ -40,7 +40,7 @@ Usage
     import gymnasium
     import mosaic_multigrid.envs  # registers environments
 
-    raw_env = gymnasium.make("MosaicMultiGrid-Soccer-1vs1-IndAgObs-v0")
+    raw_env = gymnasium.make("MosaicMultiGrid-S-1v1-IndAgObs-v1")
     aec_env = GymnasiumMultiAgentAECWrapper(raw_env)
 
     obs, info = aec_env.reset(seed=42)

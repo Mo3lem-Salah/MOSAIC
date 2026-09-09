@@ -61,7 +61,7 @@ class PolicyMappingService(LogConstantMixin):
     3. Worker-specific routing
 
     For single-agent environments, delegates to ActorService.
-    For multi-agent, maintains agent_id → policy_id mapping.
+    For multi-agent, maintains an agent_id to policy_id mapping.
 
     Example:
         >>> actor_service = ActorService()

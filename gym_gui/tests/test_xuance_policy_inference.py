@@ -30,7 +30,7 @@ CHECKPOINT_PATH = (
     / "checkpoints/torch/collect_1vs1/seed_1_2026_0215_095902"
     / "final_train_model.pth"
 )
-ENV_ID = "MosaicMultiGrid-Collect-1vs1-IndAgObs-v0"
+ENV_ID = "MosaicMultiGrid-C-1v1-IndAgObs-v1"
 
 # Architecture constants (from collect_1vs1.yaml)
 OBS_DIM = 27       # IndAgObs (3,3,3) flattened

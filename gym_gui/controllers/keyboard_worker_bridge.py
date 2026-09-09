@@ -157,14 +157,44 @@ class KeyboardWorkerBridge(QtCore.QObject, LogConstantMixin):
         self._all_ready_emitted = False
         self._noop_action: int = 0
         self._tick_timeout: float = 0.0  # 0 = blocking (single-agent)
+        self._last_action: Optional[int] = None  # Latest action from worker (persists across rounds)
+        # Optional index -> human-readable action name table, supplied by the
+        # GUI via start(action_list=...). Without it the runtime log can only
+        # show bare integers ("action 12"), which is unreadable for
+        # environments with large action sets such as GRF's Discrete(19).
+        self._action_names: List[str] = []
 
         self._poll_timer = QTimer(self)
         self._poll_timer.setInterval(16)  # ~60 Hz
         self._poll_timer.timeout.connect(self._poll_responses)
 
     @property
+    def last_action(self) -> Optional[int]:
+        """Most recent action reported by the worker. Not cleared between rounds.
+
+        Used by the session idle tick for real-time games: the tick reads
+        this at the env's native rate instead of waiting for the bridge
+        to complete a round.
+        """
+        return self._last_action
+
+    @property
     def is_active(self) -> bool:
         return bool(self._handles) and self._poll_timer.isActive()
+
+    def _describe_action(self, action: int) -> str:
+        """Render ``action`` as ``"12 (shot)"`` when a name table is available.
+
+        Falls back to the bare index when the environment supplied no action
+        names, preserving the previous log format.
+        """
+        try:
+            index = int(action)
+        except (TypeError, ValueError):
+            return str(action)
+        if 0 <= index < len(self._action_names):
+            return f"{index} ({self._action_names[index]})"
+        return str(index)
 
     def start(
         self,
@@ -201,6 +231,7 @@ class KeyboardWorkerBridge(QtCore.QObject, LogConstantMixin):
         self._all_ready_emitted = False
         self._noop_action = noop_action
         self._tick_timeout = tick_timeout
+        self._action_names = list(action_list) if action_list else []
 
         ensure_var_directories()
         VAR_HUMAN_CONTROL_LOGS_DIR.mkdir(parents=True, exist_ok=True)
@@ -285,6 +316,7 @@ class KeyboardWorkerBridge(QtCore.QObject, LogConstantMixin):
         self._pending_actions.clear()
         self._awaiting_response.clear()
         self._all_ready_emitted = False
+        self._last_action = None
 
         for agent_id, handle in self._handles.items():
             try:
@@ -386,6 +418,7 @@ class KeyboardWorkerBridge(QtCore.QObject, LogConstantMixin):
                 action = resp.get("action")
                 if action is not None:
                     self._pending_actions[agent_id] = int(action)
+                    self._last_action = int(action)
                     self._awaiting_response.discard(agent_id)
                     self.action_received.emit(agent_id, int(action))
 
@@ -402,8 +435,12 @@ class KeyboardWorkerBridge(QtCore.QObject, LogConstantMixin):
 
                     self.log_constant(
                         LOG_HUMAN_CONTROL_WORKER_ACTION,
-                        message=f"{agent_id} -> action {action} ({len(self._pending_actions)}/{len(self._handles)})",
-                        extra={"agent_id": agent_id, "action": int(action)},
+                        message=f"{agent_id} -> action {self._describe_action(action)} ({len(self._pending_actions)}/{len(self._handles)})",
+                        extra={
+                            "agent_id": agent_id,
+                            "action": int(action),
+                            "action_name": self._describe_action(action),
+                        },
                     )
 
         # Check if all ready workers have submitted actions
@@ -414,7 +451,7 @@ class KeyboardWorkerBridge(QtCore.QObject, LogConstantMixin):
             ]
             self.log_constant(
                 LOG_HUMAN_CONTROL_WORKER_STEP,
-                message=f"All actions collected: {actions}",
+                message=f"All actions collected: {[self._describe_action(a) for a in actions]}",
                 extra={"actions": actions},
             )
             self.all_actions_ready.emit(actions)

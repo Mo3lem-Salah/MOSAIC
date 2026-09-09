@@ -26,7 +26,7 @@ from PyQt6.QtGui import (
     QRadialGradient,
     QWheelEvent,
 )
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QApplication, QWidget
 
 from gym_gui.constants import mosaic_welcome as const
 
@@ -214,7 +214,32 @@ class MosaicWelcomeWidget(QWidget):
                 )
 
     def _update_animation(self) -> None:
-        """Update animation state."""
+        """Update animation state.
+
+        Skips all work (including the ``self.update()`` repaint trigger)
+        whenever this widget isn't actually the thing the user is looking
+        at: either because a modal dialog is open somewhere in the app
+        (e.g. the Train Agent form, opened via ``QDialog.exec()``, which
+        runs a nested Qt event loop that still services this widget's
+        ``QTimer`` even though the dialog covers it), or because the
+        widget itself isn't visible (covers cases where ``hideEvent``
+        wasn't reliably triggered, e.g. if a parent higher up the widget
+        tree gets hidden without propagating down).
+
+        Without this guard, the widget's animation timer keeps firing at
+        ~60 FPS and its ``paintEvent`` keeps doing real per-frame work
+        (3D ring projection, glow-layer line drawing) on the main GUI
+        thread indefinitely -- including underneath modal training-form
+        dialogs, since opening those dialogs never calls
+        ``render_tabs._hide_welcome()`` (that's only wired to actual game
+        render payloads arriving). Sustained main-thread CPU contention
+        from this was observed (via a live ``py-spy dump``) to starve the
+        Qt event loop badly enough to make Ubuntu's dock briefly flag the
+        window as unresponsive, causing the taskbar icon to flicker.
+        """
+        if QApplication.activeModalWidget() is not None or not self.isVisible():
+            return
+
         self._angle = (self._angle + const.SATELLITE_ORBIT_SPEED) % 360
         self._time += 0.016
 

@@ -5,7 +5,13 @@ from __future__ import annotations
 from typing import Any, Iterable, Mapping, TypeVar
 
 from gym_gui.cache.memory import memoize
-from gym_gui.config.game_configs import (
+from gym_gui.core.adapters.ale import ALE_ADAPTERS, ALEAdapter
+from gym_gui.core.adapters.babyai import BABYAI_ADAPTERS
+from gym_gui.core.adapters.base import AdapterContext, EnvironmentAdapter
+from gym_gui.core.adapters.box2d import BOX2D_ADAPTERS
+from gym_gui.core.adapters.minigrid import MINIGRID_ADAPTERS
+from gym_gui.core.adapters.toy_text import TOY_TEXT_ADAPTERS
+from gym_gui.core.ui.game_config.game_configs import (
     ALEConfig,
     BipedalWalkerConfig,
     BlackjackConfig,
@@ -13,22 +19,19 @@ from gym_gui.config.game_configs import (
     CliffWalkingConfig,
     FrozenLakeConfig,
     GameConfig,
+    GFootballConfig,
     GriddlyConfig,
     LunarLanderConfig,
     MeltingPotConfig,
     MiniGridConfig,
     MultiGridConfig,
+    OlympicsWrestlingConfig,
     OvercookedConfig,
     RWAREConfig,
     SMACConfig,
+    SocialJaxConfig,
     TaxiConfig,
 )
-from gym_gui.core.adapters.ale import ALE_ADAPTERS, ALEAdapter
-from gym_gui.core.adapters.babyai import BABYAI_ADAPTERS
-from gym_gui.core.adapters.base import AdapterContext, EnvironmentAdapter
-from gym_gui.core.adapters.box2d import BOX2D_ADAPTERS
-from gym_gui.core.adapters.minigrid import MINIGRID_ADAPTERS
-from gym_gui.core.adapters.toy_text import TOY_TEXT_ADAPTERS
 
 # TYPE_CHECKING imports removed - using GameConfig type alias instead
 
@@ -73,44 +76,55 @@ except Exception:  # pragma: no cover - nethack optional
     NetHackConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - Crafter (open world survival benchmark)
-    from gym_gui.config.game_configs import CrafterConfig
     from gym_gui.core.adapters.crafter import (  # pragma: no cover - optional
         CRAFTER_ADAPTERS,
         CrafterAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import CrafterConfig
 except Exception:  # pragma: no cover - crafter optional
     CRAFTER_ADAPTERS: dict[Any, Any] = {}
     CrafterAdapter = None  # type: ignore[misc, assignment]
     CrafterConfig = None  # type: ignore[misc, assignment]
 
+try:  # Optional dependency - Craftax (JAX-based Crafter successor)
+    from gym_gui.core.adapters.craftax import (  # pragma: no cover - optional
+        CRAFTAX_ADAPTERS,
+        BaseCraftaxAdapter,
+        CraftaxConfig,
+    )
+except Exception:  # pragma: no cover - craftax optional
+    CRAFTAX_ADAPTERS: dict[Any, Any] = {}
+    BaseCraftaxAdapter = None  # type: ignore[misc, assignment]
+    CraftaxConfig = None  # type: ignore[misc, assignment]
+
 try:  # Optional dependency - Procgen (procedurally generated benchmark)
-    from gym_gui.config.game_configs import ProcgenConfig
     from gym_gui.core.adapters.procgen import (  # pragma: no cover - optional
         PROCGEN_ADAPTERS,
         ProcgenAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import ProcgenConfig
 except Exception:  # pragma: no cover - procgen optional
     PROCGEN_ADAPTERS: dict[Any, Any] = {}
     ProcgenAdapter = None  # type: ignore[misc, assignment]
     ProcgenConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - TextWorld (text-based game environments)
-    from gym_gui.config.game_configs import TextWorldConfig
     from gym_gui.core.adapters.textworld import (  # pragma: no cover - optional
         TEXTWORLD_ADAPTERS,
         TextWorldAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import TextWorldConfig
 except Exception:  # pragma: no cover - textworld optional
     TEXTWORLD_ADAPTERS: dict[Any, Any] = {}
     TextWorldAdapter = None  # type: ignore[misc, assignment]
     TextWorldConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - Jumanji (JAX-based logic puzzle environments)
-    from gym_gui.config.game_configs import JumanjiConfig
     from gym_gui.core.adapters.jumanji import (  # pragma: no cover - optional
         JUMANJI_ADAPTERS,
         JumanjiAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 except Exception:  # pragma: no cover - jumanji optional
     JUMANJI_ADAPTERS: dict[Any, Any] = {}
     JumanjiAdapter = None  # type: ignore[misc, assignment]
@@ -193,6 +207,15 @@ except Exception:  # pragma: no cover - ini_multigrid optional
     INI_MULTIGRID_ADAPTERS: dict[Any, Any] = {}
     INIMultiGridAdapter = None  # type: ignore[misc, assignment]
 
+try:  # Optional dependency - SocialJax (JAX sequential social dilemma)
+    from gym_gui.core.adapters.socialjax import (  # pragma: no cover - optional
+        SOCIALJAX_ADAPTERS,
+        SocialJaxAdapter,
+    )
+except Exception:  # pragma: no cover - socialjax optional
+    SOCIALJAX_ADAPTERS: dict[Any, Any] = {}
+    SocialJaxAdapter = None  # type: ignore[misc, assignment]
+
 try:  # Optional dependency - Melting Pot (multi-agent social scenarios via Shimmy)
     from gym_gui.core.adapters.meltingpot import (  # pragma: no cover - optional
         MELTINGPOT_ADAPTERS,
@@ -256,6 +279,24 @@ except Exception:  # pragma: no cover - hemac optional
     HEMAC_ADAPTERS: dict[Any, Any] = {}
     HeMACEnvironmentAdapter = None  # type: ignore[misc, assignment]
 
+try:  # Optional dependency - Google Research Football (GRF)
+    from gym_gui.core.adapters.gfootball import (  # pragma: no cover - optional
+        GFOOTBALL_ADAPTERS,
+        GFootballAdapter,
+    )
+except Exception:  # pragma: no cover - gfootball optional
+    GFOOTBALL_ADAPTERS: dict[Any, Any] = {}
+    GFootballAdapter = None  # type: ignore[misc, assignment]
+
+try:  # Optional dependency - Jidi Olympics Wrestling (sumo)
+    from gym_gui.core.adapters.olympics_wrestling import (  # pragma: no cover - optional
+        OLYMPICS_WRESTLING_ADAPTERS,
+        OlympicsWrestlingAdapter,
+    )
+except Exception:  # pragma: no cover - olympics optional
+    OLYMPICS_WRESTLING_ADAPTERS: dict[Any, Any] = {}
+    OlympicsWrestlingAdapter = None  # type: ignore[misc, assignment]
+
 from gym_gui.core.enums import GameId
 
 AdapterT = TypeVar("AdapterT", bound=EnvironmentAdapter)
@@ -284,6 +325,7 @@ def _registry() -> Mapping[GameId, type[EnvironmentAdapter]]:
         **MINIHACK_ADAPTERS,
         **NETHACK_ADAPTERS,
         **CRAFTER_ADAPTERS,
+        **CRAFTAX_ADAPTERS,
         **PROCGEN_ADAPTERS,
         **TEXTWORLD_ADAPTERS,
         **JUMANJI_ADAPTERS,
@@ -294,6 +336,7 @@ def _registry() -> Mapping[GameId, type[EnvironmentAdapter]]:
         **MOSAIC_MULTIGRID_ADAPTERS,
         **MOSAIC_MALMO_ADAPTERS,
         **INI_MULTIGRID_ADAPTERS,
+        **SOCIALJAX_ADAPTERS,
         **MELTINGPOT_ADAPTERS,
         **OVERCOOKED_ADAPTERS,
         **SMAC_ADAPTERS,
@@ -301,6 +344,8 @@ def _registry() -> Mapping[GameId, type[EnvironmentAdapter]]:
         **RWARE_ADAPTERS,
         **GRIDDLY_ADAPTERS,
         **HEMAC_ADAPTERS,
+        **GFOOTBALL_ADAPTERS,
+        **OLYMPICS_WRESTLING_ADAPTERS,
     }
 
 
@@ -454,6 +499,13 @@ def create_adapter(
         ):
             adapter = adapter_cls(context, config=game_config)  # type: ignore[arg-type]
         elif (
+            SocialJaxAdapter is not None
+            and issubclass(adapter_cls, SocialJaxAdapter)
+            and SocialJaxConfig is not None
+            and isinstance(game_config, SocialJaxConfig)
+        ):
+            adapter = adapter_cls(context, config=game_config)  # type: ignore[arg-type]
+        elif (
             MeltingPotAdapter is not None
             and issubclass(adapter_cls, MeltingPotAdapter)
             and MeltingPotConfig is not None
@@ -491,17 +543,45 @@ def create_adapter(
             and isinstance(game_config, GriddlyConfig)
         ):
             adapter = adapter_cls(context, config=game_config)  # type: ignore[arg-type]
+        elif (
+            GFootballAdapter is not None
+            and issubclass(adapter_cls, GFootballAdapter)
+            and isinstance(game_config, GFootballConfig)
+        ):
+            adapter = adapter_cls(context, config=game_config)  # type: ignore[arg-type]
+        elif (
+            OlympicsWrestlingAdapter is not None
+            and issubclass(adapter_cls, OlympicsWrestlingAdapter)
+            and isinstance(game_config, OlympicsWrestlingConfig)
+        ):
+            adapter = adapter_cls(context, config=game_config)  # type: ignore[arg-type]
         else:
             adapter = adapter_cls(context)
     else:
-        # For MeltingPot, derive substrate config from GameId value
+        # For SocialJax, derive env_id from GameId value (e.g., "socialjax/coop_mining" -> "coop_mining")
         if (
+            SocialJaxAdapter is not None
+            and issubclass(adapter_cls, SocialJaxAdapter)
+            and SocialJaxConfig is not None
+        ):
+            env_id = game_id.value.removeprefix("socialjax/")
+            adapter = adapter_cls(context, config=SocialJaxConfig(env_id=env_id))
+        # For MeltingPot, derive substrate config from GameId value
+        elif (
             MeltingPotAdapter is not None
             and issubclass(adapter_cls, MeltingPotAdapter)
             and MeltingPotConfig is not None
         ):
             substrate = game_id.value.removeprefix("meltingpot/")
             adapter = adapter_cls(context, config=MeltingPotConfig(substrate_name=substrate))
+        elif (
+            MosaicMultiGridAdapter is not None
+            and issubclass(adapter_cls, MosaicMultiGridAdapter)
+        ):
+            # Derive the env_id straight from the GameId so MOSAIC adapters work
+            # without an explicit config (e.g. the CLI launch path). The GameId
+            # value IS the registered Gym id (e.g. "MultiGridSports-S-G-2v0-IndAgObs-v1").
+            adapter = adapter_cls(context, config=MultiGridConfig(env_id=game_id.value))
         else:
             adapter = adapter_cls(context)
 

@@ -6,6 +6,7 @@ import os
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from gym_gui.config.deployment import vllm_base_url as _vllm_base_url
 from gym_gui.services.llm.models import LLMProvider, ModelIdentity
 
 
@@ -35,8 +36,8 @@ class LLMConfig:
     openrouter_api_key: Optional[str] = None
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
 
-    # vLLM settings (local fallback)
-    vllm_base_url: str = "http://localhost:8000/v1"
+    # vLLM settings (local or remote, derived from MOSAIC_DAEMON_TARGET)
+    vllm_base_url: str = field(default_factory=_vllm_base_url)
     vllm_api_key: str = "EMPTY"
 
     # Zhipu AI settings (GLM models)
@@ -144,7 +145,7 @@ class LLMConfig:
         """
         return cls(
             openrouter_api_key=os.getenv("OPENROUTER_API_KEY"),
-            vllm_base_url=os.getenv("VLLM_BASE_URL", "http://localhost:8000/v1"),
+            vllm_base_url=os.getenv("VLLM_BASE_URL", _vllm_base_url()),
             zhipu_api_key=os.getenv("ZHIPU_API_KEY") or os.getenv("ZAI_API_KEY"),
             zhipu_base_url=os.getenv("ZHIPU_BASE_URL", "https://api.z.ai/api/anthropic"),
         )

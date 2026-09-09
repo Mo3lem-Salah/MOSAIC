@@ -7,7 +7,7 @@ RL experience data (frames, observations, actions, rewards).
 import numpy as np
 import pytest
 
-from gym_gui.replay import (
+from gym_gui.replays import (
     FrameRef,
     FrameResolver,
     ReplayReader,

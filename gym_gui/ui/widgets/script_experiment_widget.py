@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import pyqtSignal
 
-from gym_gui.services.operator import OperatorConfig, WorkerAssignment
+from gym_gui.services.operator import LinkGroup, OperatorConfig, WorkerAssignment
 from gym_gui.services.operator_script_execution_manager import OperatorScriptExecutionManager
 
 _LOGGER = logging.getLogger(__name__)
@@ -306,6 +306,7 @@ class ScriptExperimentWidget(QtWidgets.QWidget):
                         "random": "random_worker",
                         "passive": "passive_worker",
                         "rl": "cleanrl_worker",
+                        "xuance": "xuance_worker",
                         "llm": "balrog_worker",
                         "vlm": "mosaic_vlm_worker",
                         "human": "human_worker",
@@ -317,6 +318,22 @@ class ScriptExperimentWidget(QtWidgets.QWidget):
                     settings = {k: v for k, v in worker_data.items() if k != "type"}
                     workers[agent_id] = WorkerAssignment(
                         worker_id=worker_id, worker_type=worker_type, settings=settings
+                    )
+
+                # Parse optional multi-agent fields
+                view_size = op_data.get("view_size")
+                execution_mode = op_data.get("execution_mode", "parallel")
+
+                # Parse link_groups (for shared MARL policy processes)
+                link_groups: Dict[str, LinkGroup] = {}
+                for group_id, gdata in op_data.get("link_groups", {}).items():
+                    link_groups[group_id] = LinkGroup(
+                        group_id=group_id,
+                        primary_agent=gdata["primary_agent"],
+                        linked_agents=gdata.get("linked_agents", []),
+                        policy_path=gdata.get("policy_path", ""),
+                        algorithm=gdata.get("algorithm", "mappo"),
+                        worker_type=gdata.get("worker_type", "rl"),
                     )
 
                 if len(workers) == 1:
@@ -338,6 +355,9 @@ class ScriptExperimentWidget(QtWidgets.QWidget):
                         env_name=env_name,
                         task=task,
                         max_steps=max_steps,
+                        view_size=view_size,
+                        execution_mode=execution_mode,
+                        link_groups=link_groups,
                     )
 
                 operator_configs.append(config)

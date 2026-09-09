@@ -308,7 +308,7 @@ class GriddlyAdapter(EnvironmentAdapter[np.ndarray, int]):
     ) -> None:
         super().__init__(context)
 
-        from gym_gui.config.game_configs import GriddlyConfig
+        from gym_gui.core.ui.game_config.game_configs import GriddlyConfig
 
         if config is None:
             config = GriddlyConfig()

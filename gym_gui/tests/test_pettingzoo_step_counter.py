@@ -179,7 +179,8 @@ class TestControlPanelSetStepCount:
 
     @pytest.fixture
     def panel(self, qtbot):
-        from gym_gui.config.game_configs import (
+        from gym_gui.core.enums import ControlMode, GameId
+        from gym_gui.core.ui.game_config.game_configs import (
             BipedalWalkerConfig,
             CarRacingConfig,
             CliffWalkingConfig,
@@ -188,7 +189,6 @@ class TestControlPanelSetStepCount:
             MiniGridConfig,
             TaxiConfig,
         )
-        from gym_gui.core.enums import ControlMode, GameId
         from gym_gui.ui.widgets.control_panel import ControlPanelConfig, ControlPanelWidget
         config = ControlPanelConfig(
             available_modes={GameId.FROZEN_LAKE: [ControlMode.HUMAN_ONLY]},

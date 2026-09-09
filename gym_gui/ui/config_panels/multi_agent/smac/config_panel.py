@@ -7,17 +7,34 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.config.game_configs import SMACConfig
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_configs import SMACConfig
 
 # SMAC v1 hand-designed maps
 SMAC_GAME_IDS: tuple[GameId, ...] = (
     GameId.SMAC_3M,
     GameId.SMAC_8M,
+    GameId.SMAC_25M,
     GameId.SMAC_2S3Z,
     GameId.SMAC_3S5Z,
     GameId.SMAC_5M_VS_6M,
+    GameId.SMAC_8M_VS_9M,
+    GameId.SMAC_10M_VS_11M,
+    GameId.SMAC_27M_VS_30M,
+    GameId.SMAC_MMM,
     GameId.SMAC_MMM2,
+    GameId.SMAC_3S5Z_VS_3S6Z,
+    GameId.SMAC_3S_VS_3Z,
+    GameId.SMAC_3S_VS_4Z,
+    GameId.SMAC_3S_VS_5Z,
+    GameId.SMAC_1C3S5Z,
+    GameId.SMAC_2M_VS_1Z,
+    GameId.SMAC_CORRIDOR,
+    GameId.SMAC_6H_VS_8Z,
+    GameId.SMAC_2S_VS_1SC,
+    GameId.SMAC_SO_MANY_BANELING,
+    GameId.SMAC_BANE_VS_BANE,
+    GameId.SMAC_2C_VS_64ZG,
 )
 
 # SMACv2 procedural maps
@@ -25,6 +42,22 @@ SMACV2_GAME_IDS: tuple[GameId, ...] = (
     GameId.SMACV2_TERRAN,
     GameId.SMACV2_PROTOSS,
     GameId.SMACV2_ZERG,
+    # EPyMARL scenario presets (n_units vs n_enemies overrides)
+    GameId.SMACV2_TERRAN_5V5,
+    GameId.SMACV2_TERRAN_10V10,
+    GameId.SMACV2_TERRAN_20V20,
+    GameId.SMACV2_TERRAN_10V11,
+    GameId.SMACV2_TERRAN_20V23,
+    GameId.SMACV2_PROTOSS_5V5,
+    GameId.SMACV2_PROTOSS_10V10,
+    GameId.SMACV2_PROTOSS_20V20,
+    GameId.SMACV2_PROTOSS_10V11,
+    GameId.SMACV2_PROTOSS_20V23,
+    GameId.SMACV2_ZERG_5V5,
+    GameId.SMACV2_ZERG_10V10,
+    GameId.SMACV2_ZERG_20V20,
+    GameId.SMACV2_ZERG_10V11,
+    GameId.SMACV2_ZERG_20V23,
 )
 
 # Combined for config panel dispatch
@@ -34,13 +67,45 @@ ALL_SMAC_GAME_IDS: tuple[GameId, ...] = SMAC_GAME_IDS + SMACV2_GAME_IDS
 _MAP_INFO: dict[GameId, tuple[int, str, str]] = {
     GameId.SMAC_3M: (3, "3 Marines", "Easy"),
     GameId.SMAC_8M: (8, "8 Marines", "Easy"),
+    GameId.SMAC_25M: (25, "25 Marines", "Easy"),
     GameId.SMAC_2S3Z: (5, "2 Stalkers + 3 Zealots", "Easy"),
     GameId.SMAC_3S5Z: (8, "3 Stalkers + 5 Zealots", "Easy"),
     GameId.SMAC_5M_VS_6M: (5, "5 Marines (vs 6)", "Hard"),
+    GameId.SMAC_8M_VS_9M: (8, "8 Marines (vs 9)", "Hard"),
+    GameId.SMAC_10M_VS_11M: (10, "10 Marines (vs 11)", "Hard"),
+    GameId.SMAC_27M_VS_30M: (27, "27 Marines (vs 30)", "Super Hard"),
+    GameId.SMAC_MMM: (10, "1 Medivac + 2 Marauders + 7 Marines", "Hard"),
     GameId.SMAC_MMM2: (10, "1 Medivac + 2 Marauders + 7 Marines", "Super Hard"),
+    GameId.SMAC_3S5Z_VS_3S6Z: (8, "3 Stalkers + 5 Zealots (vs 3S+6Z)", "Super Hard"),
+    GameId.SMAC_3S_VS_3Z: (3, "3 Stalkers (vs 3 Zealots)", "Easy"),
+    GameId.SMAC_3S_VS_4Z: (3, "3 Stalkers (vs 4 Zealots)", "Hard"),
+    GameId.SMAC_3S_VS_5Z: (3, "3 Stalkers (vs 5 Zealots)", "Super Hard"),
+    GameId.SMAC_1C3S5Z: (9, "1 Colossus + 3 Stalkers + 5 Zealots", "Hard"),
+    GameId.SMAC_2M_VS_1Z: (2, "2 Marines (vs 1 Zealot)", "Easy"),
+    GameId.SMAC_CORRIDOR: (6, "6 Zealots (vs 24 Zerglings)", "Hard"),
+    GameId.SMAC_6H_VS_8Z: (6, "6 Hydralisks (vs 8 Zealots)", "Super Hard"),
+    GameId.SMAC_2S_VS_1SC: (2, "2 Stalkers (vs 1 Spine Crawler)", "Easy"),
+    GameId.SMAC_SO_MANY_BANELING: (7, "7 Zealots (vs 32 Banelings)", "Hard"),
+    GameId.SMAC_BANE_VS_BANE: (24, "24 Zerglings + Banelings", "Easy"),
+    GameId.SMAC_2C_VS_64ZG: (2, "2 Colossi (vs 64 Zerglings)", "Super Hard"),
     GameId.SMACV2_TERRAN: (10, "Random Terran (procedural)", "Varies"),
     GameId.SMACV2_PROTOSS: (10, "Random Protoss (procedural)", "Varies"),
     GameId.SMACV2_ZERG: (10, "Random Zerg (procedural)", "Varies"),
+    GameId.SMACV2_TERRAN_5V5: (5, "5 Random Terran (vs 5)", "Varies"),
+    GameId.SMACV2_TERRAN_10V10: (10, "10 Random Terran (vs 10)", "Varies"),
+    GameId.SMACV2_TERRAN_20V20: (20, "20 Random Terran (vs 20)", "Varies"),
+    GameId.SMACV2_TERRAN_10V11: (10, "10 Random Terran (vs 11)", "Varies"),
+    GameId.SMACV2_TERRAN_20V23: (20, "20 Random Terran (vs 23)", "Varies"),
+    GameId.SMACV2_PROTOSS_5V5: (5, "5 Random Protoss (vs 5)", "Varies"),
+    GameId.SMACV2_PROTOSS_10V10: (10, "10 Random Protoss (vs 10)", "Varies"),
+    GameId.SMACV2_PROTOSS_20V20: (20, "20 Random Protoss (vs 20)", "Varies"),
+    GameId.SMACV2_PROTOSS_10V11: (10, "10 Random Protoss (vs 11)", "Varies"),
+    GameId.SMACV2_PROTOSS_20V23: (20, "20 Random Protoss (vs 23)", "Varies"),
+    GameId.SMACV2_ZERG_5V5: (5, "5 Random Zerg (vs 5)", "Varies"),
+    GameId.SMACV2_ZERG_10V10: (10, "10 Random Zerg (vs 10)", "Varies"),
+    GameId.SMACV2_ZERG_20V20: (20, "20 Random Zerg (vs 20)", "Varies"),
+    GameId.SMACV2_ZERG_10V11: (10, "10 Random Zerg (vs 11)", "Varies"),
+    GameId.SMACV2_ZERG_20V23: (20, "20 Random Zerg (vs 23)", "Varies"),
 }
 
 # AI difficulty levels: display name -> SMAC difficulty string
@@ -170,6 +235,88 @@ def build_smac_controls(
         "Classic: SMAC's built-in PyGame renderer (colored circles with health arcs)."
     )
     layout.addRow("Renderer", renderer_combo)
+
+    # -------- Render Resolution --------
+    render_resolution_spin = QtWidgets.QSpinBox(parent)
+    render_resolution_spin.setRange(256, 2048)
+    render_resolution_spin.setSingleStep(256)
+    render_resolution_spin.setSuffix(" px")
+    render_resolution_spin.setValue(int(overrides.get("render_resolution", cfg.render_resolution)))
+
+    def on_render_resolution_changed(value: int) -> None:
+        emit("render_resolution", value)
+
+    render_resolution_spin.valueChanged.connect(on_render_resolution_changed)
+    render_resolution_spin.setToolTip(
+        "3D camera output resolution, in pixels (square frame).\n"
+        "Higher = sharper image, more GPU/CPU cost per frame.\n"
+        "Applied at environment launch -- reload the environment for changes\n"
+        "to take effect. Only applies when Renderer is '3D (GPU Rendered)'.\n"
+        "The minimap inset always renders at a fixed 256x256 regardless of this."
+    )
+    layout.addRow("Render Resolution", render_resolution_spin)
+
+    # -------- Camera Auto-Center --------
+    # Note: there is no adjustable camera zoom/FOV setting. SC2's 3D camera
+    # field of view is fixed per-map by the engine itself (measured ~7-17
+    # world units) and cannot be changed via any interface option --
+    # InterfaceOptions.render.width was tried and measured to have zero
+    # effect on 3D render output. Once running, pan the camera by clicking
+    # and dragging on the video, which sends a real ActionRaw.camera_move.
+    camera_center_cb = QtWidgets.QCheckBox("Auto-center camera on map each episode", parent)
+    camera_center_cb.setChecked(bool(overrides.get("camera_auto_center", cfg.camera_auto_center)))
+
+    def on_camera_center_changed(state: int) -> None:
+        emit("camera_auto_center", state == 2)
+
+    camera_center_cb.stateChanged.connect(on_camera_center_changed)
+    camera_center_cb.setToolTip(
+        "If checked (default): after each reset, the camera automatically moves\n"
+        "to the map's fixed geometric center, since SC2's default camera position\n"
+        "(world origin) usually misses the battle area entirely.\n"
+        "If unchecked: use StarCraft II's default camera position.\n"
+        "Once the game is running, click-and-drag on the video to pan the camera\n"
+        "(a real ActionRaw.camera_move -- the field of view itself is fixed by\n"
+        "the SC2 engine per-map and cannot be zoomed)."
+    )
+    layout.addRow("", camera_center_cb)
+
+    # -------- Minimap Inset (full-map awareness) --------
+    minimap_cb = QtWidgets.QCheckBox("Show full-map minimap inset", parent)
+    minimap_cb.setChecked(bool(overrides.get("minimap_inset", cfg.minimap_inset)))
+
+    def on_minimap_changed(state: int) -> None:
+        emit("minimap_inset", state == 2)
+
+    minimap_cb.stateChanged.connect(on_minimap_changed)
+    minimap_cb.setToolTip(
+        "If checked (default): overlay StarCraft II's always-full-map minimap\n"
+        "as a picture-in-picture inset in the corner of the 3D view, so all four\n"
+        "map edges stay visible even though the main camera's field of view is\n"
+        "fixed and zoomed in. A red box on the inset marks the main camera's\n"
+        "approximate current viewport.\n"
+        "If unchecked: show only the unmodified full-frame 3D render."
+    )
+    layout.addRow("", minimap_cb)
+
+    # -------- Unit Health Bars --------
+    health_bars_cb = QtWidgets.QCheckBox("Show health/shield bars over units", parent)
+    health_bars_cb.setChecked(bool(overrides.get("unit_health_bars", cfg.unit_health_bars)))
+
+    def on_health_bars_changed(state: int) -> None:
+        emit("unit_health_bars", state == 2)
+
+    health_bars_cb.stateChanged.connect(on_health_bars_changed)
+    health_bars_cb.setToolTip(
+        "If checked (default): overlay a green (ally) or red (enemy) health bar,\n"
+        "plus a blue shield bar when applicable, above each unit in the 3D view.\n"
+        "Built from the same per-unit health/shield data already available via\n"
+        "the raw interface, drawn using SC2's own debug-draw API so the engine\n"
+        "places bars using its real camera projection -- they track each unit\n"
+        "and the camera exactly, with no drift.\n"
+        "If unchecked: show only the unmodified render (with minimap inset, if enabled)."
+    )
+    layout.addRow("", health_bars_cb)
 
     # -------- Observation: Own Health --------
     obs_health_cb = QtWidgets.QCheckBox("Include own health in observation", parent)

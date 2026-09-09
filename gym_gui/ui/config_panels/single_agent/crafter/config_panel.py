@@ -11,8 +11,8 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.config.game_configs import CrafterConfig
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_configs import CrafterConfig
 
 CRAFTER_GAME_IDS: tuple[GameId, ...] = (
     GameId.CRAFTER_REWARD,

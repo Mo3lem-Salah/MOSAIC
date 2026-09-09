@@ -15,29 +15,99 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.config.game_configs import MultiGridConfig
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_configs import MultiGridConfig
 
-# All MultiGrid game IDs
+# All MultiGrid game IDs (v7.0.0: TeamObs removed, 30 asymmetric variants added)
 MULTIGRID_GAME_IDS: tuple[GameId, ...] = (
-    # MOSAIC multigrid
-    GameId.MOSAIC_MULTIGRID_SOCCER,      # 4 agents (2v2) - Deprecated
-    GameId.MOSAIC_MULTIGRID_COLLECT,     # 3 agents - Deprecated
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2,  # 4 agents (2v2) - Deprecated
-    GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_INDAGOBS,      # 4 agents (2v2) - IndAgObs
-    GameId.MOSAIC_MULTIGRID_SOCCER_1VS1_INDAGOBS,      # 2 agents (1v1) - IndAgObs
-    GameId.MOSAIC_MULTIGRID_COLLECT_INDAGOBS,     # 3 agents - IndAgObs
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2_INDAGOBS,  # 4 agents (2v2) - IndAgObs
-    GameId.MOSAIC_MULTIGRID_COLLECT_1VS1_INDAGOBS, # 2 agents (1v1) - IndAgObs
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_INDAGOBS,   # 6 agents (3v3) - IndAgObs
-    GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_TEAMOBS,       # 4 agents (2v2) - TeamObs
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2_TEAMOBS,   # 4 agents (2v2) - TeamObs
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_TEAMOBS,    # 6 agents (3v3) - TeamObs
-    # Solo variants (v6.0.0) - single-agent, no opponent
-    GameId.MOSAIC_MULTIGRID_SOCCER_SOLO_GREEN,     # 1 agent (Green)
-    GameId.MOSAIC_MULTIGRID_SOCCER_SOLO_BLUE,      # 1 agent (Blue)
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_SOLO_GREEN,  # 1 agent (Green)
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_SOLO_BLUE,   # 1 agent (Blue)
+    # MOSAIC multigrid — Soccer (S)
+    GameId.MOSAIC_MULTIGRID_S_G_1V0,           # 1 agent (Green solo)
+    GameId.MOSAIC_MULTIGRID_S_B_0V1,           # 1 agent (Blue solo)
+    GameId.MOSAIC_MULTIGRID_S_1V1_INDAGOBS,    # 2 agents (1v1)
+    GameId.MOSAIC_MULTIGRID_S_2V2_INDAGOBS,    # 4 agents (2v2)
+    GameId.MOSAIC_MULTIGRID_S_3V3_INDAGOBS,    # 6 agents (3v3)
+    GameId.MOSAIC_MULTIGRID_S_4V4_INDAGOBS,    # 8 agents (4v4)
+    GameId.MOSAIC_MULTIGRID_S_G_2V0_INDAGOBS,  # 2 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_S_G_3V0_INDAGOBS,  # 3 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_S_G_4V0_INDAGOBS,  # 4 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_S_G_5V0_INDAGOBS,  # 5 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_S_G_6V0_INDAGOBS,  # 6 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_S_B_0V2_INDAGOBS,  # 2 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_S_B_0V3_INDAGOBS,  # 3 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_S_B_0V4_INDAGOBS,  # 4 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_S_B_0V5_INDAGOBS,  # 5 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_S_B_0V6_INDAGOBS,  # 6 agents (Blue coop)
+    # MOSAIC multigrid — Soccer asymmetric competitive (NEW in v7.0.0)
+    GameId.MOSAIC_MULTIGRID_S_1V2_INDAGOBS,    # 3 agents (1v2 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_2V1_INDAGOBS,    # 3 agents (2v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_1V3_INDAGOBS,    # 4 agents (1v3 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_3V1_INDAGOBS,    # 4 agents (3v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_1V4_INDAGOBS,    # 5 agents (1v4 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_4V1_INDAGOBS,    # 5 agents (4v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_2V3_INDAGOBS,    # 5 agents (2v3 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_3V2_INDAGOBS,    # 5 agents (3v2 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_2V4_INDAGOBS,    # 6 agents (2v4 asymmetric)
+    GameId.MOSAIC_MULTIGRID_S_4V2_INDAGOBS,    # 6 agents (4v2 asymmetric)
+    # MOSAIC multigrid — Basketball (BB)
+    GameId.MOSAIC_MULTIGRID_BB_G_1V0,          # 1 agent (Green solo)
+    GameId.MOSAIC_MULTIGRID_BB_B_0V1,          # 1 agent (Blue solo)
+    GameId.MOSAIC_MULTIGRID_BB_1V1_INDAGOBS,   # 2 agents (1v1)
+    GameId.MOSAIC_MULTIGRID_BB_2V2_INDAGOBS,   # 4 agents (2v2)
+    GameId.MOSAIC_MULTIGRID_BB_3V3_INDAGOBS,   # 6 agents (3v3)
+    GameId.MOSAIC_MULTIGRID_BB_4V4_INDAGOBS,   # 8 agents (4v4)
+    GameId.MOSAIC_MULTIGRID_BB_G_2V0_INDAGOBS, # 2 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_BB_G_3V0_INDAGOBS, # 3 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_BB_G_4V0_INDAGOBS, # 4 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_BB_G_5V0_INDAGOBS, # 5 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_BB_G_6V0_INDAGOBS, # 6 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_BB_B_0V2_INDAGOBS, # 2 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_BB_B_0V3_INDAGOBS, # 3 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_BB_B_0V4_INDAGOBS, # 4 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_BB_B_0V5_INDAGOBS, # 5 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_BB_B_0V6_INDAGOBS, # 6 agents (Blue coop)
+    # MOSAIC multigrid — Basketball asymmetric competitive (NEW in v7.0.0)
+    GameId.MOSAIC_MULTIGRID_BB_1V2_INDAGOBS,   # 3 agents (1v2 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_2V1_INDAGOBS,   # 3 agents (2v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_1V3_INDAGOBS,   # 4 agents (1v3 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_3V1_INDAGOBS,   # 4 agents (3v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_1V4_INDAGOBS,   # 5 agents (1v4 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_4V1_INDAGOBS,   # 5 agents (4v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_2V3_INDAGOBS,   # 5 agents (2v3 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_3V2_INDAGOBS,   # 5 agents (3v2 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_2V4_INDAGOBS,   # 6 agents (2v4 asymmetric)
+    GameId.MOSAIC_MULTIGRID_BB_4V2_INDAGOBS,   # 6 agents (4v2 asymmetric)
+    # MOSAIC multigrid — AmericanFootball (AF)
+    GameId.MOSAIC_MULTIGRID_AF_G_1V0,          # 1 agent (Green solo)
+    GameId.MOSAIC_MULTIGRID_AF_B_0V1,          # 1 agent (Blue solo)
+    GameId.MOSAIC_MULTIGRID_AF_1V1_INDAGOBS,   # 2 agents (1v1)
+    GameId.MOSAIC_MULTIGRID_AF_2V2_INDAGOBS,   # 4 agents (2v2)
+    GameId.MOSAIC_MULTIGRID_AF_3V3_INDAGOBS,   # 6 agents (3v3)
+    GameId.MOSAIC_MULTIGRID_AF_4V4_INDAGOBS,   # 8 agents (4v4)
+    GameId.MOSAIC_MULTIGRID_AF_G_2V0_INDAGOBS, # 2 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_AF_G_3V0_INDAGOBS, # 3 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_AF_G_4V0_INDAGOBS, # 4 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_AF_G_5V0_INDAGOBS, # 5 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_AF_G_6V0_INDAGOBS, # 6 agents (Green coop)
+    GameId.MOSAIC_MULTIGRID_AF_B_0V2_INDAGOBS, # 2 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_AF_B_0V3_INDAGOBS, # 3 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_AF_B_0V4_INDAGOBS, # 4 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_AF_B_0V5_INDAGOBS, # 5 agents (Blue coop)
+    GameId.MOSAIC_MULTIGRID_AF_B_0V6_INDAGOBS, # 6 agents (Blue coop)
+    # MOSAIC multigrid — American Football asymmetric competitive (NEW in v7.0.0)
+    GameId.MOSAIC_MULTIGRID_AF_1V2_INDAGOBS,   # 3 agents (1v2 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_2V1_INDAGOBS,   # 3 agents (2v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_1V3_INDAGOBS,   # 4 agents (1v3 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_3V1_INDAGOBS,   # 4 agents (3v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_1V4_INDAGOBS,   # 5 agents (1v4 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_4V1_INDAGOBS,   # 5 agents (4v1 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_2V3_INDAGOBS,   # 5 agents (2v3 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_3V2_INDAGOBS,   # 5 agents (3v2 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_2V4_INDAGOBS,   # 6 agents (2v4 asymmetric)
+    GameId.MOSAIC_MULTIGRID_AF_4V2_INDAGOBS,   # 6 agents (4v2 asymmetric)
+    # MOSAIC multigrid — Collect (C)
+    GameId.MOSAIC_MULTIGRID_C_INDAGOBS,        # 3 agents
+    GameId.MOSAIC_MULTIGRID_C_1V1_INDAGOBS,    # 2 agents (1v1)
+    GameId.MOSAIC_MULTIGRID_C_2V2_INDAGOBS,    # 4 agents (2v2)
     # INI multigrid (configurable agent count, default 2)
     GameId.INI_MULTIGRID_BLOCKED_UNLOCK_PICKUP,
     GameId.INI_MULTIGRID_EMPTY_5X5,
@@ -54,25 +124,96 @@ MULTIGRID_GAME_IDS: tuple[GameId, ...] = (
     GameId.INI_MULTIGRID_RED_BLUE_DOORS_8X8,
 )
 
-# MOSAIC environments with agent counts
+# MOSAIC environments with agent counts (v7.0.0)
 MOSAIC_AGENT_COUNTS: dict[GameId, int] = {
-    GameId.MOSAIC_MULTIGRID_SOCCER: 4,   # 2v2 teams
-    GameId.MOSAIC_MULTIGRID_COLLECT: 3,  # 3 collectors
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2: 4,  # 2v2 teams
-    GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_INDAGOBS: 4,   # 2v2 teams
-    GameId.MOSAIC_MULTIGRID_SOCCER_1VS1_INDAGOBS: 2,   # 1v1
-    GameId.MOSAIC_MULTIGRID_COLLECT_INDAGOBS: 3,  # 3 collectors
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2_INDAGOBS: 4,  # 2v2 teams
-    GameId.MOSAIC_MULTIGRID_COLLECT_1VS1_INDAGOBS: 2,  # 1v1
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_INDAGOBS: 6,  # 3v3
-    GameId.MOSAIC_MULTIGRID_SOCCER_2VS2_TEAMOBS: 4,   # 2v2 teams
-    GameId.MOSAIC_MULTIGRID_COLLECT2VS2_TEAMOBS: 4,  # 2v2 teams
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_TEAMOBS: 6,  # 3v3
-    # Solo variants (v6.0.0) - single agent
-    GameId.MOSAIC_MULTIGRID_SOCCER_SOLO_GREEN: 1,
-    GameId.MOSAIC_MULTIGRID_SOCCER_SOLO_BLUE: 1,
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_SOLO_GREEN: 1,
-    GameId.MOSAIC_MULTIGRID_BASKETBALL_SOLO_BLUE: 1,
+    # Soccer
+    GameId.MOSAIC_MULTIGRID_S_G_1V0: 1,
+    GameId.MOSAIC_MULTIGRID_S_B_0V1: 1,
+    GameId.MOSAIC_MULTIGRID_S_1V1_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_S_2V2_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_S_3V3_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_S_4V4_INDAGOBS: 8,
+    GameId.MOSAIC_MULTIGRID_S_G_2V0_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_S_G_3V0_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_S_G_4V0_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_S_G_5V0_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_S_G_6V0_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_S_B_0V2_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_S_B_0V3_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_S_B_0V4_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_S_B_0V5_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_S_B_0V6_INDAGOBS: 6,
+    # Soccer asymmetric competitive (v7.0.0)
+    GameId.MOSAIC_MULTIGRID_S_1V2_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_S_2V1_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_S_1V3_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_S_3V1_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_S_1V4_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_S_4V1_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_S_2V3_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_S_3V2_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_S_2V4_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_S_4V2_INDAGOBS: 6,
+    # Basketball
+    GameId.MOSAIC_MULTIGRID_BB_G_1V0: 1,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V1: 1,
+    GameId.MOSAIC_MULTIGRID_BB_1V1_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_BB_2V2_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_BB_3V3_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_BB_4V4_INDAGOBS: 8,
+    GameId.MOSAIC_MULTIGRID_BB_G_2V0_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_BB_G_3V0_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_BB_G_4V0_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_BB_G_5V0_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_BB_G_6V0_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V2_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V3_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V4_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V5_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_BB_B_0V6_INDAGOBS: 6,
+    # Basketball asymmetric competitive (v7.0.0)
+    GameId.MOSAIC_MULTIGRID_BB_1V2_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_BB_2V1_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_BB_1V3_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_BB_3V1_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_BB_1V4_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_BB_4V1_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_BB_2V3_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_BB_3V2_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_BB_2V4_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_BB_4V2_INDAGOBS: 6,
+    # American Football
+    GameId.MOSAIC_MULTIGRID_AF_G_1V0: 1,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V1: 1,
+    GameId.MOSAIC_MULTIGRID_AF_1V1_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_AF_2V2_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_AF_3V3_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_AF_4V4_INDAGOBS: 8,
+    GameId.MOSAIC_MULTIGRID_AF_G_2V0_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_AF_G_3V0_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_AF_G_4V0_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_AF_G_5V0_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_AF_G_6V0_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V2_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V3_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V4_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V5_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_AF_B_0V6_INDAGOBS: 6,
+    # American Football asymmetric competitive (v7.0.0)
+    GameId.MOSAIC_MULTIGRID_AF_1V2_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_AF_2V1_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_AF_1V3_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_AF_3V1_INDAGOBS: 4,
+    GameId.MOSAIC_MULTIGRID_AF_1V4_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_AF_4V1_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_AF_2V3_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_AF_3V2_INDAGOBS: 5,
+    GameId.MOSAIC_MULTIGRID_AF_2V4_INDAGOBS: 6,
+    GameId.MOSAIC_MULTIGRID_AF_4V2_INDAGOBS: 6,
+    # Collect
+    GameId.MOSAIC_MULTIGRID_C_INDAGOBS: 3,
+    GameId.MOSAIC_MULTIGRID_C_1V1_INDAGOBS: 2,
+    GameId.MOSAIC_MULTIGRID_C_2V2_INDAGOBS: 4,
 }
 
 # INI environments that support configurable agent count
