@@ -344,7 +344,7 @@ The second set of configurations examines intra-team heterogeneity by mixing par
 
 All RL policies are trained solo ($N=1$) and frozen before deployment; LLM/VLM agents are zero-shot. Configurations C1-C2 and C3-C4 test whether LLM and VLM agents can serve as effective teammates for frozen RL policies. C5 serves as the fair comparison baseline: two independently trained solo experts paired at evaluation time. C6-C7 compare zero-shot cross-paradigm teaming against co-trained RL teams. C8 directly compares LLM and VLM agents as teammates within heterogeneous teams.
 
-## Supported Environment Families (29)
+## Supported Environment Families (33)
 
 | Family | Description | Example | Status |
 |--------|-------------|---------|--------|
@@ -357,6 +357,7 @@ All RL policies are trained solo ($N=1$) and frozen before deployment; LLM/VLM a
 | **MiniHack** | Roguelike sandbox built on NetHack (NLE) | <img src="docs/source/images/envs/minihack/minihack.gif" width="200"> | Human-Control: ✅, Single-Agent: 📋, Multi-Agent: ❌ |
 | **NetHack** | Full NetHack roguelike game via NLE | <img src="docs/source/images/envs/nethack/nethack.gif" width="200"> | Human-Control: ✅, Single-Agent: 📋, Multi-Agent: ❌ |
 | **Crafter** | Open-world survival benchmark | <img src="docs/source/images/envs/crafter/crafter.gif" width="200"> | Human-Control: ✅, Single-Agent: 📋, Multi-Agent: ❌ |
+| **Craftax** | JAX-accelerated open-world survival (Crafter-in-JAX, 22 achievements) | <img src="https://raw.githubusercontent.com/MichaelTMatthews/Craftax/main/images/archery.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
 | **Procgen** | 16 procedurally generated environments | <img src="docs/source/images/envs/procgen/coinrun.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ❌ |
 | **BabaIsAI** | Rule-manipulation puzzles | <img src="docs/source/images/envs/babaisai/babaisai.png" width="200"> | Human-Control: ✅, Single-Agent: 📋, Multi-Agent: ❌ |
 | **TextWorld** | Text-based interactive fiction (Microsoft Research) | <img src="docs/source/images/envs/textworld/textworld.gif" width="200"> | Human-Control: ✅, Single-Agent: 📋, Multi-Agent: ❌ |
@@ -364,8 +365,9 @@ All RL policies are trained solo ($N=1$) and frozen before deployment; LLM/VLM a
 | **PyBullet Drones** | Quadcopter physics simulation | <img src="docs/source/images/envs/pybullet_drones/pybullet_drones.gif" width="200"> | Human-Control: ❌, Single-Agent: ✅, Multi-Agent: ✅ |
 | **PettingZoo Classic** | Turn-based board games (AEC) | <img src="docs/source/images/envs/pettingzoo/pettingzoo.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **OpenSpiel** | Board games via DeepMind's OpenSpiel + Shimmy (Chess, Go, Checkers) | <img src="docs/source/images/envs/openspiel/openspiel.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ❌ |
-| **MOSAIC MultiGrid** | Competitive team sports (view_size=3) | <img src="docs/source/images/envs/multigrid_sports/multigrid_sports.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
+| **MOSAIC MultiGrid** | Competitive team sports (view_size=3) | <img src="docs/source/images/envs/mosaic_multigrid/mosaic_multigrid.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
 | **INI MultiGrid** | Cooperative exploration (view_size=7) | <img src="docs/source/images/envs/multigrid_ini/multigrid_ini.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
+| **SocialJax** | JAX-accelerated sequential social dilemmas (9 envs) | <img src="docs/source/images/envs/socialjax/socialjax_common.gif" width="200"> | Human-Control: ❌, Single-Agent: ❌, Multi-Agent: ✅ |
 | **Melting Pot** | Social multi-agent scenarios (up to 16 agents) | <img src="docs/source/images/envs/meltingpot/meltingpot.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **Overcooked** | Cooperative cooking (2 agents) | <img src="docs/source/images/envs/overcooked/overcooked_layouts.gif" width="200"> | Human-Control: ✅, Single-Agent: ❌, Multi-Agent: ✅ |
 | **SMAC** | StarCraft Multi-Agent Challenge (hand-designed maps) | <img src="docs/source/images/envs/smac/smac.gif" width="200"> | Human-Control: ✅, Single-Agent: ✅, Multi-Agent: ✅ |
@@ -493,7 +495,7 @@ If you use MOSAIC in your research, please cite:
 
 ```bibtex
 @misc{mousa2026mosaicunifiedplatformcrossparadigm,
-      title={MOSAIC: A Unified Platform for Cross-Paradigm Agent-Mixing and Human-AI Collaboration},
+      title={MOSAIC: A Universal Agent-Level Interface for Cross-Paradigm Agent Mixing and Human-AI Collaboration},
       author={Abdulhamid M. Mousa and Yu Fu and Rakhmonberdi Khajiev and Jalaledin M. Azzabi and Abdulkarim M. Mousa and Peng Yang and Yunusa Haruna and Ming Liu},
       year={2026},
       eprint={2603.01260},
