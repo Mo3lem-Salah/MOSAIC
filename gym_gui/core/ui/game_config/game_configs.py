@@ -88,9 +88,9 @@ class FrozenLakeConfig:
 
 @dataclass(frozen=True)
 class TaxiConfig:
-    """Configuration for Taxi-v3 environment.
+    """Configuration for Taxi-v4 environment.
 
-    Note: Taxi-v3 in Gymnasium does not support is_raining or fickle_passenger
+    Note: Taxi-v4 in Gymnasium does not support is_raining or fickle_passenger
     parameters. These were present in older versions but removed in modern Gymnasium.
     The environment always uses deterministic movement.
     """
@@ -106,9 +106,9 @@ class TaxiConfig:
     def to_gym_kwargs(self) -> Dict[str, Any]:
         """Convert to Gymnasium environment kwargs.
 
-        Note: Returns empty dict as Taxi-v3 doesn't accept custom parameters.
+        Note: Returns empty dict as Taxi-v4 doesn't accept custom parameters.
         """
-        # Taxi-v3 doesn't support is_raining or fickle_passenger in current Gymnasium
+        # Taxi-v4 doesn't support is_raining or fickle_passenger in current Gymnasium
         return {}
 
 

@@ -184,7 +184,7 @@ ENV_FAMILIES: Dict[str, Tuple[str, ...]] = {
     "textworld": ("treasure_hunter", "the_cooking_game", "coin_collector"),
     "toytext": (
         "FrozenLake-v1",
-        "Taxi-v3",
+        "Taxi-v4",
         "CliffWalking-v1",
         "Blackjack-v1",
     ),
