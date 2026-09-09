@@ -49,7 +49,7 @@ class TestRedBlueDoorsRegistration:
             assert gid.value.startswith("MiniGrid-RedBlueDoors-")
 
     def test_default_configs_exported(self) -> None:
-        from gym_gui.config import game_configs
+        from gym_gui.core.ui.game_config import game_configs
         for name in [
             "DEFAULT_MINIGRID_REDBLUE_DOORS_6x6_CONFIG",
             "DEFAULT_MINIGRID_REDBLUE_DOORS_8x8_CONFIG",

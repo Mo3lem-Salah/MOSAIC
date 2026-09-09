@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Optional, Tuple, cast
 
 import numpy as np
 
-from gym_gui.config import game_configs
+from gym_gui.core.ui.game_config import game_configs
 from gym_gui.ui.handlers.env_previewers.base import EnvPreviewImportError
 
 if TYPE_CHECKING:

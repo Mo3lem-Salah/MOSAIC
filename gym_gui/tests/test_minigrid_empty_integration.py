@@ -67,7 +67,7 @@ class TestEmptyEnvironmentRegistration:
 
     def test_all_empty_configs_exported(self) -> None:
         """Verify all Empty default configs are exported."""
-        from gym_gui.config import game_configs
+        from gym_gui.core.ui.game_config import game_configs
 
         expected_configs = [
             "DEFAULT_MINIGRID_EMPTY_5x5_CONFIG",

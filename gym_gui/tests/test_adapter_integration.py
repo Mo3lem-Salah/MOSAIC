@@ -357,7 +357,7 @@ class TestRenderPayloadStructure:
     ])
     def test_render_payload_structure(self, game_id, adapter_class, config):
         """All adapters provide properly structured render payloads."""
-        from gym_gui.config import game_configs
+        from gym_gui.core.ui.game_config import game_configs
         from gym_gui.core.adapters import toy_text
 
         AdapterClass = getattr(toy_text, adapter_class)
@@ -439,4 +439,3 @@ class TestWorkerIntegration:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

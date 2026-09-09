@@ -18,7 +18,6 @@ try:
 except ImportError:
     from qtpy.QtWidgets import QAction  # type: ignore[attr-defined]
 
-from gym_gui.config import game_configs
 from gym_gui.config.deployment import DAEMON_TARGET
 from gym_gui.config.paths import VAR_TRAINER_DIR
 from gym_gui.config.settings import Settings, get_settings
@@ -28,6 +27,7 @@ from gym_gui.controllers.live_telemetry_controllers import LiveTelemetryControll
 from gym_gui.controllers.session import SessionController
 from gym_gui.core.enums import ENVIRONMENT_FAMILY_BY_GAME, ControlMode, EnvironmentFamily, GameId
 from gym_gui.core.factories.adapters import available_games
+from gym_gui.core.ui.game_config import game_configs
 from gym_gui.core.ui.game_config.game_config_builder import GameConfigBuilder
 from gym_gui.game_docs import get_game_info
 from gym_gui.game_docs.mosaic_welcome import MOSAIC_WELCOME_HTML
