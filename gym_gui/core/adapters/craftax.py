@@ -300,11 +300,11 @@ class BaseCraftaxAdapter(EnvironmentAdapter[np.ndarray, int]):
             return payload
 
         if self.IS_CLASSIC:
-            from craftax.craftax_classic.renderer import render_craftax_pixels
             from craftax.craftax_classic.constants import BLOCK_PIXEL_SIZE_HUMAN
+            from craftax.craftax_classic.renderer import render_craftax_pixels
         else:
-            from craftax.craftax.renderer import render_craftax_pixels
             from craftax.craftax.constants import BLOCK_PIXEL_SIZE_HUMAN
+            from craftax.craftax.renderer import render_craftax_pixels
 
         pixels_jax = render_craftax_pixels(self._state, block_pixel_size=BLOCK_PIXEL_SIZE_HUMAN)
         pixels = np.asarray(_jax.device_get(pixels_jax))

@@ -478,15 +478,15 @@ try:  # Optional dependency - SocialJax (JAX sequential social dilemma)
     from .socialjax import (  # pragma: no cover - socialjax optional
         SOCIALJAX_ADAPTERS,
         SocialJaxAdapter,
-        SocialJaxCoinGameAdapter,
-        SocialJaxHarvestCommonOpenAdapter,
         SocialJaxCleanUpAdapter,
+        SocialJaxCoinGameAdapter,
         SocialJaxCoopMiningAdapter,
-        SocialJaxTerritoryOpenAdapter,
-        SocialJaxPdArenaAdapter,
-        SocialJaxMushroomsAdapter,
         SocialJaxGiftAdapter,
+        SocialJaxHarvestCommonOpenAdapter,
         SocialJaxLbForagingAdapter,
+        SocialJaxMushroomsAdapter,
+        SocialJaxPdArenaAdapter,
+        SocialJaxTerritoryOpenAdapter,
         create_socialjax_adapter,
     )
     _SOCIALJAX_AVAILABLE = True
@@ -626,9 +626,6 @@ try:
     from .smac import (
         SMAC_ADAPTERS,
         SMAC1C3S5ZAdapter,
-        SMAC10Mvs11MAdapter,
-        SMAC25MAdapter,
-        SMAC27Mvs30MAdapter,
         SMAC2Cvs64ZGAdapter,
         SMAC2Mvs1ZAdapter,
         SMAC2S3ZAdapter,
@@ -643,11 +640,14 @@ try:
         SMAC6Hvs8ZAdapter,
         SMAC8MAdapter,
         SMAC8Mvs9MAdapter,
+        SMAC10Mvs11MAdapter,
+        SMAC25MAdapter,
+        SMAC27Mvs30MAdapter,
         SMACAdapter,
         SMACBaneVsBaneAdapter,
         SMACCorridorAdapter,
-        SMACMMMAdapter,
         SMACMMM2Adapter,
+        SMACMMMAdapter,
         SMACSoManyBanelingAdapter,
     )
     _SMAC_AVAILABLE = True
@@ -687,14 +687,14 @@ except Exception:
 
 try:  # Optional dependency - Google Research Football (GRF)
     from .gfootball import (  # pragma: no cover - gfootball optional
-        GRF_DEFAULT_ACTIONS,
         GFOOTBALL_ADAPTERS,
+        GRF_DEFAULT_ACTIONS,
         GFootballAdapter,
+        GRF1vs1EasyAdapter,
+        GRF5vs5Adapter,
         GRF11vs11Adapter,
         GRF11vs11EasyAdapter,
         GRF11vs11HardAdapter,
-        GRF1vs1EasyAdapter,
-        GRF5vs5Adapter,
         GRFAcademy3vs1WithKeeperAdapter,
         GRFAcademyCornerAdapter,
         GRFAcademyCounterattackEasyAdapter,

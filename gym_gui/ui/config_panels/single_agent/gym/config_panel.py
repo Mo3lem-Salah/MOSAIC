@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 from PyQt6 import QtCore, QtWidgets
 
+from gym_gui.core.enums import GameId
 from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_FROZEN_LAKE_V2_CONFIG,
     BipedalWalkerConfig,
@@ -15,7 +16,6 @@ from gym_gui.core.ui.game_config.game_configs import (
     LunarLanderConfig,
     TaxiConfig,
 )
-from gym_gui.core.enums import GameId
 
 TOY_TEXT_FAMILY = {
     GameId.FROZEN_LAKE,

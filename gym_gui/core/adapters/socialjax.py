@@ -21,7 +21,6 @@ from typing import Any
 
 import numpy as np
 
-from gym_gui.core.ui.game_config.game_configs import SocialJaxConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,
@@ -30,6 +29,7 @@ from gym_gui.core.adapters.base import (
     StepState,
 )
 from gym_gui.core.enums import ControlMode, GameId, RenderMode, SteppingParadigm
+from gym_gui.core.ui.game_config.game_configs import SocialJaxConfig
 from gym_gui.logging_config.log_constants import (
     LOG_SOCIALJAX_ACTION_TAKEN,
     LOG_SOCIALJAX_ENV_CLOSED,

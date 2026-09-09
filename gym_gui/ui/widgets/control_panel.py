@@ -8,6 +8,14 @@ from typing import Any, Dict, Iterable, Optional, Tuple
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import pyqtSignal  # type: ignore[attr-defined]
 
+from gym_gui.core.adapters.vizdoom import ViZDoomConfig
+from gym_gui.core.enums import (
+    ENVIRONMENT_FAMILY_BY_GAME,
+    ControlMode,
+    EnvironmentFamily,
+    GameId,
+    get_game_display_name,
+)
 from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_FROZEN_LAKE_V2_CONFIG,
     ALEConfig,
@@ -24,19 +32,15 @@ from gym_gui.core.ui.game_config.game_configs import (
     SMACConfig,
     TaxiConfig,
 )
-from gym_gui.core.adapters.vizdoom import ViZDoomConfig
-from gym_gui.core.enums import (
-    ENVIRONMENT_FAMILY_BY_GAME,
-    ControlMode,
-    EnvironmentFamily,
-    GameId,
-    get_game_display_name,
-)
 from gym_gui.services.operator import OperatorConfig, OperatorDescriptor
 from gym_gui.telemetry.semconv import (
     TELEMETRY_MODE_DESCRIPTORS,
     TelemetryModeDescriptor,
     TelemetryModes,
+)
+from gym_gui.ui.config_panels.multi_agent.hemac import (
+    ALL_HEMAC_GAME_IDS,
+    build_hemac_controls,
 )
 from gym_gui.ui.config_panels.multi_agent.meltingpot import (
     MELTINGPOT_GAME_IDS,
@@ -45,23 +49,12 @@ from gym_gui.ui.config_panels.multi_agent.meltingpot import (
 from gym_gui.ui.config_panels.multi_agent.meltingpot import (
     ControlCallbacks as MeltingPotControlCallbacks,
 )
-from gym_gui.ui.config_panels.multi_agent.socialjax import (
-    SOCIALJAX_GAME_IDS,
-    build_socialjax_controls,
-)
-from gym_gui.ui.config_panels.multi_agent.socialjax import (
-    ControlCallbacks as SocialJaxControlCallbacks,
-)
 from gym_gui.ui.config_panels.multi_agent.multigrid import (
     MULTIGRID_GAME_IDS,
     build_multigrid_controls,
 )
 from gym_gui.ui.config_panels.multi_agent.multigrid import (
     ControlCallbacks as MultiGridControlCallbacks,
-)
-from gym_gui.ui.config_panels.multi_agent.hemac import (
-    ALL_HEMAC_GAME_IDS,
-    build_hemac_controls,
 )
 from gym_gui.ui.config_panels.multi_agent.rware import (
     ALL_RWARE_GAME_IDS,
@@ -73,6 +66,13 @@ from gym_gui.ui.config_panels.multi_agent.smac import (
 )
 from gym_gui.ui.config_panels.multi_agent.smac import (
     ControlCallbacks as SMACControlCallbacks,
+)
+from gym_gui.ui.config_panels.multi_agent.socialjax import (
+    SOCIALJAX_GAME_IDS,
+    build_socialjax_controls,
+)
+from gym_gui.ui.config_panels.multi_agent.socialjax import (
+    ControlCallbacks as SocialJaxControlCallbacks,
 )
 from gym_gui.ui.config_panels.single_agent.ale import (
     ALE_GAME_IDS,

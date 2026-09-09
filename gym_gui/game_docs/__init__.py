@@ -228,8 +228,31 @@ try:  # Optional dependency - MalmoEnv docs (experimental)
 except Exception:  # pragma: no cover - MalmoEnv optional
     _MOSAIC_MALMO_DOCS_AVAILABLE = False
 
+from gym_gui.game_docs.GRF import (
+    # Full match (multi-agent)
+    GRF_1V1_EASY_HTML,
+    GRF_5V5_HTML,
+    GRF_11V11_EASY_HTML,
+    GRF_11V11_HARD_HTML,
+    GRF_11V11_HTML,
+    GRF_ACADEMY_3VS1_WITH_KEEPER_HTML,
+    GRF_ACADEMY_CORNER_HTML,
+    GRF_ACADEMY_COUNTERATTACK_EASY_HTML,
+    GRF_ACADEMY_COUNTERATTACK_HARD_HTML,
+    GRF_ACADEMY_EMPTY_GOAL_CLOSE_HTML,
+    # Academy (single-agent)
+    GRF_ACADEMY_EMPTY_GOAL_HTML,
+    GRF_ACADEMY_PASS_AND_SHOOT_HTML,
+    GRF_ACADEMY_RUN_PASS_AND_SHOOT_HTML,
+    GRF_ACADEMY_RUN_TO_SCORE_HTML,
+    GRF_ACADEMY_RUN_TO_SCORE_WITH_KEEPER_HTML,
+    GRF_ACADEMY_SINGLE_GOAL_VS_LAZY_HTML,
+)
 from gym_gui.game_docs.MultiGrid_INI import (
     get_ini_multigrid_html,
+)
+from gym_gui.game_docs.Olympics import (
+    OLYMPICS_WRESTLING_HTML,
 )
 from gym_gui.game_docs.OpenSpiel import (
     CHECKERS_HTML,
@@ -278,52 +301,29 @@ from gym_gui.game_docs.SMAC import (
     SMAC_27M_VS_30M_HTML,
     SMAC_BANE_VS_BANE_HTML,
     SMAC_CORRIDOR_HTML,
-    SMAC_MMM_HTML,
     SMAC_MMM2_HTML,
+    SMAC_MMM_HTML,
     SMAC_SO_MANY_BANELING_HTML,
 )
 from gym_gui.game_docs.SMACv2 import (
-    SMACV2_PROTOSS_HTML,
     SMACV2_PROTOSS_5V5_HTML,
     SMACV2_PROTOSS_10V10_HTML,
     SMACV2_PROTOSS_10V11_HTML,
     SMACV2_PROTOSS_20V20_HTML,
     SMACV2_PROTOSS_20V23_HTML,
-    SMACV2_TERRAN_HTML,
+    SMACV2_PROTOSS_HTML,
     SMACV2_TERRAN_5V5_HTML,
     SMACV2_TERRAN_10V10_HTML,
     SMACV2_TERRAN_10V11_HTML,
     SMACV2_TERRAN_20V20_HTML,
     SMACV2_TERRAN_20V23_HTML,
-    SMACV2_ZERG_HTML,
+    SMACV2_TERRAN_HTML,
     SMACV2_ZERG_5V5_HTML,
     SMACV2_ZERG_10V10_HTML,
     SMACV2_ZERG_10V11_HTML,
     SMACV2_ZERG_20V20_HTML,
     SMACV2_ZERG_20V23_HTML,
-)
-from gym_gui.game_docs.GRF import (
-    # Academy (single-agent)
-    GRF_ACADEMY_EMPTY_GOAL_HTML,
-    GRF_ACADEMY_EMPTY_GOAL_CLOSE_HTML,
-    GRF_ACADEMY_RUN_TO_SCORE_HTML,
-    GRF_ACADEMY_RUN_TO_SCORE_WITH_KEEPER_HTML,
-    GRF_ACADEMY_PASS_AND_SHOOT_HTML,
-    GRF_ACADEMY_RUN_PASS_AND_SHOOT_HTML,
-    GRF_ACADEMY_COUNTERATTACK_EASY_HTML,
-    GRF_ACADEMY_COUNTERATTACK_HARD_HTML,
-    GRF_ACADEMY_CORNER_HTML,
-    GRF_ACADEMY_3VS1_WITH_KEEPER_HTML,
-    GRF_ACADEMY_SINGLE_GOAL_VS_LAZY_HTML,
-    # Full match (multi-agent)
-    GRF_1V1_EASY_HTML,
-    GRF_5V5_HTML,
-    GRF_11V11_EASY_HTML,
-    GRF_11V11_HTML,
-    GRF_11V11_HARD_HTML,
-)
-from gym_gui.game_docs.Olympics import (
-    OLYMPICS_WRESTLING_HTML,
+    SMACV2_ZERG_HTML,
 )
 
 try:  # Optional dependency for ViZDoom docs (kept lightweight)
@@ -964,15 +964,15 @@ def _get_socialjax_doc(env_id: str) -> str:
     and maps it to the corresponding documentation module.
     """
     from gym_gui.game_docs.SocialJax import (
-        SOCIALJAX_COIN_GAME_HTML,
-        SOCIALJAX_HARVEST_COMMON_OPEN_HTML,
         SOCIALJAX_CLEAN_UP_HTML,
+        SOCIALJAX_COIN_GAME_HTML,
         SOCIALJAX_COOP_MINING_HTML,
-        SOCIALJAX_TERRITORY_OPEN_HTML,
-        SOCIALJAX_PD_ARENA_HTML,
-        SOCIALJAX_MUSHROOMS_HTML,
         SOCIALJAX_GIFT_HTML,
+        SOCIALJAX_HARVEST_COMMON_OPEN_HTML,
         SOCIALJAX_LB_FORAGING_HTML,
+        SOCIALJAX_MUSHROOMS_HTML,
+        SOCIALJAX_PD_ARENA_HTML,
+        SOCIALJAX_TERRITORY_OPEN_HTML,
     )
 
     _DOC_MAP = {

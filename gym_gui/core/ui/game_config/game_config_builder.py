@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any, Dict
 
+from gym_gui.core.enums import ENVIRONMENT_FAMILY_BY_GAME, EnvironmentFamily, GameId
 from gym_gui.core.ui.game_config.game_configs import (
     BipedalWalkerConfig,
     CarRacingConfig,
@@ -17,7 +18,6 @@ from gym_gui.core.ui.game_config.game_configs import (
     SMACConfig,
     TaxiConfig,
 )
-from gym_gui.core.enums import ENVIRONMENT_FAMILY_BY_GAME, EnvironmentFamily, GameId
 
 try:
     from gym_gui.core.adapters.vizdoom import ViZDoomConfig

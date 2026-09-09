@@ -20,15 +20,15 @@ except ImportError:
 
 from gym_gui.config import game_configs
 from gym_gui.config.deployment import DAEMON_TARGET
-from gym_gui.core.ui.game_config.game_config_builder import GameConfigBuilder
 from gym_gui.config.paths import VAR_TRAINER_DIR
 from gym_gui.config.settings import Settings, get_settings
 from gym_gui.constants import TRAINER_DEFAULTS, UI_DEFAULTS
 from gym_gui.controllers.human_input import HumanInputController
 from gym_gui.controllers.live_telemetry_controllers import LiveTelemetryController
 from gym_gui.controllers.session import SessionController
-from gym_gui.core.enums import ControlMode, ENVIRONMENT_FAMILY_BY_GAME, EnvironmentFamily, GameId
+from gym_gui.core.enums import ENVIRONMENT_FAMILY_BY_GAME, ControlMode, EnvironmentFamily, GameId
 from gym_gui.core.factories.adapters import available_games
+from gym_gui.core.ui.game_config.game_config_builder import GameConfigBuilder
 from gym_gui.game_docs import get_game_info
 from gym_gui.game_docs.mosaic_welcome import MOSAIC_WELCOME_HTML
 from gym_gui.logging_config.helpers import LogConstantMixin
@@ -97,28 +97,28 @@ from gym_gui.ui.handlers import (
     ConnectFourEnvLoader,
     ConnectFourHandler,
     FastLaneTabHandler,
-    KeyboardBridgeHandler,
-    OperatorLifecycleHandler,
-    ParallelMultiAgentHandler,
-    PettingzooHandler,
-    ScriptModeHandler,
-    TrainingLifecycleHandler,
     GameConfigHandler,
     GodotHandler,
     GoEnvLoader,
     GoHandler,
     HumanVsAgentHandler,
     JumanjiGridClickLoader,
+    KeyboardBridgeHandler,
     LogHandler,
     MalmoEnvLoader,
     MPCHandler,
     # New composed handlers for extracted functionality
     MultiAgentGameHandler,
+    OperatorLifecycleHandler,
+    ParallelMultiAgentHandler,
+    PettingzooHandler,
     PolicyEvaluationHandler,
+    ScriptModeHandler,
     SmacCameraLoader,
     SudokuHandler,
     TicTacToeEnvLoader,
     TrainingFormHandler,
+    TrainingLifecycleHandler,
     TrainingMonitorHandler,
     VizdoomEnvLoader,
 )

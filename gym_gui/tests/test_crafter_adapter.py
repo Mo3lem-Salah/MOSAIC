@@ -14,7 +14,6 @@ import pytest
 # Skip entire module if crafter is not installed
 pytest.importorskip("crafter")
 
-from gym_gui.core.ui.game_config.game_configs import CrafterConfig
 from gym_gui.core.adapters.base import AdapterContext
 from gym_gui.core.adapters.crafter import (
     CRAFTER_ACHIEVEMENTS,
@@ -25,6 +24,7 @@ from gym_gui.core.adapters.crafter import (
     CrafterRewardAdapter,
 )
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
+from gym_gui.core.ui.game_config.game_configs import CrafterConfig
 from gym_gui.logging_config.log_constants import (
     LOG_ENV_CRAFTER_BOOT,
     LOG_ENV_CRAFTER_STEP,

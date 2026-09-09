@@ -19,11 +19,11 @@ Source: 3rd_party/environments/football/
 """
 
 from gym_gui.game_docs.GRF.multi_agent import (
+    GRF_1V1_EASY_HTML,
+    GRF_5V5_HTML,
     GRF_11V11_EASY_HTML,
     GRF_11V11_HARD_HTML,
     GRF_11V11_HTML,
-    GRF_1V1_EASY_HTML,
-    GRF_5V5_HTML,
 )
 from gym_gui.game_docs.GRF.single_agent import (
     GRF_ACADEMY_3VS1_WITH_KEEPER_HTML,

@@ -5,6 +5,12 @@ from __future__ import annotations
 from typing import Any, Iterable, Mapping, TypeVar
 
 from gym_gui.cache.memory import memoize
+from gym_gui.core.adapters.ale import ALE_ADAPTERS, ALEAdapter
+from gym_gui.core.adapters.babyai import BABYAI_ADAPTERS
+from gym_gui.core.adapters.base import AdapterContext, EnvironmentAdapter
+from gym_gui.core.adapters.box2d import BOX2D_ADAPTERS
+from gym_gui.core.adapters.minigrid import MINIGRID_ADAPTERS
+from gym_gui.core.adapters.toy_text import TOY_TEXT_ADAPTERS
 from gym_gui.core.ui.game_config.game_configs import (
     ALEConfig,
     BipedalWalkerConfig,
@@ -12,26 +18,20 @@ from gym_gui.core.ui.game_config.game_configs import (
     CarRacingConfig,
     CliffWalkingConfig,
     FrozenLakeConfig,
-    GFootballConfig,
     GameConfig,
+    GFootballConfig,
     GriddlyConfig,
     LunarLanderConfig,
     MeltingPotConfig,
-    SocialJaxConfig,
     MiniGridConfig,
     MultiGridConfig,
     OlympicsWrestlingConfig,
     OvercookedConfig,
     RWAREConfig,
     SMACConfig,
+    SocialJaxConfig,
     TaxiConfig,
 )
-from gym_gui.core.adapters.ale import ALE_ADAPTERS, ALEAdapter
-from gym_gui.core.adapters.babyai import BABYAI_ADAPTERS
-from gym_gui.core.adapters.base import AdapterContext, EnvironmentAdapter
-from gym_gui.core.adapters.box2d import BOX2D_ADAPTERS
-from gym_gui.core.adapters.minigrid import MINIGRID_ADAPTERS
-from gym_gui.core.adapters.toy_text import TOY_TEXT_ADAPTERS
 
 # TYPE_CHECKING imports removed - using GameConfig type alias instead
 
@@ -76,11 +76,11 @@ except Exception:  # pragma: no cover - nethack optional
     NetHackConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - Crafter (open world survival benchmark)
-    from gym_gui.core.ui.game_config.game_configs import CrafterConfig
     from gym_gui.core.adapters.crafter import (  # pragma: no cover - optional
         CRAFTER_ADAPTERS,
         CrafterAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import CrafterConfig
 except Exception:  # pragma: no cover - crafter optional
     CRAFTER_ADAPTERS: dict[Any, Any] = {}
     CrafterAdapter = None  # type: ignore[misc, assignment]
@@ -98,33 +98,33 @@ except Exception:  # pragma: no cover - craftax optional
     CraftaxConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - Procgen (procedurally generated benchmark)
-    from gym_gui.core.ui.game_config.game_configs import ProcgenConfig
     from gym_gui.core.adapters.procgen import (  # pragma: no cover - optional
         PROCGEN_ADAPTERS,
         ProcgenAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import ProcgenConfig
 except Exception:  # pragma: no cover - procgen optional
     PROCGEN_ADAPTERS: dict[Any, Any] = {}
     ProcgenAdapter = None  # type: ignore[misc, assignment]
     ProcgenConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - TextWorld (text-based game environments)
-    from gym_gui.core.ui.game_config.game_configs import TextWorldConfig
     from gym_gui.core.adapters.textworld import (  # pragma: no cover - optional
         TEXTWORLD_ADAPTERS,
         TextWorldAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import TextWorldConfig
 except Exception:  # pragma: no cover - textworld optional
     TEXTWORLD_ADAPTERS: dict[Any, Any] = {}
     TextWorldAdapter = None  # type: ignore[misc, assignment]
     TextWorldConfig = None  # type: ignore[misc, assignment]
 
 try:  # Optional dependency - Jumanji (JAX-based logic puzzle environments)
-    from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
     from gym_gui.core.adapters.jumanji import (  # pragma: no cover - optional
         JUMANJI_ADAPTERS,
         JumanjiAdapter,
     )
+    from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 except Exception:  # pragma: no cover - jumanji optional
     JUMANJI_ADAPTERS: dict[Any, Any] = {}
     JumanjiAdapter = None  # type: ignore[misc, assignment]

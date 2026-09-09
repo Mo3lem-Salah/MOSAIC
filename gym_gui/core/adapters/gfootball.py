@@ -23,7 +23,6 @@ from typing import Any, Dict, List, Mapping
 import gymnasium as gym  # type: ignore[import]
 import numpy as np
 
-from gym_gui.core.ui.game_config.game_configs import GFootballConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,
@@ -32,6 +31,7 @@ from gym_gui.core.adapters.base import (
     StepState,
 )
 from gym_gui.core.enums import ControlMode, GameId, RenderMode, SteppingParadigm
+from gym_gui.core.ui.game_config.game_configs import GFootballConfig
 from gym_gui.logging_config.log_constants import (
     LOG_GFOOTBALL_ENV_CLOSED,
     LOG_GFOOTBALL_ENV_CREATED,

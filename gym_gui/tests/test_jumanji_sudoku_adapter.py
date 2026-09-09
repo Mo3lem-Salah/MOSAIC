@@ -29,13 +29,13 @@ import pytest
 # Skip entire module if jumanji is not installed
 jumanji = pytest.importorskip("jumanji")
 
-from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 from gym_gui.core.adapters.base import AdapterContext
 from gym_gui.core.adapters.jumanji import (
     JUMANJI_ADAPTERS,
     JumanjiSudokuAdapter,
 )
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
+from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 
 
 def _make_sudoku_adapter(**overrides: Any) -> JumanjiSudokuAdapter:

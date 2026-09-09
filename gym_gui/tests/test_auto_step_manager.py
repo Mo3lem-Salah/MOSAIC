@@ -11,8 +11,8 @@ Run:
 
 from __future__ import annotations
 
-import time
 import os
+import time
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -21,7 +21,6 @@ from qtpy import QtWidgets
 
 from gym_gui.services.auto_step_manager import AutoStepManager
 from gym_gui.services.operator import OperatorConfig, WorkerAssignment
-
 
 # ---------------------------------------------------------------------------
 # Shared fixtures

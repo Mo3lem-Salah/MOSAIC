@@ -19,14 +19,14 @@ import pytest
 
 pytest.importorskip("minigrid")
 
+from gym_gui.core.adapters.base import AdapterContext
+from gym_gui.core.adapters.minigrid import MiniGridAdapter
+from gym_gui.core.enums import ControlMode, GameId
 from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_MINIGRID_REDBLUE_DOORS_6x6_CONFIG,
     DEFAULT_MINIGRID_REDBLUE_DOORS_8x8_CONFIG,
     MiniGridConfig,
 )
-from gym_gui.core.adapters.base import AdapterContext
-from gym_gui.core.adapters.minigrid import MiniGridAdapter
-from gym_gui.core.enums import ControlMode, GameId
 from gym_gui.game_docs import get_game_info
 from gym_gui.logging_config.log_constants import LOG_ENV_MINIGRID_BOOT
 from gym_gui.ui.config_panels.single_agent.minigrid.config_panel import (

@@ -14,16 +14,6 @@ import numpy as np
 from PyQt6 import QtCore
 from PyQt6.QtCore import pyqtSignal  # type: ignore[attr-defined]
 
-from gym_gui.core.ui.game_config.game_configs import (
-    BipedalWalkerConfig,
-    CarRacingConfig,
-    CliffWalkingConfig,
-    FrozenLakeConfig,
-    GameConfig,
-    LunarLanderConfig,
-    MiniGridConfig,
-    TaxiConfig,
-)
 from gym_gui.config.settings import Settings
 from gym_gui.constants import DEFAULT_RENDER_DELAY_MS, format_episode_id
 from gym_gui.constants.constants_telemetry import (
@@ -59,6 +49,16 @@ from gym_gui.core.factories.adapters import create_adapter, get_adapter_cls
 from gym_gui.core.run_counter_manager import RunCounterManager
 from gym_gui.core.schema import schema_registry
 from gym_gui.core.spaces.vector_metadata import extract_vector_step_details
+from gym_gui.core.ui.game_config.game_configs import (
+    BipedalWalkerConfig,
+    CarRacingConfig,
+    CliffWalkingConfig,
+    FrozenLakeConfig,
+    GameConfig,
+    LunarLanderConfig,
+    MiniGridConfig,
+    TaxiConfig,
+)
 from gym_gui.logging_config.helpers import LogConstantMixin
 from gym_gui.logging_config.log_constants import (
     LOG_NORMALIZATION_STATS_DROPPED,

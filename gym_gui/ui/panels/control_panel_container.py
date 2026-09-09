@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from qtpy import QtWidgets
 
+from gym_gui.core.factories.adapters import available_games
 from gym_gui.core.ui.game_config.game_configs import (
     DEFAULT_MINIGRID_LAVAGAP_S7_CONFIG,
     BipedalWalkerConfig,
@@ -22,7 +23,6 @@ from gym_gui.core.ui.game_config.game_configs import (
     LunarLanderConfig,
     TaxiConfig,
 )
-from gym_gui.core.factories.adapters import available_games
 from gym_gui.services.operator import OperatorDescriptor
 from gym_gui.ui.widgets.control_panel import ControlPanelConfig, ControlPanelWidget
 

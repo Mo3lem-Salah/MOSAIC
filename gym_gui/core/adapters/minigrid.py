@@ -15,9 +15,9 @@ from typing import Any, Mapping
 import gymnasium as gym
 import numpy as np
 
-from gym_gui.core.ui.game_config.game_configs import MiniGridConfig
 from gym_gui.core.adapters.base import AdapterContext, AdapterStep, EnvironmentAdapter, StepState
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
+from gym_gui.core.ui.game_config.game_configs import MiniGridConfig
 from gym_gui.logging_config.log_constants import (
     LOG_ADAPTER_ENV_RESET,
     LOG_ADAPTER_STEP_SUMMARY,

@@ -14,7 +14,6 @@ from typing import Any, Mapping
 
 import numpy as np
 
-from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,
@@ -22,6 +21,7 @@ from gym_gui.core.adapters.base import (
     StepState,
 )
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
+from gym_gui.core.ui.game_config.game_configs import JumanjiConfig
 
 _LOGGER = logging.getLogger(__name__)
 

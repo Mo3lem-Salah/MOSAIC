@@ -131,8 +131,8 @@ def mappo_agent(checkpoint):
 @pytest.fixture(scope="module")
 def env():
     """Create the AF 1v1 environment with view_size=7."""
-    import mosaic_multigrid.envs  # noqa: F401
     import gymnasium as gym
+    import mosaic_multigrid.envs  # noqa: F401
 
     e = gym.make(ENV_ID, view_size=VIEW_SIZE, render_mode=None)
     yield e

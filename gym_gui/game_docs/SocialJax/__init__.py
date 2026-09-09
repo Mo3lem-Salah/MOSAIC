@@ -9,15 +9,15 @@ Paper: https://arxiv.org/abs/2503.14576
 
 from __future__ import annotations
 
-from gym_gui.game_docs.SocialJax.CoinGame import COIN_GAME_HTML
-from gym_gui.game_docs.SocialJax.HarvestCommonOpen import HARVEST_COMMON_OPEN_HTML
 from gym_gui.game_docs.SocialJax.CleanUp import CLEAN_UP_HTML
+from gym_gui.game_docs.SocialJax.CoinGame import COIN_GAME_HTML
 from gym_gui.game_docs.SocialJax.CoopMining import COOP_MINING_HTML
-from gym_gui.game_docs.SocialJax.TerritoryOpen import TERRITORY_OPEN_HTML
-from gym_gui.game_docs.SocialJax.PdArena import PD_ARENA_HTML
-from gym_gui.game_docs.SocialJax.Mushrooms import MUSHROOMS_HTML
 from gym_gui.game_docs.SocialJax.Gift import GIFT_HTML
+from gym_gui.game_docs.SocialJax.HarvestCommonOpen import HARVEST_COMMON_OPEN_HTML
 from gym_gui.game_docs.SocialJax.LbForaging import LB_FORAGING_HTML
+from gym_gui.game_docs.SocialJax.Mushrooms import MUSHROOMS_HTML
+from gym_gui.game_docs.SocialJax.PdArena import PD_ARENA_HTML
+from gym_gui.game_docs.SocialJax.TerritoryOpen import TERRITORY_OPEN_HTML
 
 SOCIALJAX_COIN_GAME_HTML = COIN_GAME_HTML
 SOCIALJAX_HARVEST_COMMON_OPEN_HTML = HARVEST_COMMON_OPEN_HTML

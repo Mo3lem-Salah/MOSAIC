@@ -26,7 +26,6 @@ import pytest
 # Skip the whole module when the compiled GRF engine is unavailable.
 pytest.importorskip("gfootball")
 
-from gym_gui.core.ui.game_config.game_configs import GFootballConfig
 from gym_gui.controllers.interaction import (
     AleInteractionController,
     GFootballInteractionController,
@@ -51,6 +50,7 @@ from gym_gui.core.enums import (
     GameId,
     RenderMode,
 )
+from gym_gui.core.ui.game_config.game_configs import GFootballConfig
 
 GRF_GAME_IDS = [g for g in GameId if g.name.startswith("GRF_")]
 

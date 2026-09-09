@@ -43,12 +43,11 @@ from gym_gui.constants import TRAINER_DEFAULTS
 from gym_gui.logging_config.log_constants import LOG_DAEMON_START
 from gym_gui.logging_config.logger import configure_logging
 from gym_gui.services.trainer import GPUAllocator, RunRegistry, RunStatus, TrainerDispatcher
-from gym_gui.services.trainer.proto import trainer_pb2, trainer_pb2_grpc
-from gym_gui.services.trainer.proto import inference_pb2_grpc, system_pb2_grpc
 from gym_gui.services.trainer.inference_service import InferenceServicer
-from gym_gui.services.trainer.system_service import SystemServicer
+from gym_gui.services.trainer.proto import inference_pb2_grpc, system_pb2_grpc, trainer_pb2, trainer_pb2_grpc
 from gym_gui.services.trainer.registry import WALCheckpointStats
 from gym_gui.services.trainer.service import _record_to_proto
+from gym_gui.services.trainer.system_service import SystemServicer
 from gym_gui.telemetry import TelemetrySQLiteStore
 from gym_gui.telemetry.db_sink import TelemetryDBSink
 from gym_gui.telemetry.run_bus import get_bus

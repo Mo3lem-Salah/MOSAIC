@@ -64,10 +64,10 @@ DATA FLOW
 ================================================================================
 """
 
-from gym_gui.replays.ReplayWriter import ReplayWriter
-from gym_gui.replays.ReplayReader import ReplayReader
+from gym_gui.replays.EpisodeLoader import EpisodeLoader, EpisodeReplay
 from gym_gui.replays.FrameResolver import FrameRef, FrameResolver, make_frame_ref
-from gym_gui.replays.EpisodeLoader import EpisodeReplay, EpisodeLoader
+from gym_gui.replays.ReplayReader import ReplayReader
+from gym_gui.replays.ReplayWriter import ReplayWriter
 
 __all__ = [
     # Write path (training time)

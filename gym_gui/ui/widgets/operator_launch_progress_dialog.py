@@ -12,8 +12,8 @@ from __future__ import annotations
 import logging
 from typing import Dict
 
-from qtpy import QtCore, QtWidgets
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from qtpy import QtCore, QtWidgets
 
 _LOGGER = logging.getLogger(__name__)
 

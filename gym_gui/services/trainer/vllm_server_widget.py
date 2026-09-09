@@ -1049,6 +1049,7 @@ class VLLMServerWidget(QtWidgets.QGroupBox):
         WatchVLLMServers is iterated in a daemon thread.
         """
         import grpc as _grpc
+
         from gym_gui.config.deployment import DAEMON_TARGET
         from gym_gui.services.trainer.proto import inference_pb2_grpc, system_pb2_grpc
 

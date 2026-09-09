@@ -10,17 +10,6 @@ from typing import Any, List, Sequence, Tuple, Type
 
 import gymnasium as gym
 
-from gym_gui.core.ui.game_config.game_configs import (
-    DEFAULT_BLACKJACK_CONFIG,
-    DEFAULT_CLIFF_WALKING_CONFIG,
-    DEFAULT_FROZEN_LAKE_CONFIG,
-    DEFAULT_FROZEN_LAKE_V2_CONFIG,
-    DEFAULT_TAXI_CONFIG,
-    BlackjackConfig,
-    CliffWalkingConfig,
-    FrozenLakeConfig,
-    TaxiConfig,
-)
 from gym_gui.config.paths import VAR_DATA_DIR
 from gym_gui.constants.constants_game import (
     BLACKJACK_DEFAULTS,
@@ -33,6 +22,17 @@ from gym_gui.constants.constants_game import (
 )
 from gym_gui.core.adapters.base import AdapterContext, EnvironmentAdapter, StepState
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
+from gym_gui.core.ui.game_config.game_configs import (
+    DEFAULT_BLACKJACK_CONFIG,
+    DEFAULT_CLIFF_WALKING_CONFIG,
+    DEFAULT_FROZEN_LAKE_CONFIG,
+    DEFAULT_FROZEN_LAKE_V2_CONFIG,
+    DEFAULT_TAXI_CONFIG,
+    BlackjackConfig,
+    CliffWalkingConfig,
+    FrozenLakeConfig,
+    TaxiConfig,
+)
 from gym_gui.logging_config.log_constants import (
     LOG_ADAPTER_ENV_CREATED,
     LOG_ADAPTER_GOAL_OVERRIDE,

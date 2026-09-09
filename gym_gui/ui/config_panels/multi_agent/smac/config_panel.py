@@ -7,8 +7,8 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.core.ui.game_config.game_configs import SMACConfig
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_configs import SMACConfig
 
 # SMAC v1 hand-designed maps
 SMAC_GAME_IDS: tuple[GameId, ...] = (

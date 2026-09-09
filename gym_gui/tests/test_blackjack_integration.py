@@ -18,11 +18,11 @@ import pytest
 
 pygame = pytest.importorskip("pygame", reason="gymnasium[toy-text] requires pygame")
 
-from gym_gui.core.ui.game_config.game_configs import DEFAULT_BLACKJACK_CONFIG, BlackjackConfig
 from gym_gui.controllers.human_input import _TOY_TEXT_MAPPINGS
 from gym_gui.core.adapters.toy_text import BlackjackAdapter
 from gym_gui.core.enums import ControlMode, GameId, RenderMode
 from gym_gui.core.factories.adapters import create_adapter
+from gym_gui.core.ui.game_config.game_configs import DEFAULT_BLACKJACK_CONFIG, BlackjackConfig
 from gym_gui.game_docs import get_game_info
 from gym_gui.utils import json_serialization
 

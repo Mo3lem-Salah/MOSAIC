@@ -146,8 +146,8 @@ class TestGRFGameIdCoverage:
 
     def test_all_grf_game_ids_have_keyboard_mapping(self):
         """Every GameId.GRF_* entry must appear in _GFOOTBALL_MAPPINGS."""
-        from gym_gui.core.enums import GameId
         from gym_gui.controllers.human_input import _GFOOTBALL_MAPPINGS
+        from gym_gui.core.enums import GameId
 
         grf_ids = [gid for gid in GameId if gid.name.startswith("GRF_")]
         unmapped = [gid for gid in grf_ids if gid not in _GFOOTBALL_MAPPINGS]
@@ -159,8 +159,8 @@ class TestGRFGameIdCoverage:
 
     def test_no_stale_game_ids_in_mapping(self):
         """_GFOOTBALL_MAPPINGS must not reference GameId values that no longer exist."""
-        from gym_gui.core.enums import GameId
         from gym_gui.controllers.human_input import _GFOOTBALL_MAPPINGS
+        from gym_gui.core.enums import GameId
 
         all_ids = set(GameId)
         stale = [gid for gid in _GFOOTBALL_MAPPINGS if gid not in all_ids]

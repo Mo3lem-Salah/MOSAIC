@@ -23,7 +23,6 @@ from typing import Any, Dict, List, Mapping
 import gymnasium as gym
 import numpy as np
 
-from gym_gui.core.ui.game_config.game_configs import OlympicsWrestlingConfig
 from gym_gui.core.adapters.base import (
     AdapterContext,
     AdapterStep,
@@ -32,6 +31,7 @@ from gym_gui.core.adapters.base import (
     StepState,
 )
 from gym_gui.core.enums import ControlMode, GameId, RenderMode, SteppingParadigm
+from gym_gui.core.ui.game_config.game_configs import OlympicsWrestlingConfig
 from gym_gui.logging_config.log_constants import (
     LOG_OLYMPICS_ENV_CLOSED,
     LOG_OLYMPICS_ENV_CREATED,

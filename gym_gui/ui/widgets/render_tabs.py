@@ -28,7 +28,7 @@ from gym_gui.rendering import (
     create_default_renderer_registry,
 )
 from gym_gui.rendering.strategies.board_game import BoardGameRendererStrategy
-from gym_gui.replays import EpisodeReplay, EpisodeLoader
+from gym_gui.replays import EpisodeLoader, EpisodeReplay
 from gym_gui.services.operator import OperatorConfig
 from gym_gui.services.service_locator import get_service_locator
 from gym_gui.services.telemetry import TelemetryService

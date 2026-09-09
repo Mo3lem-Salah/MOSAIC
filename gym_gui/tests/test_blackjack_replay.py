@@ -17,10 +17,10 @@ import pytest
 
 pygame = pytest.importorskip("pygame", reason="gymnasium[toy-text] requires pygame")
 
-from gym_gui.core.ui.game_config.game_configs import DEFAULT_BLACKJACK_CONFIG
 from gym_gui.core.adapters.toy_text import BlackjackAdapter
 from gym_gui.core.data_model import EpisodeRollup, StepRecord
 from gym_gui.core.enums import ControlMode, GameId
+from gym_gui.core.ui.game_config.game_configs import DEFAULT_BLACKJACK_CONFIG
 from gym_gui.replays.EpisodeLoader import EpisodeLoader
 from gym_gui.services.telemetry import TelemetryService
 from gym_gui.telemetry.sqlite_store import TelemetrySQLiteStore

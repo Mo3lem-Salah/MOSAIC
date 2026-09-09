@@ -15,8 +15,8 @@ from typing import Any, Callable, Dict
 
 from PyQt6 import QtWidgets
 
-from gym_gui.core.ui.game_config.game_configs import MultiGridConfig
 from gym_gui.core.enums import GameId
+from gym_gui.core.ui.game_config.game_configs import MultiGridConfig
 
 # All MultiGrid game IDs (v7.0.0: TeamObs removed, 30 asymmetric variants added)
 MULTIGRID_GAME_IDS: tuple[GameId, ...] = (

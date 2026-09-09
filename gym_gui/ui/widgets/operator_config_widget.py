@@ -1450,7 +1450,8 @@ class PlayerAssignmentRow(QtWidgets.QWidget):
     def _on_browse_policy_remote(self) -> None:
         """SSH into the server, list checkpoint files, show a picker dialog."""
         import subprocess
-        from gym_gui.config.deployment import SERVER_SSH_HOST, SERVER_PROJECT_ROOT
+
+        from gym_gui.config.deployment import SERVER_PROJECT_ROOT, SERVER_SSH_HOST
 
         trainer_dir = f"{SERVER_PROJECT_ROOT}/var/trainer"
         _, globs = self._policy_file_filter()

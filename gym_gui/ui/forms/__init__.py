@@ -35,6 +35,9 @@ def ensure_all_forms_registered() -> None:
     from gym_gui.ui.widgets.cleanrl_resume_form import CleanRlResumeForm  # noqa: F401
     from gym_gui.ui.widgets.cleanrl_script_form import CleanRlScriptForm  # noqa: F401
     from gym_gui.ui.widgets.cleanrl_train_form import CleanRlTrainForm  # noqa: F401
+    from gym_gui.ui.widgets.jaxmarl_policy_form import JaxMARLPolicyForm  # noqa: F401
+    from gym_gui.ui.widgets.jaxmarl_script_form import JaxMARLScriptForm  # noqa: F401
+    from gym_gui.ui.widgets.jaxmarl_train_form import JaxMARLTrainForm  # noqa: F401
     from gym_gui.ui.widgets.jumanji_train_form import JumanjiTrainForm  # noqa: F401
     from gym_gui.ui.widgets.marllib_train_form import MARLlibTrainForm  # noqa: F401
     from gym_gui.ui.widgets.mctx_train_form import MCTXTrainForm  # noqa: F401
@@ -44,9 +47,6 @@ def ensure_all_forms_registered() -> None:
     from gym_gui.ui.widgets.tianshou_resume_form import TianshouResumeForm  # noqa: F401
     from gym_gui.ui.widgets.tianshou_script_form import TianshouScriptForm  # noqa: F401
     from gym_gui.ui.widgets.tianshou_train_form import TianshouTrainForm  # noqa: F401
-    from gym_gui.ui.widgets.jaxmarl_train_form import JaxMARLTrainForm  # noqa: F401
-    from gym_gui.ui.widgets.jaxmarl_policy_form import JaxMARLPolicyForm  # noqa: F401
-    from gym_gui.ui.widgets.jaxmarl_script_form import JaxMARLScriptForm  # noqa: F401
     from gym_gui.ui.widgets.xuance_script_form import XuanCeScriptForm  # noqa: F401
     from gym_gui.ui.widgets.xuance_train_form import XuanCeTrainForm  # noqa: F401
 
