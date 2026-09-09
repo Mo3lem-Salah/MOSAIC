@@ -1094,7 +1094,6 @@ def _composite_resource_hud(
         vespene = int(player_common.get("vespene", 0))
         food_used = int(player_common.get("food_used", 0))
         food_cap = int(player_common.get("food_cap", 0))
-        idle = int(player_common.get("idle_worker_count", 0))
 
         pad = max(3, int(bar_h * 0.12))
         text_y = bar_h // 2

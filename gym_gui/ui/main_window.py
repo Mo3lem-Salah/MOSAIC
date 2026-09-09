@@ -1436,7 +1436,6 @@ class MainWindow(QtWidgets.QMainWindow, LogConstantMixin):
         )
 
         try:
-            env = None
             rgb_frame = None
             board_game_payload: Dict[str, Any] | None = None
 

@@ -233,8 +233,10 @@ class _SocialJaxGridView(QtWidgets.QWidget):
                     cmin, cmax = col_i - fwd,    col_i + bwd
 
                 # Clamp to valid grid area
-                rmin = max(0, rmin); rmax = min(rows - 1, rmax)
-                cmin = max(0, cmin); cmax = min(cols - 1, cmax)
+                rmin = max(0, rmin)
+                rmax = min(rows - 1, rmax)
+                cmin = max(0, cmin)
+                cmax = min(cols - 1, cmax)
 
                 wx = ox + cmin * cell
                 wy = oy + rmin * cell
