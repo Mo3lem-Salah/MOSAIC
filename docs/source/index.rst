@@ -1169,7 +1169,7 @@ If you use MOSAIC in your research, please cite the following paper:
 .. code-block:: bibtex
 
    @misc{mousa2026mosaicunifiedplatformcrossparadigm,
-     title={MOSAIC: A Unified Platform for Cross-Paradigm Agent-Mixing and Human-AI Collaboration},
+     title={MOSAIC: A Universal Agent-Level Interface for Cross-Paradigm Agent Mixing and Human-AI Collaboration},
      author={Abdulhamid M. Mousa and Yu Fu and Rakhmonberdi Khajiev and Jalaledin M. Azzabi and Abdulkarim M. Mousa and Peng Yang and Yunusa Haruna and Ming Liu},
      year={2026},
      eprint={2603.01260},
