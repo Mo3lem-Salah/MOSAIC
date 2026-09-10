@@ -496,7 +496,7 @@ If you use MOSAIC in your research, please cite:
 ```bibtex
 @misc{mousa2026mosaicunifiedplatformcrossparadigm,
       title={MOSAIC: A Universal Agent-Level Interface for Cross-Paradigm Agent Mixing and Human-AI Collaboration},
-      author={Abdulhamid M. Mousa and Jinhui Pang and Rakhmonberdi Khajiev and Jalaledin M. Azzabi and Abdulkarim M. Mousa and Peng Yong and Yunusa Haruna and Ming Liu},
+      author={Abdulhamid M. Mousa and Ming Liu and Rakhmonberdi Khajiev and Jalaledin M. Azzabi and Abdulkarim M. Mousa and Peng Yong and Yunusa Haruna and Jinhui Pang},
       year={2026},
       eprint={2603.01260},
       archivePrefix={arXiv},
